@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using NetWorthTracker.Database;
 using NetWorthTracker.Database.Repositories;
 using NetWorthTracker.Database.Repositories.Interfaces;
 using System.Configuration;
@@ -32,6 +33,7 @@ namespace NetWorthTracker
 
             // Register Services
             //services.AddSingleton<IUserService, UserService>();
+            services.AddDbContext<NetWorthTrackerDbContext>();
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<IEntryRepository, EntryRepository>();
             services.AddSingleton<IAssetRepository, AssetRepository>();
@@ -40,7 +42,7 @@ namespace NetWorthTracker
             services.AddSingleton<IDebtDefinitionRepository, DebtDefinitionRepository>();
 
             // Register ViewModels
-            services.AddSingleton<IMainViewModel, MainViewModel>();
+            services.AddSingleton<IMainViewModel, LoginViewModel>();
 
             // Register Views
             services.AddSingleton<LoginWindow>();

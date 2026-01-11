@@ -10,6 +10,6 @@
         <ComboBox HorizontalAlignment="Left" Margin="10,71,0,0" VerticalAlignment="Top" Width="260"/>
         <Label Content="Wybierz konto:" HorizontalAlignment="Left" Margin="10,45,0,0" VerticalAlignment="Top"/>
         <Button Content="Zaloguj" IsEnabled="false" HorizontalAlignment="Left" Margin="10,131,0,0" VerticalAlignment="Top" Height="26" Width="120"/>
-        <Button Content="Stwórz" HorizontalAlignment="Left" Margin="150,131,0,0" VerticalAlignment="Top" Height="26" Width="120"/>
+        <Button Content="Stwórz" Command="{Binding OpenUserCreationWindow}" HorizontalAlignment="Left" Margin="150,131,0,0" VerticalAlignment="Top" Height="26" Width="120"/>
     </Grid>
 </Window>
