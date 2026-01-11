@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="NetWorthTracker.Database/NetWorthTracker.Database.csproj" />
+  <Project Path="NetWorthTracker/NetWorthTracker.csproj" />
+</Solution>
