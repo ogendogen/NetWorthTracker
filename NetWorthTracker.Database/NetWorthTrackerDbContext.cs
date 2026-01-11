@@ -7,11 +7,11 @@ namespace NetWorthTracker.Database;
 public class NetWorthTrackerDbContext : DbContext
 {
     public DbSet<User> Users { get; set; }
-    public DbSet<Entry> Entry { get; set; }
+    public DbSet<Entry> Entries { get; set; }
     public DbSet<Asset> Assets { get; set; }
     public DbSet<Debt> Debts { get; set; }
     public DbSet<AssetDefinition> AssetsDefinitions { get; set; }
-    public DbSet<DebtDefinition> DebtDefinition { get; set; }
+    public DbSet<DebtDefinition> DebtsDefinitions { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

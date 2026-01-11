@@ -18,7 +18,7 @@ public class EntryRepository : IEntryRepository
 
     public async Task<Result<Entry>> AddEntry(Entry entry, CancellationToken cancellationToken = default)
     {
-        await _context.Entry.AddAsync(entry, cancellationToken);
+        await _context.Entries.AddAsync(entry, cancellationToken);
         int affected = await _context.SaveChangesAsync(cancellationToken);
         if (affected == 0)
         {
@@ -30,13 +30,13 @@ public class EntryRepository : IEntryRepository
 
     public async Task<Result<IEnumerable<Entry>>> GetUserEntries(int userId, CancellationToken cancellationToken = default)
     {
-        var entries = await _context.Entry.Where(x => x.UserId == userId).ToListAsync(cancellationToken);
+        var entries = await _context.Entries.Where(x => x.UserId == userId).ToListAsync(cancellationToken);
         return Result.Ok(entries.AsEnumerable());
     }
 
     public async Task<Result<int>> RemoveEntry(int entryId, CancellationToken cancellationToken = default)
     {
-        var entry = await _context.Entry.FindAsync(entryId, cancellationToken);
+        var entry = await _context.Entries.FindAsync(entryId, cancellationToken);
         if (entry is null)
         {
             return Result.Fail("Entry not found");
@@ -49,7 +49,7 @@ public class EntryRepository : IEntryRepository
 
     public async Task<Result<Entry>> UpdateEntry(Entry entry, CancellationToken cancellationToken = default)
     {
-        _context.Entry.Update(entry);
+        _context.Entries.Update(entry);
         int affected = await _context.SaveChangesAsync(cancellationToken);
 
         if (affected == 0)
