@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentResults;
+using Microsoft.EntityFrameworkCore;
 using NetWorthTracker.Database.Models;
 using NetWorthTracker.Database.Repositories.Interfaces;
 using System;
@@ -15,25 +16,47 @@ public class EntryRepository : IEntryRepository
         _context = context;
     }
 
-    public async Task<Entry> AddEntry(Entry entry, CancellationToken cancellationToken = default)
+    public async Task<Result<Entry>> AddEntry(Entry entry, CancellationToken cancellationToken = default)
     {
         await _context.Entry.AddAsync(entry, cancellationToken);
         int affected = await _context.SaveChangesAsync(cancellationToken);
+        if (affected == 0)
+        {
+            return Result.Fail("Entry not added");
+        }
+
         return entry;
     }
 
-    public async Task<IEnumerable<Entry>> GetUserEntries(int userId, CancellationToken cancellationToken = default)
+    public async Task<Result<IEnumerable<Entry>>> GetUserEntries(int userId, CancellationToken cancellationToken = default)
     {
-        return await _context.Entry.Where(x => x.UserId == userId).ToListAsync(cancellationToken: cancellationToken);
+        var entries = await _context.Entry.Where(x => x.UserId == userId).ToListAsync(cancellationToken);
+        return Result.Ok(entries.AsEnumerable());
     }
 
-    public Task<bool> RemoveEntry(int entryId, CancellationToken cancellationToken = default)
+    public async Task<Result<int>> RemoveEntry(int entryId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var entry = await _context.Entry.FindAsync(entryId, cancellationToken);
+        if (entry is null)
+        {
+            return Result.Fail("Entry not found");
+        }
+
+        _context.Remove(entry);
+        int affected = await _context.SaveChangesAsync(cancellationToken);
+        return Result.Ok(affected);
     }
 
-    public Task<Entry> UpdateEntry(Entry entry, CancellationToken cancellationToken = default)
+    public async Task<Result<Entry>> UpdateEntry(Entry entry, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        _context.Entry.Update(entry);
+        int affected = await _context.SaveChangesAsync(cancellationToken);
+
+        if (affected == 0)
+        {
+            return Result.Fail("No entries updated");
+        }
+
+        return Result.Ok(entry);
     }
 }
