@@ -21,7 +21,7 @@ namespace NetWorthTracker
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
 
-            var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+            var mainWindow = _serviceProvider.GetRequiredService<LoginWindow>();
             mainWindow.Show();
         }
 
@@ -43,7 +43,7 @@ namespace NetWorthTracker
             services.AddSingleton<IMainViewModel, MainViewModel>();
 
             // Register Views
-            services.AddSingleton<MainWindow>();
+            services.AddSingleton<LoginWindow>();
         }
 
         private void OnExit(object sender, ExitEventArgs e)
