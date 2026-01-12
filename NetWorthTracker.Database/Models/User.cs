@@ -11,4 +11,9 @@ public class User
     public virtual ICollection<Entry> Entries { get; set; } = new List<Entry>();
     public virtual ICollection<AssetDefinition> AssetsDefinitions { get; set; } = new List<AssetDefinition>();
     public virtual ICollection<DebtDefinition> DebtsDefinitions { get; set; } = new List<DebtDefinition>();
+
+    public override string? ToString()
+    {
+        return Name;
+    }
 }
