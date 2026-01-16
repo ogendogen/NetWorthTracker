@@ -1,4 +1,5 @@
-﻿using NetWorthTracker.Database.Models;
+﻿using FluentResults;
+using NetWorthTracker.Database.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,5 +8,6 @@ namespace NetWorthTracker.Database.Repositories.Interfaces;
 
 public interface IUserRepository
 {
-    Task<IEnumerable<User>> GetAllUsers(CancellationToken cancellationToken = default);
+    Task<Result<IEnumerable<User>>> GetAllUsers(CancellationToken cancellationToken = default);
+    Task<Result<User>> CreateUser(User user, CancellationToken cancellationToken = default);
 }

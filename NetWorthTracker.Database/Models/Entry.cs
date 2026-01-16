@@ -8,7 +8,7 @@ public class Entry
 {
     public int Id { get; set; }
     public int UserId { get; set; }
-    public virtual User User { get; set; } = new User();
+    public virtual User User { get; set; } = new User() { Name = string.Empty };
     public string? Name { get; set; } = string.Empty;
     public decimal Value { get; set; }
     public DateTime Date { get; set; }

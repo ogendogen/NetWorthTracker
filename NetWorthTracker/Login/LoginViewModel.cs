@@ -1,38 +1,46 @@
 ﻿using Microsoft.Extensions.Logging;
 using NetWorthTracker.Database.Models;
 using NetWorthTracker.Database.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 using System.Windows.Input;
+using NetWorthTracker.CreateUser;
+using NetWorthTracker.RelayCommands;
 
-namespace NetWorthTracker;
+namespace NetWorthTracker.Login;
 
-public interface IMainViewModel
+public interface ILoginViewModel
 {
     ICommand Login { get; }
     ICommand OpenUserCreationWindow { get; }
 }
 
-public class LoginViewModel : IMainViewModel
+public class LoginViewModel : ILoginViewModel
 {
     private readonly ILogger<LoginViewModel> _logger;
     private readonly IUserRepository _userRepository;
+    private readonly ICreateNewWindowViewModel _createNewWindowViewModel;
 
     public ObservableCollection<User> Users { get; } = new();
 
-    public LoginViewModel(ILogger<LoginViewModel> logger, IUserRepository userRepository)
+    public LoginViewModel(ILogger<LoginViewModel> logger, IUserRepository userRepository, ICreateNewWindowViewModel createNewWindowViewModel)
     {
         _logger = logger;
         _userRepository = userRepository;
+        _createNewWindowViewModel = createNewWindowViewModel;
+        _createNewWindowViewModel.UserCreated += OnUserCreated;
         LoadUsers();
     }
 
-    private async void LoadUsers()
+    private void OnUserCreated(object sender, EventArgs e)
     {
-        var users = await _userRepository.GetAllUsers();
-        foreach (var user in users)
+        LoadUsers();
+    }
+
+    public async void LoadUsers()
+    {
+        Users.Clear();
+        var usersResult = await _userRepository.GetAllUsers();
+        foreach (var user in usersResult.Value)
         {
             Users.Add(user);
         }
@@ -47,24 +55,7 @@ public class LoginViewModel : IMainViewModel
 
     private void ExecuteOpenUserCreationWindow()
     {
-        var createUserWindow = new CreateUserWindow();
+        var createUserWindow = new CreateUser.CreateUserWindow(_createNewWindowViewModel);
         createUserWindow.ShowDialog();
     }
-
-    //private ICommand _saveCommand;
-    //public ICommand SaveCommand =>
-    //    _saveCommand ??= new AsyncRelayCommand(ExecuteSaveAsync);
-
-    //private async Task ExecuteSaveAsync()
-    //{
-    //    try
-    //    {
-    //        _logger.LogInformation("Save command executed");
-    //        await _userService.SaveUserDataAsync();
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        _logger.LogError(ex, "Error during save operation");
-    //    }
-    //}
 }
