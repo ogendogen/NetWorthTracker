@@ -11,5 +11,6 @@ public partial class LoginWindow : Window
     {
         InitializeComponent();
         DataContext = viewModel;
+        viewModel.CloseRequested += () => Close();
     }
 }

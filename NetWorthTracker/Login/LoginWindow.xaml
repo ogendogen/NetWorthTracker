@@ -7,9 +7,12 @@
         mc:Ignorable="d"
         Title="Net Worth Tracker" Height="250" Width="300">
     <Grid>
-        <ComboBox ItemsSource="{Binding Path=Users}" HorizontalAlignment="Left" Margin="10,71,0,0" VerticalAlignment="Top" Width="260"/>
+        <ComboBox ItemsSource="{Binding Path=Users}" 
+                  SelectedItem="{Binding SelectedUser}"
+                  DisplayMemberPath="Name"
+                  HorizontalAlignment="Left" Margin="10,71,0,0" VerticalAlignment="Top" Width="260"/>
         <Label Content="Wybierz konto:" HorizontalAlignment="Left" Margin="10,45,0,0" VerticalAlignment="Top"/>
-        <Button Content="Zaloguj" IsEnabled="false" HorizontalAlignment="Left" Margin="10,131,0,0" VerticalAlignment="Top" Height="26" Width="120"/>
+        <Button Content="Zaloguj" Command="{Binding Login}" HorizontalAlignment="Left" Margin="10,131,0,0" VerticalAlignment="Top" Height="26" Width="120"/>
         <Button Content="Stwórz" Command="{Binding OpenUserCreationWindow}" HorizontalAlignment="Left" Margin="150,131,0,0" VerticalAlignment="Top" Height="26" Width="120"/>
     </Grid>
 </Window>

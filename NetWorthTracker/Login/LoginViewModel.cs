@@ -2,9 +2,12 @@
 using NetWorthTracker.Database.Models;
 using NetWorthTracker.Database.Repositories.Interfaces;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using NetWorthTracker.CreateUser;
 using NetWorthTracker.RelayCommands;
+using NetWorthTracker.Main;
 
 namespace NetWorthTracker.Login;
 
@@ -12,15 +15,36 @@ public interface ILoginViewModel
 {
     ICommand Login { get; }
     ICommand OpenUserCreationWindow { get; }
+    event Action CloseRequested;
 }
 
-public class LoginViewModel : ILoginViewModel
+public class LoginViewModel : ILoginViewModel, INotifyPropertyChanged
 {
     private readonly ILogger<LoginViewModel> _logger;
     private readonly IUserRepository _userRepository;
     private readonly ICreateNewWindowViewModel _createNewWindowViewModel;
+    private User _selectedUser;
+
+    public event Action CloseRequested;
 
     public ObservableCollection<User> Users { get; } = new();
+
+    public User SelectedUser
+    {
+        get => _selectedUser;
+        set
+        {
+            _selectedUser = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
 
     public LoginViewModel(ILogger<LoginViewModel> logger, IUserRepository userRepository, ICreateNewWindowViewModel createNewWindowViewModel)
     {
@@ -46,7 +70,16 @@ public class LoginViewModel : ILoginViewModel
         }
     }
 
-    public ICommand Login => throw new NotImplementedException();
+    private ICommand _login;
+    public ICommand Login =>
+        _login ??= new RelayCommand(ExecuteLogin, () => SelectedUser != null);
+
+    private void ExecuteLogin()
+    {
+        MainWindow mainWindow = new MainWindow();
+        mainWindow.Show();
+        CloseRequested?.Invoke();
+    }
 
     private ICommand _openUserCreationWindow;
 
@@ -55,7 +88,7 @@ public class LoginViewModel : ILoginViewModel
 
     private void ExecuteOpenUserCreationWindow()
     {
-        var createUserWindow = new CreateUser.CreateUserWindow(_createNewWindowViewModel);
+        var createUserWindow = new CreateUserWindow(_createNewWindowViewModel);
         createUserWindow.ShowDialog();
     }
 }
