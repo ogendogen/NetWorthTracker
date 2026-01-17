@@ -5,8 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NetWorthTracker.Main"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="Net Worth Tracker" Height="450" Width="800">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <!--<MenuItem Header="Wpisy">
+                <MenuItem Header="Dodaj" Command="{Binding NewCommand}"/>
+                <MenuItem Header="" Command="{Binding OpenCommand}"/>
+                <Separator/>
+                <MenuItem Header="Exit" Command="{Binding ExitCommand}"/>
+            </MenuItem>-->
+            <MenuItem Header="Definicje">
+                <MenuItem Header="Aktywa" Command="{Binding Actives}"/>
+                <MenuItem Header="Zobowiązania" Command="{Binding Debts}"/>
+            </MenuItem>
+        </Menu>
+        <Grid>
+            <!-- Your content here -->
+        </Grid>
+    </DockPanel>
 </Window>

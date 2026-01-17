@@ -23,6 +23,7 @@ public class LoginViewModel : ILoginViewModel, INotifyPropertyChanged
     private readonly ILogger<LoginViewModel> _logger;
     private readonly IUserRepository _userRepository;
     private readonly ICreateNewWindowViewModel _createNewWindowViewModel;
+    private readonly IMainWindowViewModel _mainWindowViewModel;
     private User _selectedUser;
 
     public event Action CloseRequested;
@@ -46,11 +47,12 @@ public class LoginViewModel : ILoginViewModel, INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    public LoginViewModel(ILogger<LoginViewModel> logger, IUserRepository userRepository, ICreateNewWindowViewModel createNewWindowViewModel)
+    public LoginViewModel(ILogger<LoginViewModel> logger, IUserRepository userRepository, ICreateNewWindowViewModel createNewWindowViewModel, IMainWindowViewModel mainWindowViewModel)
     {
         _logger = logger;
         _userRepository = userRepository;
         _createNewWindowViewModel = createNewWindowViewModel;
+        _mainWindowViewModel = mainWindowViewModel;
         _createNewWindowViewModel.UserCreated += OnUserCreated;
         LoadUsers();
     }
@@ -76,7 +78,7 @@ public class LoginViewModel : ILoginViewModel, INotifyPropertyChanged
 
     private void ExecuteLogin()
     {
-        MainWindow mainWindow = new MainWindow();
+        MainWindow mainWindow = new MainWindow(_mainWindowViewModel);
         mainWindow.Show();
         CloseRequested?.Invoke();
     }

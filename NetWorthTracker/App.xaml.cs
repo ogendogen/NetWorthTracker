@@ -7,6 +7,7 @@ using System.Configuration;
 using System.Data;
 using System.Windows;
 using NetWorthTracker.Login;
+using NetWorthTracker.Main;
 
 namespace NetWorthTracker;
 
@@ -46,6 +47,7 @@ public partial class App : Application
         // Register ViewModels
         services.AddSingleton<ILoginViewModel, LoginViewModel>();
         services.AddSingleton<ICreateNewWindowViewModel, CreateUserWindowViewModel>();
+        services.AddSingleton<IMainWindowViewModel, MainWindowViewModel>();
 
         // Register Views
         services.AddSingleton<LoginWindow>();

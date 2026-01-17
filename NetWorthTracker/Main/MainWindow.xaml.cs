@@ -17,8 +17,9 @@ namespace NetWorthTracker.Main;
 /// </summary>
 public partial class MainWindow : Window
 {
-    public MainWindow()
+    public MainWindow(IMainWindowViewModel mainWindowViewModel)
     {
         InitializeComponent();
+        DataContext = mainWindowViewModel;
     }
 }
