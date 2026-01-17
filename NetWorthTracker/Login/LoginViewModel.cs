@@ -25,10 +25,21 @@ public class LoginViewModel : ILoginViewModel, INotifyPropertyChanged
     private readonly ICreateNewWindowViewModel _createNewWindowViewModel;
     private readonly IMainWindowViewModel _mainWindowViewModel;
     private User _selectedUser;
+    private bool _isAddDefaultDefinitions;
 
     public event Action CloseRequested;
 
     public ObservableCollection<User> Users { get; } = new();
+
+    public bool IsAddDefaultDefinitions
+    {
+        get => _isAddDefaultDefinitions;
+        set
+        {
+            _isAddDefaultDefinitions = value;
+            OnPropertyChanged();
+        }
+    }
 
     public User SelectedUser
     {

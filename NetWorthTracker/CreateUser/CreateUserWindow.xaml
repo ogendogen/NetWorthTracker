@@ -5,11 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NetWorthTracker.CreateUser"
         mc:Ignorable="d"
-        Title="CreateUserWindow" Height="200" Width="200">
+        Title="Tworzenie użytkownika" Height="200" Width="200">
     <Grid>
         <Label Content="Nazwa Użytkownika" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Margin="10,41,0,0" TextWrapping="Wrap" Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="160" Height="25"/>
-        <Button Content="Stwórz" Command="{Binding CreateUser}"  HorizontalAlignment="Left" Margin="10,84,0,0" VerticalAlignment="Top" Height="32" Width="160"/>
+        <Button Content="Stwórz" Command="{Binding CreateUser}"  HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" Height="32" Width="160"/>
+        <CheckBox Content="Dodaj domyślne definicje" IsChecked="{Binding IsAddDefaultDefinitions, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="10,77,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.359,0.53"/>
 
     </Grid>
 </Window>

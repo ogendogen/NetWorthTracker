@@ -9,5 +9,5 @@ namespace NetWorthTracker.Database.Repositories.Interfaces;
 public interface IUserRepository
 {
     Task<Result<IEnumerable<User>>> GetAllUsers(CancellationToken cancellationToken = default);
-    Task<Result<User>> CreateUser(User user, CancellationToken cancellationToken = default);
+    Task<Result<User>> CreateUser(User user, bool withDefaultDefinitions = true, CancellationToken cancellationToken = default);
 }

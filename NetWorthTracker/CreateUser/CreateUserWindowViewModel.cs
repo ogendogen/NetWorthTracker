@@ -26,6 +26,17 @@ public class CreateUserWindowViewModel : ICreateNewWindowViewModel, INotifyPrope
         }
     }
 
+    private bool _isAddDefaultDefinitions = true;
+    public bool IsAddDefaultDefinitions
+    {
+        get => _isAddDefaultDefinitions;
+        set
+        {
+            _isAddDefaultDefinitions = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsAddDefaultDefinitions)));
+        }
+    }
+
     public event PropertyChangedEventHandler PropertyChanged;
     public event EventHandler UserCreated;
 
@@ -43,7 +54,7 @@ public class CreateUserWindowViewModel : ICreateNewWindowViewModel, INotifyPrope
 
     private async Task ExecuteCreateUserButton()
     {
-        var result = await _userRepository.CreateUser(new User() { Name = UserName });
+        var result = await _userRepository.CreateUser(new User() { Name = UserName }, _isAddDefaultDefinitions);
         if (result.IsFailed)
         {
             MessageBox.Show(result.Errors.First().Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
