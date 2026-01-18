@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NetWorthTracker.Database.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -17,9 +18,10 @@ namespace NetWorthTracker.Main;
 /// </summary>
 public partial class MainWindow : Window
 {
-    public MainWindow(IMainWindowViewModel mainWindowViewModel)
+    public MainWindow(IMainWindowViewModel mainWindowViewModel, User user)
     {
         InitializeComponent();
         DataContext = mainWindowViewModel;
+        mainWindowViewModel.User = user;
     }
 }

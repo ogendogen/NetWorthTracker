@@ -59,4 +59,16 @@ public class AssetDefinitionRepository : IAssetDefinitionRepository
         var assetDefinitions = await _context.AssetsDefinitions.Where(x => x.UserId == userId).ToListAsync(cancellationToken);
         return Result.Ok(assetDefinitions.AsEnumerable());
     }
+
+    public async Task<Result> SyncUserDefinitions(int userId, IEnumerable<AssetDefinition> definitions, CancellationToken cancellationToken = default)
+    {
+        definitions = definitions.Select(def => new AssetDefinition() { Name =  def.Name, User = def.User, UserId = def.UserId});
+        var existing = await _context.AssetsDefinitions.Where(x => x.UserId == userId).ToListAsync(cancellationToken);
+        
+        _context.AssetsDefinitions.RemoveRange(existing);
+        await _context.AssetsDefinitions.AddRangeAsync(definitions, cancellationToken);
+        
+        await _context.SaveChangesAsync(cancellationToken);
+        return Result.Ok();
+    }
 }

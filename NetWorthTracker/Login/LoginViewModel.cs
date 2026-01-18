@@ -89,7 +89,7 @@ public class LoginViewModel : ILoginViewModel, INotifyPropertyChanged
 
     private void ExecuteLogin()
     {
-        MainWindow mainWindow = new MainWindow(_mainWindowViewModel);
+        MainWindow mainWindow = new MainWindow(_mainWindowViewModel, SelectedUser);
         mainWindow.Show();
         CloseRequested?.Invoke();
     }

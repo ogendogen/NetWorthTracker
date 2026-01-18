@@ -4,10 +4,8 @@ using System.Text;
 
 namespace NetWorthTracker.Definitions;
 
-public interface IDefinitionsViewModel
+public enum DefinitionType
 {
-}
-
-public class DefinitionsViewModel
-{
+    Asset,
+    Debt,
 }

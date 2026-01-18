@@ -1,13 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using NetWorthTracker.AssetsDefinitions;
 using NetWorthTracker.CreateUser;
 using NetWorthTracker.Database;
 using NetWorthTracker.Database.Repositories;
 using NetWorthTracker.Database.Repositories.Interfaces;
+using NetWorthTracker.Login;
+using NetWorthTracker.Main;
 using System.Configuration;
 using System.Data;
 using System.Windows;
-using NetWorthTracker.Login;
-using NetWorthTracker.Main;
 
 namespace NetWorthTracker;
 
@@ -48,6 +49,7 @@ public partial class App : Application
         services.AddSingleton<ILoginViewModel, LoginViewModel>();
         services.AddSingleton<ICreateNewWindowViewModel, CreateUserWindowViewModel>();
         services.AddSingleton<IMainWindowViewModel, MainWindowViewModel>();
+        services.AddSingleton<IAssetsDefinitionsViewModel, AssetsDefinitionsViewModel>();
 
         // Register Views
         services.AddSingleton<LoginWindow>();

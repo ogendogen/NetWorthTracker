@@ -12,4 +12,5 @@ public interface IAssetDefinitionRepository
     Task<Result<AssetDefinition>> UpdateAssetDefinition(AssetDefinition assetDefinition, CancellationToken cancellationToken = default);
     Task<Result> RemoveAssetDefinition(int assetDefinitionId, CancellationToken cancellationToken = default);
     Task<Result<IEnumerable<AssetDefinition>>> GetByUserId(int userId, CancellationToken cancellationToken = default);
+    Task<Result> SyncUserDefinitions(int userId, IEnumerable<AssetDefinition> definitions, CancellationToken cancellationToken = default);
 }
