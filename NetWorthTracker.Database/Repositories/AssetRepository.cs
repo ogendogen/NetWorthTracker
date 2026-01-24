@@ -1,12 +1,15 @@
 ﻿using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using NetWorthTracker.Database.Models;
-using NetWorthTracker.Database.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NetWorthTracker.Database.Repositories;
+
+public interface IAssetRepository
+{
+    Task<Result<Asset>> AddAssetToEntry(Asset asset, Entry entry, CancellationToken cancellationToken);
+    Task<Result<Asset>> UpdateAsset(Asset asset, CancellationToken cancellationToken);
+    Task<Result> RemoveAsset(Asset asset, CancellationToken cancellationToken);
+}
 
 public class AssetRepository : IAssetRepository
 {

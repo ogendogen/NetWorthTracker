@@ -1,5 +1,4 @@
 ﻿using NetWorthTracker.Database.Models;
-using NetWorthTracker.Database.Repositories.Interfaces;
 using System.Windows;
 
 namespace NetWorthTracker.AssetsDefinitions;
@@ -9,7 +8,7 @@ namespace NetWorthTracker.AssetsDefinitions;
 /// </summary>
 public partial class AssetsDefinitionsWindow : Window
 {
-    public AssetsDefinitionsWindow(IDefinitionsViewModel assetsDefinitionsViewModel, User user, DefinitionType definitionType) // todo: inject user and parameter which definitions collection to fetch
+    public AssetsDefinitionsWindow(IDefinitionsViewModel assetsDefinitionsViewModel, User user, DefinitionType definitionType)
     {
         InitializeComponent();
         DataContext = assetsDefinitionsViewModel;

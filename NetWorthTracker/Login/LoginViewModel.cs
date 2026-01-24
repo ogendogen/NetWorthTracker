@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using NetWorthTracker.Database.Models;
-using NetWorthTracker.Database.Repositories.Interfaces;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -8,6 +7,7 @@ using System.Windows.Input;
 using NetWorthTracker.CreateUser;
 using NetWorthTracker.RelayCommands;
 using NetWorthTracker.Main;
+using NetWorthTracker.Database.Repositories;
 
 namespace NetWorthTracker.Login;
 

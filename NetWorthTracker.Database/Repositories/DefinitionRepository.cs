@@ -1,12 +1,14 @@
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using NetWorthTracker.Database.Models;
-using NetWorthTracker.Database.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NetWorthTracker.Database.Repositories;
+
+public interface IDefinitionRepository
+{
+    Task<Result<IEnumerable<Definition>>> GetDefinitionsByUserId(int userId, DefinitionType definitionType, CancellationToken cancellationToken = default);
+    Task<Result> SyncUserDefinitions(User user, IEnumerable<Definition> definitions, DefinitionType definitionType, CancellationToken cancellationToken = default);
+}
 
 public class DefinitionRepository : IDefinitionRepository
 {

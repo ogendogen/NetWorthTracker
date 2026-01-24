@@ -1,5 +1,5 @@
 ﻿using NetWorthTracker.Database.Models;
-using NetWorthTracker.Database.Repositories.Interfaces;
+using NetWorthTracker.Database.Repositories;
 using System.Collections.ObjectModel;
 using System.Windows;
 

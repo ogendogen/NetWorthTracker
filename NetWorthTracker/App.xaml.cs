@@ -3,7 +3,6 @@ using NetWorthTracker.AssetsDefinitions;
 using NetWorthTracker.CreateUser;
 using NetWorthTracker.Database;
 using NetWorthTracker.Database.Repositories;
-using NetWorthTracker.Database.Repositories.Interfaces;
 using NetWorthTracker.Login;
 using NetWorthTracker.Main;
 using System.Configuration;

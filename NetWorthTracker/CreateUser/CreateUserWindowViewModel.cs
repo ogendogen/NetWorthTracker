@@ -1,9 +1,9 @@
-﻿using NetWorthTracker.Database.Repositories.Interfaces;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows.Input;
 using NetWorthTracker.Database.Models;
 using System.Windows;
 using NetWorthTracker.RelayCommands;
+using NetWorthTracker.Database.Repositories;
 
 namespace NetWorthTracker.CreateUser;
 public interface ICreateNewWindowViewModel

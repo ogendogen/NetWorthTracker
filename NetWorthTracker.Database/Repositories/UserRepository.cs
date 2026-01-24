@@ -2,10 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using NetWorthTracker.Database.Constants;
 using NetWorthTracker.Database.Models;
-using NetWorthTracker.Database.Repositories.Interfaces;
-using System.Reflection.Metadata;
 
 namespace NetWorthTracker.Database.Repositories;
+
+public interface IUserRepository
+{
+    Task<Result<IEnumerable<User>>> GetAllUsers(CancellationToken cancellationToken = default);
+    Task<Result<User>> CreateUser(User user, bool withDefaultDefinitions = true, CancellationToken cancellationToken = default);
+}
 
 public class UserRepository : IUserRepository
 {

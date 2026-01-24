@@ -1,12 +1,15 @@
 ﻿using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using NetWorthTracker.Database.Models;
-using NetWorthTracker.Database.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NetWorthTracker.Database.Repositories;
+
+public interface IDebtRepository
+{
+    Task<Result<Debt>> AddDebtToEntry(Debt debt, Entry entry, CancellationToken cancellationToken);
+    Task<Result<Debt>> UpdateDebt(Debt debt, CancellationToken cancellationToken);
+    Task<Result> RemoveDebt(Debt debt, CancellationToken cancellationToken);
+}
 
 public class DebtRepository : IDebtRepository
 {
