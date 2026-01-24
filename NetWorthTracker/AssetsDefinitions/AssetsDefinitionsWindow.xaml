@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NetWorthTracker.AssetsDefinitions"
         mc:Ignorable="d"
-        Title="DefinitionsWindow" Height="450" Width="400">
+        Title="{Binding Title}" Height="450" Width="400">
     <Grid>
         <DataGrid ItemsSource="{Binding Definitions}"
                   AutoGenerateColumns="False"

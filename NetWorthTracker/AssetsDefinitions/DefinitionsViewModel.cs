@@ -15,6 +15,7 @@ public interface IDefinitionsViewModel
 public class DefinitionsViewModel : IDefinitionsViewModel
 {
     public ObservableCollection<Definition> Definitions { get; set; } = new();
+    public string Title => _definitionType == DefinitionType.Asset ? "Definicje aktywów" : "Definicje zobowiązań";
     private readonly IDefinitionRepository _definitionRepository;
 
     public event Action CloseRequested;
