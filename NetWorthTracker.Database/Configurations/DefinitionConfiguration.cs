@@ -7,13 +7,13 @@ using System.Text;
 
 namespace NetWorthTracker.Database.Configurations;
 
-public class DebtDefinitionConfiguration : IEntityTypeConfiguration<DebtDefinition>
+public class DefinitionConfiguration : IEntityTypeConfiguration<Definition>
 {
-    public void Configure(EntityTypeBuilder<DebtDefinition> builder)
+    public void Configure(EntityTypeBuilder<Definition> builder)
     {
         builder.HasKey(e => e.Id);
 
-        builder.ToTable("debtsdefinitions");
+        builder.ToTable("definitions");
 
         builder.Property(e => e.Id)
             .HasColumnName("id")
@@ -26,8 +26,11 @@ public class DebtDefinitionConfiguration : IEntityTypeConfiguration<DebtDefiniti
         builder.Property(e => e.UserId)
             .HasColumnName("user_id");
 
+        builder.Property(e => e.Type)
+            .HasColumnName("type");
+
         builder.HasOne(e => e.User)
-            .WithMany(e => e.DebtsDefinitions)
+            .WithMany(e => e.Definitions)
             .HasForeignKey(e => e.UserId)
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();

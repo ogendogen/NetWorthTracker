@@ -36,20 +36,18 @@ public partial class App : Application
         services.AddLogging();
 
         // Register Services
-        //services.AddSingleton<IUserService, UserService>();
         services.AddDbContext<NetWorthTrackerDbContext>();
         services.AddSingleton<IUserRepository, UserRepository>();
         services.AddSingleton<IEntryRepository, EntryRepository>();
         services.AddSingleton<IAssetRepository, AssetRepository>();
         services.AddSingleton<IDebtRepository, DebtRepository>();
-        services.AddSingleton<IAssetDefinitionRepository, AssetDefinitionRepository>();
-        services.AddSingleton<IDebtDefinitionRepository, DebtDefinitionRepository>();
+        services.AddSingleton<IDefinitionRepository, DefinitionRepository>();
 
         // Register ViewModels
         services.AddSingleton<ILoginViewModel, LoginViewModel>();
         services.AddSingleton<ICreateNewWindowViewModel, CreateUserWindowViewModel>();
         services.AddSingleton<IMainWindowViewModel, MainWindowViewModel>();
-        services.AddSingleton<IAssetsDefinitionsViewModel, AssetsDefinitionsViewModel>();
+        services.AddSingleton<IDefinitionsViewModel, DefinitionsViewModel>();
 
         // Register Views
         services.AddSingleton<LoginWindow>();

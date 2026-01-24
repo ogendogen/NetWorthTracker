@@ -10,8 +10,7 @@ public class NetWorthTrackerDbContext : DbContext
     public DbSet<Entry> Entries { get; set; }
     public DbSet<Asset> Assets { get; set; }
     public DbSet<Debt> Debts { get; set; }
-    public DbSet<AssetDefinition> AssetsDefinitions { get; set; }
-    public DbSet<DebtDefinition> DebtsDefinitions { get; set; }
+    public DbSet<Definition> Definitions { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -24,7 +23,6 @@ public class NetWorthTrackerDbContext : DbContext
         modelBuilder.ApplyConfiguration(new EntryConfiguration());
         modelBuilder.ApplyConfiguration(new AssetConfiguration());
         modelBuilder.ApplyConfiguration(new DebtConfiguration());
-        modelBuilder.ApplyConfiguration(new AssetDefinitionConfiguration());
-        modelBuilder.ApplyConfiguration(new DebtDefinitionConfiguration());
+        modelBuilder.ApplyConfiguration(new DefinitionConfiguration());
     }
 }

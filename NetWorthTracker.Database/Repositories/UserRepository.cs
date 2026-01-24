@@ -21,12 +21,7 @@ public class UserRepository : IUserRepository
         {
             foreach (var item in Definitions.Assets)
             {
-                user.AssetsDefinitions.Add(item);
-            }
-
-            foreach (var item in Definitions.Debts)
-            {
-                user.DebtsDefinitions.Add(item);
+                user.Definitions.Add(item);
             }
         }
 
