@@ -27,14 +27,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasMany(e => e.AssetsDefinitions)
-            .WithOne(e => e.User)
-            .HasForeignKey(e => e.UserId)
-            .HasPrincipalKey(e => e.Id)
-            .IsRequired()
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasMany(e => e.DebtsDefinitions)
+        builder.HasMany(e => e.Definitions)
             .WithOne(e => e.User)
             .HasForeignKey(e => e.UserId)
             .HasPrincipalKey(e => e.Id)

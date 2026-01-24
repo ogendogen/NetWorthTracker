@@ -1,6 +1,5 @@
 ﻿using NetWorthTracker.AssetsDefinitions;
 using NetWorthTracker.Database.Models;
-using NetWorthTracker.Definitions;
 using NetWorthTracker.RelayCommands;
 using System;
 using System.Collections.Generic;
@@ -22,7 +21,7 @@ public class MainWindowViewModel : IMainWindowViewModel
     private ICommand _actives;
     public ICommand Actives => _actives ??= new RelayCommand(ExecuteActivesCommand);
 
-    private readonly IAssetsDefinitionsViewModel _assetsDefinitionsViewModel;
+    private readonly IDefinitionsViewModel _assetsDefinitionsViewModel;
     private User _user;
 
     public User User
@@ -31,14 +30,14 @@ public class MainWindowViewModel : IMainWindowViewModel
         set { _user = value; }
     }
 
-    public MainWindowViewModel(IAssetsDefinitionsViewModel assetsDefinitionsViewModel)
+    public MainWindowViewModel(IDefinitionsViewModel assetsDefinitionsViewModel)
     {
         _assetsDefinitionsViewModel = assetsDefinitionsViewModel;
     }
 
     private void ExecuteActivesCommand(object obj)
     {
-        AssetsDefinitionsWindow assetsDefinitionsWindow = new AssetsDefinitionsWindow(_assetsDefinitionsViewModel, _user);
+        AssetsDefinitionsWindow assetsDefinitionsWindow = new AssetsDefinitionsWindow(_assetsDefinitionsViewModel, _user, DefinitionType.Asset);
         assetsDefinitionsWindow.ShowDialog();
     }
 
@@ -48,7 +47,7 @@ public class MainWindowViewModel : IMainWindowViewModel
 
     private void ExecuteDebtsCommand(object obj)
     {
-        //DefinitionsWindow definitionsWindow = new DefinitionsWindow();
-        //definitionsWindow.ShowDialog();
+        AssetsDefinitionsWindow assetsDefinitionsWindow = new AssetsDefinitionsWindow(_assetsDefinitionsViewModel, _user, DefinitionType.Debt);
+        assetsDefinitionsWindow.ShowDialog();
     }
 }

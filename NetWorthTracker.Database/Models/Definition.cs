@@ -4,10 +4,17 @@ using System.Text;
 
 namespace NetWorthTracker.Database.Models;
 
-public class DebtDefinition
+public class Definition
 {
     public int Id { get; set; }
     public int UserId { get; set; }
     public virtual User User { get; set; } = new User() { Name = string.Empty };
     public string Name { get; set; } = string.Empty;
+    public required DefinitionType Type { get; set; }
+}
+
+public enum DefinitionType
+{
+    Asset,
+    Debt,
 }
