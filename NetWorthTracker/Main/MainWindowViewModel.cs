@@ -1,6 +1,7 @@
 ﻿using NetWorthTracker.AssetsDefinitions;
 using NetWorthTracker.Database.Models;
 using NetWorthTracker.Database.Repositories;
+using NetWorthTracker.Entry;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -22,9 +23,10 @@ public partial class MainWindowViewModel : IMainWindowViewModel, INotifyProperty
 {
     private readonly IDefinitionsViewModel _assetsDefinitionsViewModel;
     private readonly IEntryRepository _entryRepository;
-    private Entry _selectedEntry;
+    private readonly IEntryWindowViewModel _entryWindowViewModel;
+    private Database.Models.Entry _selectedEntry;
 
-    public Entry SelectedEntry
+    public Database.Models.Entry SelectedEntry
     {
         get => _selectedEntry;
         set
@@ -34,7 +36,7 @@ public partial class MainWindowViewModel : IMainWindowViewModel, INotifyProperty
         }
     }
 
-    public ObservableCollection<Entry> Entries { get; private set; } = new();
+    public ObservableCollection<Database.Models.Entry> Entries { get; private set; } = new();
 
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -45,10 +47,11 @@ public partial class MainWindowViewModel : IMainWindowViewModel, INotifyProperty
 
     public User User { get; set; }
 
-    public MainWindowViewModel(IDefinitionsViewModel assetsDefinitionsViewModel, IEntryRepository entryRepository)
+    public MainWindowViewModel(IDefinitionsViewModel assetsDefinitionsViewModel, IEntryRepository entryRepository, IEntryWindowViewModel entryWindowViewModel)
     {
         _assetsDefinitionsViewModel = assetsDefinitionsViewModel;
         _entryRepository = entryRepository;
+        _entryWindowViewModel = entryWindowViewModel;
     }
 
     public async void LoadEntries()
@@ -56,7 +59,7 @@ public partial class MainWindowViewModel : IMainWindowViewModel, INotifyProperty
         var entries = await _entryRepository.GetUserEntries(User.Id);
         if (entries.IsSuccess)
         {
-            Entries = new ObservableCollection<Entry>(entries.Value);
+            Entries = new ObservableCollection<Database.Models.Entry>(entries.Value);
         }
     }
 
@@ -68,7 +71,8 @@ public partial class MainWindowViewModel : IMainWindowViewModel, INotifyProperty
 
     private void ExecuteAddEntryCommand(object obj)
     {
-        throw new NotImplementedException();
+        EntryWindow entryWindow = new EntryWindow(_entryWindowViewModel);
+        entryWindow.ShowDialog();
     }
 
     private async void ExecuteRemoveEntryCommand(object obj)

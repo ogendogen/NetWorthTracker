@@ -3,6 +3,7 @@ using NetWorthTracker.AssetsDefinitions;
 using NetWorthTracker.CreateUser;
 using NetWorthTracker.Database;
 using NetWorthTracker.Database.Repositories;
+using NetWorthTracker.Entry;
 using NetWorthTracker.Login;
 using NetWorthTracker.Main;
 using System.Configuration;
@@ -47,6 +48,7 @@ public partial class App : Application
         services.AddSingleton<ICreateNewWindowViewModel, CreateUserWindowViewModel>();
         services.AddSingleton<IMainWindowViewModel, MainWindowViewModel>();
         services.AddSingleton<IDefinitionsViewModel, DefinitionsViewModel>();
+        services.AddSingleton<IEntryWindowViewModel, EntryWindowViewModel>();
 
         // Register Views
         services.AddSingleton<LoginWindow>();
