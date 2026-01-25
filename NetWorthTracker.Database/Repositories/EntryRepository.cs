@@ -10,6 +10,7 @@ public interface IEntryRepository
     Task<Result<Entry>> AddEntry(Entry entry, CancellationToken cancellationToken = default);
     Task<Result<Entry>> UpdateEntry(Entry entry, CancellationToken cancellationToken = default);
     Task<Result<int>> RemoveEntry(int entryId, CancellationToken cancellationToken = default);
+    Task<Result> SyncEntryActivesAndDebts(Entry entry, CancellationToken cancellationToken = default);
 }
 
 public class EntryRepository : IEntryRepository
@@ -49,6 +50,11 @@ public class EntryRepository : IEntryRepository
         _context.Remove(entry);
         int affected = await _context.SaveChangesAsync(cancellationToken);
         return Result.Ok(affected);
+    }
+
+    public Task<Result> SyncEntryActivesAndDebts(Entry entry, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<Result<Entry>> UpdateEntry(Entry entry, CancellationToken cancellationToken = default)

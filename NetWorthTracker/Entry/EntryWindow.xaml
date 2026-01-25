@@ -16,24 +16,28 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="15*"/>
+            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Label Grid.Row="0" Grid.Column="0" Content="Aktywa" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <DataGrid Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Actives}">
+        <DataGrid Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Assets}" AutoGenerateColumns="False" CanUserAddRows="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Nazwa" Binding="{Binding Name}" Width="*"/>
+                <DataGridTextColumn Header="Nazwa" Binding="{Binding Name}" Width="*" IsReadOnly="true"/>
                 <DataGridTextColumn Header="Wartość" Binding="{Binding Value}" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
 
         <Label Grid.Row="0" Grid.Column="1" Content="Zobowiązania" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <DataGrid Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Debts}">
+        <DataGrid Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Debts}" AutoGenerateColumns="False" CanUserAddRows="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Nazwa" Binding="{Binding Name}" Width="*"/>
+                <DataGridTextColumn Header="Nazwa" Binding="{Binding Name}" Width="*" IsReadOnly="true"/>
                 <DataGridTextColumn Header="Wartość" Binding="{Binding Value}" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
 
         <Label Grid.Row="0" Grid.Column="2" Content="Wykres zmian" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <lvc:CartesianChart Grid.Row="1" Grid.Column="2" Series="{Binding Series}"/>
+
+        <Label Grid.Row="2" Grid.Column="0" Content="Suma: 0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <Label Grid.Row="2" Grid.Column="1" Content="Suma: 0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
     </Grid>
 </Window>
