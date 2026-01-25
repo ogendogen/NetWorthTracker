@@ -8,19 +8,33 @@
         Title="Net Worth Tracker" Height="450" Width="800">
     <DockPanel>
         <Menu DockPanel.Dock="Top">
-            <!--<MenuItem Header="Wpisy">
-                <MenuItem Header="Dodaj" Command="{Binding NewCommand}"/>
-                <MenuItem Header="" Command="{Binding OpenCommand}"/>
-                <Separator/>
-                <MenuItem Header="Exit" Command="{Binding ExitCommand}"/>
-            </MenuItem>-->
             <MenuItem Header="Definicje">
                 <MenuItem Header="Aktywa" Command="{Binding Actives}"/>
                 <MenuItem Header="Zobowiązania" Command="{Binding Debts}"/>
             </MenuItem>
         </Menu>
         <Grid>
-            <!-- Your content here -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="9*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <DataGrid Grid.Column="0" Grid.Row="0" ItemsSource="{Binding Entries}"
+                  SelectedItem="{Binding SelectedEntry}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Data" Binding="{Binding Name}" Width="*"/>
+                    <DataGridTextColumn Header="Wartość" Binding="{Binding Name}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+            <UniformGrid Grid.Column="0" Grid.Row="1" Columns="2">
+                <Button Command="{Binding AddEntry}">Dodaj</Button>
+                <Button Command="{Binding RemoveEntry}">Usuń</Button>
+            </UniformGrid>
         </Grid>
     </DockPanel>
 </Window>

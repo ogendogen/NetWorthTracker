@@ -1,9 +1,9 @@
 ﻿using NetWorthTracker.AssetsDefinitions;
 using NetWorthTracker.Database.Models;
-using NetWorthTracker.RelayCommands;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using NetWorthTracker.Database.Repositories;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 
@@ -13,41 +13,82 @@ public interface IMainWindowViewModel
 {
     ICommand Actives { get; }
     ICommand Debts { get; }
+    ICommand AddEntry { get; }
+    ICommand RemoveEntry { get; }
     User User { get; set; }
 }
 
-public class MainWindowViewModel : IMainWindowViewModel
+public partial class MainWindowViewModel : IMainWindowViewModel, INotifyPropertyChanged
 {
-    private ICommand _actives;
-    public ICommand Actives => _actives ??= new RelayCommand(ExecuteActivesCommand);
-
     private readonly IDefinitionsViewModel _assetsDefinitionsViewModel;
-    private User _user;
+    private readonly IEntryRepository _entryRepository;
+    private Entry _selectedEntry;
 
-    public User User
+    public Entry SelectedEntry
     {
-        get { return _user; }
-        set { _user = value; }
+        get => _selectedEntry;
+        set
+        {
+            _selectedEntry = value;
+            OnPropertyChanged();
+        }
     }
 
-    public MainWindowViewModel(IDefinitionsViewModel assetsDefinitionsViewModel)
+    public ObservableCollection<Entry> Entries { get; private set; } = new();
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    public User User { get; set; }
+
+    public MainWindowViewModel(IDefinitionsViewModel assetsDefinitionsViewModel, IEntryRepository entryRepository)
     {
         _assetsDefinitionsViewModel = assetsDefinitionsViewModel;
+        _entryRepository = entryRepository;
+    }
+
+    public async void LoadEntries()
+    {
+        var entries = await _entryRepository.GetUserEntries(User.Id);
+        if (entries.IsSuccess)
+        {
+            Entries = new ObservableCollection<Entry>(entries.Value);
+        }
     }
 
     private void ExecuteActivesCommand(object obj)
     {
-        AssetsDefinitionsWindow assetsDefinitionsWindow = new AssetsDefinitionsWindow(_assetsDefinitionsViewModel, _user, DefinitionType.Asset);
+        AssetsDefinitionsWindow assetsDefinitionsWindow = new AssetsDefinitionsWindow(_assetsDefinitionsViewModel, User, DefinitionType.Asset);
         assetsDefinitionsWindow.ShowDialog();
     }
 
-    private ICommand _debts;
+    private void ExecuteAddEntryCommand(object obj)
+    {
+        throw new NotImplementedException();
+    }
 
-    public ICommand Debts => _debts ??= new RelayCommand(ExecuteDebtsCommand);
+    private async void ExecuteRemoveEntryCommand(object obj)
+    {
+        if (SelectedEntry == null)
+        {
+            MessageBox.Show("Wybierz wpis do usunięcia", "Informacja", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        var result = MessageBox.Show("Czy na pewno chcesz usunąć wybrany wpis? Ta operacja jest nieodwracalna i usunie powiązane wpisy!", "Uwaga", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+        if (result == MessageBoxResult.Yes)
+        {
+            await _entryRepository.RemoveEntry(SelectedEntry.Id);
+        }
+    }
 
     private void ExecuteDebtsCommand(object obj)
     {
-        AssetsDefinitionsWindow assetsDefinitionsWindow = new AssetsDefinitionsWindow(_assetsDefinitionsViewModel, _user, DefinitionType.Debt);
+        AssetsDefinitionsWindow assetsDefinitionsWindow = new AssetsDefinitionsWindow(_assetsDefinitionsViewModel, User, DefinitionType.Debt);
         assetsDefinitionsWindow.ShowDialog();
     }
 }
