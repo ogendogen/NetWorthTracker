@@ -26,6 +26,14 @@ public class DefinitionRepository : IDefinitionRepository
 
     public async Task<Result> SyncUserDefinitions(User user, IEnumerable<Definition> definitions, DefinitionType definitionType, CancellationToken cancellationToken = default)
     {
+        if (!definitions.Any())
+        {
+            _context.Definitions.RemoveRange(_context.Definitions.Where(x => x.UserId == user.Id && x.Type == definitionType));
+            await _context.SaveChangesAsync();
+
+            return Result.Ok();
+        }
+
         definitions = definitions.Select(def => new Definition
         {
             Name =  def.Name,
