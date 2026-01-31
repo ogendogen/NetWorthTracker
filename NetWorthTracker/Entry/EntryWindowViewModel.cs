@@ -100,9 +100,9 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
     }
 
     public Database.Models.Entry SelectedEntry { get; set; }
-    public string AssetsSum => $"Suma: {Assets?.Sum(x => x.Value).ToString("0.00") ?? "0.00"}";
-    public string DebtsSum => $"Suma: {Debts?.Sum(x => x.Value).ToString("0.00") ?? "0.00"}";
-    public string TotalSum => $"Całkowita suma: {(Assets?.Sum(x => x.Value) ?? 0) - (Debts?.Sum(x => x.Value) ?? 0):0.00}";
+    public string AssetsSum => $"Suma: {Assets?.Sum(x => x.Value).ToString("N2") ?? "0.00"} zł";
+    public string DebtsSum => $"Suma: {Debts?.Sum(x => x.Value).ToString("N2") ?? "0.00"} zł";
+    public string TotalSum => $"Całkowita suma: {(Assets?.Sum(x => x.Value) ?? 0) - (Debts?.Sum(x => x.Value) ?? 0):N2} zł";
     public User User { get; set; }
 
     public event PropertyChangedEventHandler PropertyChanged;
