@@ -5,14 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NetWorthTracker.Login"
         mc:Ignorable="d"
-        Title="Net Worth Tracker" Height="250" Width="300">
+        Title="Net Worth Tracker" Height="175" Width="300">
     <Grid>
-        <ComboBox ItemsSource="{Binding Path=Users}" 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <Label Grid.Row="0" Content="Wybierz konto:" Margin="10,10,10,5"/>
+        <ComboBox Grid.Row="1" ItemsSource="{Binding Path=Users}" 
                   SelectedItem="{Binding SelectedUser}"
                   DisplayMemberPath="Name"
-                  HorizontalAlignment="Left" Margin="10,71,0,0" VerticalAlignment="Top" Width="260"/>
-        <Label Content="Wybierz konto:" HorizontalAlignment="Left" Margin="10,45,0,0" VerticalAlignment="Top"/>
-        <Button Content="Zaloguj" Command="{Binding Login}" HorizontalAlignment="Left" Margin="10,131,0,0" VerticalAlignment="Top" Height="26" Width="120"/>
-        <Button Content="Stwórz" Command="{Binding OpenUserCreationWindow}" HorizontalAlignment="Left" Margin="150,131,0,0" VerticalAlignment="Top" Height="26" Width="120"/>
+                  Margin="10,5,10,10"/>
+        
+        <UniformGrid Grid.Row="2" Columns="2" Margin="10,10,10,10">
+            <Button Content="Zaloguj" Command="{Binding Login}" Margin="0,0,5,0" Height="26"/>
+            <Button Content="Stwórz" Command="{Binding OpenUserCreationWindow}" Margin="5,0,0,0" Height="26"/>
+        </UniformGrid>
     </Grid>
 </Window>
