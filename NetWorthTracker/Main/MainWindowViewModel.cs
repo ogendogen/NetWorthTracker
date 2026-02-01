@@ -71,7 +71,7 @@ public partial class MainWindowViewModel : IMainWindowViewModel, INotifyProperty
 
     private void ExecuteAddEntryCommand(object obj)
     {
-        EntryWindow entryWindow = new EntryWindow(_entryWindowViewModel, User);
+        EntryWindow entryWindow = new EntryWindow(_entryWindowViewModel, User, WindowMode.Create);
         entryWindow.ShowDialog();
     }
 

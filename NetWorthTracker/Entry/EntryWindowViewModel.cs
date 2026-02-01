@@ -1,13 +1,17 @@
-﻿using LiveChartsCore;
+﻿using FluentResults;
+using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using NetWorthTracker.Database.Models;
 using NetWorthTracker.Database.Repositories;
+using NetWorthTracker.RelayCommands;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Text;
+using System.Windows;
+using System.Windows.Input;
 
 namespace NetWorthTracker.Entry;
 
@@ -15,6 +19,8 @@ public interface IEntryWindowViewModel
 {
     void LoadData();
     User User { get; set; }
+    Database.Models.Entry Entry { get; set; }
+    WindowMode WindowMode { get; set; }
 }
 
 public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChanged
@@ -22,7 +28,7 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
     private readonly IAssetRepository _assetRepository;
     private readonly IDebtRepository _debtRepository;
     private readonly IDefinitionRepository _definitionRepository;
-
+    private readonly IEntryRepository _entryRepository;
     private ObservableCollection<Asset> _assets;
     public ObservableCollection<Asset> Assets
     {
@@ -99,11 +105,12 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
         }
     }
 
-    public Database.Models.Entry SelectedEntry { get; set; }
     public string AssetsSum => $"Suma: {Assets?.Sum(x => x.Value).ToString("N2") ?? "0.00"} zł";
     public string DebtsSum => $"Suma: {Debts?.Sum(x => x.Value).ToString("N2") ?? "0.00"} zł";
     public string TotalSum => $"Całkowita suma: {(Assets?.Sum(x => x.Value) ?? 0) - (Debts?.Sum(x => x.Value) ?? 0):N2} zł";
     public User User { get; set; }
+    public Database.Models.Entry Entry { get; set; }
+    public WindowMode WindowMode { get; set; }
 
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -111,13 +118,15 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
-    public EntryWindowViewModel(IDefinitionRepository definitionRepository)
+    public EntryWindowViewModel(IDefinitionRepository definitionRepository, IEntryRepository entryRepository)
     {
         _definitionRepository = definitionRepository;
+        _entryRepository = entryRepository;
     }
 
     public async void LoadData()
     {
+        // todo: handling edit (Entry is not null)
         var assetsDefinitions = await _definitionRepository.GetDefinitionsByUserId(User.Id, DefinitionType.Asset);
         var assetsList = assetsDefinitions.Value.Select(assetDefinition => new Asset()
         {
@@ -137,6 +146,48 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
         Debts = new ObservableCollection<Debt>(debtsList);
         foreach (var debt in Debts)
             debt.PropertyChanged += OnDebtPropertyChanged;
+    }
+
+    private ICommand _saveEntryCommand;
+    public ICommand SaveEntryCommand =>
+        _saveEntryCommand ??= new RelayCommand(ExecuteSaveEntry);
+
+    private async void ExecuteSaveEntry(object obj)
+    {
+        if (WindowMode == WindowMode.Create)
+        {
+            var result = await _entryRepository.AddEntry(new Database.Models.Entry()
+            {
+                Assets = Assets.Where(x => x.Value != 0).ToList(),
+                Debts = Debts.Where(x => x.Value != 0).ToList(),
+                Date = DateTime.Now,
+                UserId = User.Id,
+                User = User,
+            });
+
+            if (result.IsSuccess)
+            {
+                MessageBox.Show("Zapisano pomyślnie!", "Sukces", MessageBoxButton.OK, MessageBoxImage.Information);
+                WindowMode = WindowMode.Edit;
+                Entry = result.Value;
+            }
+            else
+            {
+                MessageBox.Show($"Nie udało się zapisać! {result.Errors[0].Message}", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        else if (WindowMode == WindowMode.Edit)
+        {
+            var result = await _entryRepository.UpdateEntry(Entry);
+            if (result.IsSuccess)
+            {
+                MessageBox.Show("Zapisano pomyślnie!", "Sukces", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show($"Nie udało się zapisać! {result.Errors[0].Message}", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
     }
 
     public ISeries[] Series { get; set; } =

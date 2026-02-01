@@ -8,11 +8,13 @@ namespace NetWorthTracker.Entry;
 /// </summary>
 public partial class EntryWindow : Window
 {
-    public EntryWindow(IEntryWindowViewModel entryWindowViewModel, User user)
+    public EntryWindow(IEntryWindowViewModel entryWindowViewModel, User user, WindowMode windowMode, Database.Models.Entry? entry = null)
     {
         InitializeComponent();
         DataContext = entryWindowViewModel;
         entryWindowViewModel.User = user;
+        entryWindowViewModel.Entry = entry;
+        entryWindowViewModel.WindowMode = windowMode;
         entryWindowViewModel.LoadData();
     }
 }
