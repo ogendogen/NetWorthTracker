@@ -35,7 +35,11 @@ public class EntryRepository : IEntryRepository
 
     public async Task<Result<IEnumerable<Entry>>> GetUserEntries(int userId, CancellationToken cancellationToken = default)
     {
-        var entries = await _context.Entries.Where(x => x.UserId == userId).ToListAsync(cancellationToken);
+        var entries = await _context.Entries.Where(x => x.UserId == userId)
+            .Include(e => e.Assets)
+            .Include(e => e.Debts)
+            .ToListAsync(cancellationToken);
+
         return Result.Ok(entries.AsEnumerable());
     }
 
