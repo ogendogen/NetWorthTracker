@@ -42,7 +42,7 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
                 _assets.CollectionChanged += OnAssetsChanged;
             OnPropertyChanged(nameof(Assets));
             OnPropertyChanged(nameof(AssetsSum));
-            OnPropertyChanged(nameof(TotalSum));
+            OnPropertyChanged(nameof(TotalSumFormatted));
         }
     }
 
@@ -59,7 +59,7 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
                 _debts.CollectionChanged += OnDebtsChanged;
             OnPropertyChanged(nameof(Debts));
             OnPropertyChanged(nameof(DebtsSum));
-            OnPropertyChanged(nameof(TotalSum));
+            OnPropertyChanged(nameof(TotalSumFormatted));
         }
     }
 
@@ -72,7 +72,7 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
             foreach (Asset item in e.NewItems)
                 item.PropertyChanged += OnAssetPropertyChanged;
         OnPropertyChanged(nameof(AssetsSum));
-        OnPropertyChanged(nameof(TotalSum));
+        OnPropertyChanged(nameof(TotalSumFormatted));
     }
 
     private void OnDebtsChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -84,7 +84,7 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
             foreach (Debt item in e.NewItems)
                 item.PropertyChanged += OnDebtPropertyChanged;
         OnPropertyChanged(nameof(DebtsSum));
-        OnPropertyChanged(nameof(TotalSum));
+        OnPropertyChanged(nameof(TotalSumFormatted));
     }
 
     private void OnAssetPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -92,7 +92,7 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
         if (e.PropertyName == nameof(Asset.Value))
         {
             OnPropertyChanged(nameof(AssetsSum));
-            OnPropertyChanged(nameof(TotalSum));
+            OnPropertyChanged(nameof(TotalSumFormatted));
         }
     }
 
@@ -101,13 +101,14 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
         if (e.PropertyName == nameof(Debt.Value))
         {
             OnPropertyChanged(nameof(DebtsSum));
-            OnPropertyChanged(nameof(TotalSum));
+            OnPropertyChanged(nameof(TotalSumFormatted));
         }
     }
 
     public string AssetsSum => $"Suma: {Assets?.Sum(x => x.Value).ToString("N2") ?? "0.00"} zł";
     public string DebtsSum => $"Suma: {Debts?.Sum(x => x.Value).ToString("N2") ?? "0.00"} zł";
-    public string TotalSum => $"Całkowita suma: {(Assets?.Sum(x => x.Value) ?? 0) - (Debts?.Sum(x => x.Value) ?? 0):N2} zł";
+    public decimal TotalSum => (Assets?.Sum(x => x.Value) ?? 0) - (Debts?.Sum(x => x.Value) ?? 0);
+    public string TotalSumFormatted => $"Całkowita suma: {(TotalSum):N2} zł";
     public User User { get; set; }
     public Database.Models.Entry Entry { get; set; }
     public WindowMode WindowMode { get; set; }
@@ -163,6 +164,7 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
                 Date = DateTime.Now,
                 UserId = User.Id,
                 User = User,
+                Value = TotalSum,
             });
 
             if (result.IsSuccess)

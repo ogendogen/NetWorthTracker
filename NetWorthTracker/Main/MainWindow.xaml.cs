@@ -23,5 +23,6 @@ public partial class MainWindow : Window
         InitializeComponent();
         DataContext = mainWindowViewModel;
         mainWindowViewModel.User = user;
+        mainWindowViewModel.LoadEntries();
     }
 }

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NetWorthTracker.Main"
         mc:Ignorable="d"
-        Title="Net Worth Tracker" Height="450" Width="800">
+        Title="Net Worth Tracker" Height="450" Width="825">
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="Definicje">
@@ -27,8 +27,8 @@
                   AutoGenerateColumns="False"
                   CanUserAddRows="False">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Data" Binding="{Binding Name}" Width="*"/>
-                    <DataGridTextColumn Header="Wartość" Binding="{Binding Name}" Width="*"/>
+                    <DataGridTextColumn Header="Data" Binding="{Binding Date, StringFormat='dd/MM/yyyy HH:mm'}" Width="6*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Wartość" Binding="{Binding Value}" Width="4*" IsReadOnly="True"/>
                 </DataGrid.Columns>
             </DataGrid>
             <UniformGrid Grid.Column="0" Grid.Row="1" Columns="2">

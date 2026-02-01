@@ -17,6 +17,7 @@ public interface IMainWindowViewModel
     ICommand AddEntry { get; }
     ICommand RemoveEntry { get; }
     User User { get; set; }
+    void LoadEntries();
 }
 
 public partial class MainWindowViewModel : IMainWindowViewModel, INotifyPropertyChanged
@@ -59,7 +60,11 @@ public partial class MainWindowViewModel : IMainWindowViewModel, INotifyProperty
         var entries = await _entryRepository.GetUserEntries(User.Id);
         if (entries.IsSuccess)
         {
-            Entries = new ObservableCollection<Database.Models.Entry>(entries.Value);
+            Entries.Clear();
+            foreach (var entry in entries.Value)
+            {
+                Entries.Add(entry);
+            }
         }
     }
 
@@ -72,6 +77,7 @@ public partial class MainWindowViewModel : IMainWindowViewModel, INotifyProperty
     private void ExecuteAddEntryCommand(object obj)
     {
         EntryWindow entryWindow = new EntryWindow(_entryWindowViewModel, User, WindowMode.Create);
+        entryWindow.Closed += (s, e) => LoadEntries();
         entryWindow.ShowDialog();
     }
 

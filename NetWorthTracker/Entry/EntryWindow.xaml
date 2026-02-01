@@ -62,7 +62,7 @@
 
         <Label Grid.Row="2" Grid.Column="0" Content="{Binding AssetsSum}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <Label Grid.Row="2" Grid.Column="1" Content="{Binding DebtsSum}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <Label Grid.Row="2" Grid.Column="2" Content="{Binding TotalSum}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <Label Grid.Row="2" Grid.Column="2" Content="{Binding TotalSumFormatted}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
         <Button Grid.Row="3" Grid.Column="0" Content="Zapisz" Command="{Binding SaveEntryCommand}"/>
         <Button Grid.Row="3" Grid.Column="1" Content="Wyświetl historie"/>
