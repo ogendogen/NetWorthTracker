@@ -184,7 +184,7 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
 
     private async void ExecuteSaveEntry(object obj)
     {
-        if (WindowMode == WindowMode.Create)
+        if (IsCreate)
         {
             var result = await _entryRepository.AddEntry(new Database.Models.Entry()
             {
@@ -207,7 +207,7 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
                 MessageBox.Show($"Nie udało się zapisać! {result.Errors[0].Message}", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        else if (WindowMode == WindowMode.Edit)
+        else if (IsEdit)
         {
             Entry.Assets = Assets.Where(x => x.Value != 0).ToList();
             Entry.Debts = Debts.Where(x => x.Value != 0).ToList();
@@ -234,4 +234,5 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
     };
 
     private bool IsEdit => WindowMode == WindowMode.Edit;
+    private bool IsCreate => WindowMode == WindowMode.Create;
 }
