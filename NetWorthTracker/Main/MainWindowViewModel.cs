@@ -85,8 +85,10 @@ public partial class MainWindowViewModel : IMainWindowViewModel, INotifyProperty
                 new Axis
                 {
                     Labeler = value => new DateTime((long)value).ToString("dd/MM/yyyy"),
-                    //Labels = entries.Value.Select(x => x.Date.ToString("ddMMyyyy")).ToList(),
-                    LabelsRotation = 15
+                    LabelsRotation = 15,
+                    // todo: hide steps between
+                    //ForceStepToMin = true,
+                    //MinStep = TimeSpan.FromDays(1).Ticks
                 }
             };
             

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:NetWorthTracker.Main"
         xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         mc:Ignorable="d"
-        Title="Net Worth Tracker" Height="450" Width="825">
+        Title="Net Worth Tracker" Height="650" Width="925">
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="Definicje">
