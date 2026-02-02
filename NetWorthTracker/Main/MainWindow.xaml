@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NetWorthTracker.Main"
+        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         mc:Ignorable="d"
         Title="Net Worth Tracker" Height="450" Width="825">
     <DockPanel>
@@ -38,6 +39,7 @@
                 <Button Command="{Binding AddEntry}">Dodaj</Button>
                 <Button Command="{Binding RemoveEntry}">Usuń</Button>
             </UniformGrid>
+            <lvc:CartesianChart Grid.Row="0" Grid.Column="1" Series="{Binding Series}" XAxes="{Binding XAxes}"/>
         </Grid>
     </DockPanel>
 </Window>

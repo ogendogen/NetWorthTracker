@@ -1,7 +1,12 @@
-﻿using NetWorthTracker.AssetsDefinitions;
+﻿using LiveChartsCore;
+using LiveChartsCore.Defaults;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
+using NetWorthTracker.AssetsDefinitions;
 using NetWorthTracker.Database.Models;
 using NetWorthTracker.Database.Repositories;
 using NetWorthTracker.Entry;
+using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -18,7 +23,7 @@ public interface IMainWindowViewModel
     ICommand EditEntry { get; }
     ICommand RemoveEntry { get; }
     User User { get; set; }
-    void LoadEntries();
+    void LoadEntriesAndChartData();
 }
 
 public partial class MainWindowViewModel : IMainWindowViewModel, INotifyPropertyChanged
@@ -56,7 +61,7 @@ public partial class MainWindowViewModel : IMainWindowViewModel, INotifyProperty
         _entryWindowViewModel = entryWindowViewModel;
     }
 
-    public async void LoadEntries()
+    public async void LoadEntriesAndChartData()
     {
         var entries = await _entryRepository.GetUserEntries(User.Id);
         if (entries.IsSuccess)
@@ -66,6 +71,27 @@ public partial class MainWindowViewModel : IMainWindowViewModel, INotifyProperty
             {
                 Entries.Add(entry);
             }
+
+            Series = new ISeries[]
+            {
+                new LineSeries<DateTimePoint>
+                {
+                    Values = entries.Value.Select(e => new DateTimePoint(e.Date, (double)e.Value)).ToList()
+                }
+            };
+            
+            XAxes = new Axis[]
+            {
+                new Axis
+                {
+                    Labeler = value => new DateTime((long)value).ToString("dd/MM/yyyy"),
+                    //Labels = entries.Value.Select(x => x.Date.ToString("ddMMyyyy")).ToList(),
+                    LabelsRotation = 15
+                }
+            };
+            
+            OnPropertyChanged(nameof(Series));
+            OnPropertyChanged(nameof(XAxes));
         }
     }
 
@@ -78,7 +104,7 @@ public partial class MainWindowViewModel : IMainWindowViewModel, INotifyProperty
     private void ExecuteAddEntryCommand(object obj)
     {
         EntryWindow entryWindow = new EntryWindow(_entryWindowViewModel, User, WindowMode.Create);
-        entryWindow.Closed += (s, e) => LoadEntries();
+        entryWindow.Closed += (s, e) => LoadEntriesAndChartData();
         entryWindow.ShowDialog();
     }
 
@@ -94,7 +120,7 @@ public partial class MainWindowViewModel : IMainWindowViewModel, INotifyProperty
         if (result == MessageBoxResult.Yes)
         {
             await _entryRepository.RemoveEntry(SelectedEntry.Id);
-            LoadEntries();
+            LoadEntriesAndChartData();
         }
     }
 
@@ -109,8 +135,11 @@ public partial class MainWindowViewModel : IMainWindowViewModel, INotifyProperty
         if (SelectedEntry is not null)
         {
             EntryWindow entryWindow = new EntryWindow(_entryWindowViewModel, User, WindowMode.Edit, SelectedEntry);
-            entryWindow.Closed += (s, e) => LoadEntries();
+            entryWindow.Closed += (s, e) => LoadEntriesAndChartData();
             entryWindow.ShowDialog();
         }
     }
+
+    public ISeries[] Series { get; set; }
+    public Axis[] XAxes { get; set; }
 }
