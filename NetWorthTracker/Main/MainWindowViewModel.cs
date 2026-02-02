@@ -15,6 +15,7 @@ public interface IMainWindowViewModel
     ICommand Actives { get; }
     ICommand Debts { get; }
     ICommand AddEntry { get; }
+    ICommand EditEntry { get; }
     ICommand RemoveEntry { get; }
     User User { get; set; }
     void LoadEntries();
@@ -101,5 +102,15 @@ public partial class MainWindowViewModel : IMainWindowViewModel, INotifyProperty
     {
         AssetsDefinitionsWindow assetsDefinitionsWindow = new AssetsDefinitionsWindow(_assetsDefinitionsViewModel, User, DefinitionType.Debt);
         assetsDefinitionsWindow.ShowDialog();
+    }
+
+    private void ExecuteEditEntryCommand(object obj)
+    {
+        if (SelectedEntry is not null)
+        {
+            EntryWindow entryWindow = new EntryWindow(_entryWindowViewModel, User, WindowMode.Edit, SelectedEntry);
+            entryWindow.Closed += (s, e) => LoadEntries();
+            entryWindow.ShowDialog();
+        }
     }
 }

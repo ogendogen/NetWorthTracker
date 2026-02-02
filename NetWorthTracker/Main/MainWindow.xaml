@@ -26,6 +26,9 @@
                   SelectedItem="{Binding SelectedEntry}"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False">
+                <DataGrid.InputBindings>
+                    <MouseBinding Gesture="LeftDoubleClick" Command="{Binding EditEntry}"/>
+                </DataGrid.InputBindings>
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Data" Binding="{Binding Date, StringFormat='dd/MM/yyyy HH:mm'}" Width="6*" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Wartość" Binding="{Binding Value}" Width="4*" IsReadOnly="True"/>

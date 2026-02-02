@@ -127,12 +127,26 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
 
     public async void LoadData()
     {
-        // todo: handling edit (Entry is not null)
         var assetsDefinitions = await _definitionRepository.GetDefinitionsByUserId(User.Id, DefinitionType.Asset);
         var assetsList = assetsDefinitions.Value.Select(assetDefinition => new Asset()
         {
             Name = assetDefinition.Name,
         }).ToList();
+
+        if (IsEdit)
+        {
+            foreach (var asset in assetsList)
+            {
+                var assetFound = Entry.Assets.FirstOrDefault(x => x.Name == asset.Name);
+                if (assetFound is not null)
+                {
+                    asset.Value = assetFound.Value;
+                    asset.EntryId = assetFound.EntryId;
+                    asset.Entry = assetFound.Entry;
+                    asset.Id = assetFound.Id;
+                }
+            }
+        }
         
         Assets = new ObservableCollection<Asset>(assetsList);
         foreach (var asset in Assets)
@@ -143,7 +157,22 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
         {
             Name = debtDefinition.Name,
         }).ToList();
-        
+
+        if (IsEdit)
+        {
+            foreach (var debt in debtsList)
+            {
+                var debtFound = Entry.Debts.FirstOrDefault(x => x.Name == debt.Name);
+                if (debtFound is not null)
+                {
+                    debt.Value = debtFound.Value;
+                    debt.EntryId = debtFound.EntryId;
+                    debt.Entry = debtFound.Entry;
+                    debt.Id = debtFound.Id;
+                }
+            }
+        }
+
         Debts = new ObservableCollection<Debt>(debtsList);
         foreach (var debt in Debts)
             debt.PropertyChanged += OnDebtPropertyChanged;
@@ -180,6 +209,10 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
         }
         else if (WindowMode == WindowMode.Edit)
         {
+            Entry.Assets = Assets.Where(x => x.Value != 0).ToList();
+            Entry.Debts = Debts.Where(x => x.Value != 0).ToList();
+            Entry.Date = DateTime.Now;
+            Entry.Value = TotalSum;
             var result = await _entryRepository.UpdateEntry(Entry);
             if (result.IsSuccess)
             {
@@ -200,4 +233,5 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
         }
     };
 
+    private bool IsEdit => WindowMode == WindowMode.Edit;
 }

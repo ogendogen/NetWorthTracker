@@ -19,4 +19,7 @@ public partial class MainWindowViewModel
 
     private ICommand _removeEntry;
     public ICommand RemoveEntry => _removeEntry ??= new RelayCommand(ExecuteRemoveEntryCommand);
+
+    private ICommand _editEntry;
+    public ICommand EditEntry => _editEntry ??= new RelayCommand(ExecuteEditEntryCommand);
 }
