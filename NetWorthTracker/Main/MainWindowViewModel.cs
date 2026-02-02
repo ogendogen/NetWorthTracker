@@ -93,6 +93,7 @@ public partial class MainWindowViewModel : IMainWindowViewModel, INotifyProperty
         if (result == MessageBoxResult.Yes)
         {
             await _entryRepository.RemoveEntry(SelectedEntry.Id);
+            LoadEntries();
         }
     }
 
