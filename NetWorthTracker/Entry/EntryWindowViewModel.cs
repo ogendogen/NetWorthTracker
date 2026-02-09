@@ -209,9 +209,11 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
         }
         else if (IsEdit)
         {
+            var dateQuestionResult = MessageBox.Show("Czy zaktualizować datę wpisu?", "Uwaga", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
             Entry.Assets = Assets.Where(x => x.Value != 0).ToList();
             Entry.Debts = Debts.Where(x => x.Value != 0).ToList();
-            Entry.Date = DateTime.Now;
+            Entry.Date = dateQuestionResult == MessageBoxResult.Yes ? DateTime.Now : Entry.Date;
             Entry.Value = TotalSum;
             var result = await _entryRepository.UpdateEntry(Entry);
             if (result.IsSuccess)
