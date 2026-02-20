@@ -17,4 +17,20 @@ public partial class EntryWindow : Window
         entryWindowViewModel.WindowMode = windowMode;
         entryWindowViewModel.LoadData();
     }
+
+    private void DataGrid_LostFocus(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is IEntryWindowViewModel vm)
+        {
+            vm.OnAssetsDataGridLostFocus();
+        }
+    }
+
+    private void DebtDataGrid_LostFocus(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is IEntryWindowViewModel vm)
+        {
+            vm.OnDebtsDataGridLostFocus();
+        }
+    }
 }

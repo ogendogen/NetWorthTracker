@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NetWorthTracker.Entry"
         xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         Title="Wpisy" Height="450" Width="800">
     <Grid>
@@ -20,7 +21,7 @@
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Label Grid.Row="0" Grid.Column="0" Content="Aktywa" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <DataGrid Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Assets}" AutoGenerateColumns="False" CanUserAddRows="False">
+        <DataGrid Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Assets}" SelectedItem="{Binding SelectedAsset}" AutoGenerateColumns="False" CanUserAddRows="False" LostFocus="DataGrid_LostFocus">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Nazwa" Binding="{Binding Name}" Width="*" IsReadOnly="true"/>
                 <DataGridTemplateColumn Header="Wartość" Width="*">
@@ -39,7 +40,7 @@
         </DataGrid>
 
         <Label Grid.Row="0" Grid.Column="1" Content="Zobowiązania" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <DataGrid Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Debts}" AutoGenerateColumns="False" CanUserAddRows="False">
+        <DataGrid Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Debts}" SelectedItem="{Binding SelectedDebt}" AutoGenerateColumns="False" CanUserAddRows="False" LostFocus="DebtDataGrid_LostFocus">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Nazwa" Binding="{Binding Name}" Width="*" IsReadOnly="true"/>
                 <DataGridTemplateColumn Header="Wartość" Width="*">
@@ -65,6 +66,6 @@
         <Label Grid.Row="2" Grid.Column="2" Content="{Binding TotalSumFormatted}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
         <Button Grid.Row="3" Grid.Column="0" Content="Zapisz" Command="{Binding SaveEntryCommand}"/>
-        <Button Grid.Row="3" Grid.Column="1" Content="Wyświetl historie"/>
+        <Button Grid.Row="3" Grid.Column="1" Content="Wyświetl historie" Command="{Binding ShowHistory}"/>
     </Grid>
 </Window>

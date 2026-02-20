@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
@@ -21,15 +22,38 @@ public interface IEntryWindowViewModel
     User User { get; set; }
     Database.Models.Entry Entry { get; set; }
     WindowMode WindowMode { get; set; }
+    void OnAssetsDataGridLostFocus();
+    void OnDebtsDataGridLostFocus();
 }
 
 public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChanged
 {
-    private readonly IAssetRepository _assetRepository;
-    private readonly IDebtRepository _debtRepository;
     private readonly IDefinitionRepository _definitionRepository;
     private readonly IEntryRepository _entryRepository;
     private ObservableCollection<Asset> _assets;
+    private Asset _selectedAsset;
+    private Debt _selectedDebt;
+
+    public Asset SelectedAsset
+    {
+        get => _selectedAsset;
+        set
+        {
+            _selectedAsset = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Debt SelectedDebt
+    {
+        get => _selectedDebt;
+        set
+        {
+            _selectedDebt = value;
+            OnPropertyChanged();
+        }
+    }
+
     public ObservableCollection<Asset> Assets
     {
         get => _assets;
@@ -115,10 +139,11 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
 
     public event PropertyChangedEventHandler PropertyChanged;
 
-    protected void OnPropertyChanged(string propertyName)
+    protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+
     public EntryWindowViewModel(IDefinitionRepository definitionRepository, IEntryRepository entryRepository)
     {
         _definitionRepository = definitionRepository;
@@ -229,6 +254,25 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
                 MessageBox.Show($"Nie udało się zapisać! {result.Errors[0].Message}", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+    }
+
+    private ICommand _showHistoryCommand;
+    public ICommand ShowHistoryCommand =>
+        _showHistoryCommand ??= new RelayCommand(ExecuteShowHistory);
+
+    private void ExecuteShowHistory(object obj)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnAssetsDataGridLostFocus()
+    {
+        SelectedAsset = null!;
+    }
+
+    public void OnDebtsDataGridLostFocus()
+    {
+        SelectedDebt = null!;
     }
 
     public ISeries[] Series { get; set; } =
