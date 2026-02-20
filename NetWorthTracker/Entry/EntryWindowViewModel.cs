@@ -209,7 +209,11 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
         }
         else if (IsEdit)
         {
-            var dateQuestionResult = MessageBox.Show("Czy zaktualizować datę wpisu?", "Uwaga", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var dateQuestionResult = MessageBox.Show("Czy zaktualizować datę wpisu?", "Uwaga", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+            if (dateQuestionResult == MessageBoxResult.Cancel)
+            {
+                return;
+            }
 
             Entry.Assets = Assets.Where(x => x.Value != 0).ToList();
             Entry.Debts = Debts.Where(x => x.Value != 0).ToList();
