@@ -13,12 +13,12 @@ public partial class EntryWindow : Window
         InitializeComponent();
         DataContext = entryWindowViewModel;
         entryWindowViewModel.User = user;
-        entryWindowViewModel.Entry = entry;
+        entryWindowViewModel.Entry = entry!;
         entryWindowViewModel.WindowMode = windowMode;
         entryWindowViewModel.LoadData();
     }
 
-    private void DataGrid_LostFocus(object sender, RoutedEventArgs e)
+    private void AssetDataGrid_LostFocus(object sender, RoutedEventArgs e)
     {
         if (DataContext is IEntryWindowViewModel vm)
         {

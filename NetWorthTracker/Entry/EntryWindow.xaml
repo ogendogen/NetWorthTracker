@@ -21,7 +21,7 @@
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Label Grid.Row="0" Grid.Column="0" Content="Aktywa" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <DataGrid Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Assets}" SelectedItem="{Binding SelectedAsset}" AutoGenerateColumns="False" CanUserAddRows="False" LostFocus="DataGrid_LostFocus">
+        <DataGrid Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Assets}" SelectedItem="{Binding SelectedAsset}" AutoGenerateColumns="False" CanUserAddRows="False" LostFocus="AssetDataGrid_LostFocus">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Nazwa" Binding="{Binding Name}" Width="*" IsReadOnly="true"/>
                 <DataGridTemplateColumn Header="Wartość" Width="*">
