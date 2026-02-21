@@ -282,6 +282,18 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
                     Values = historyResult.Value.Items.Select(x => new DateTimePoint(x.Date, (double)x.Value)).ToArray()
                 }
             ];
+
+            XAxes =
+            [
+                new Axis
+                {
+                    Labeler = value => new DateTime((long)value).ToString("dd/MM/yyyy"),
+                    LabelsRotation = 15,
+                    // todo: hide steps between
+                    //ForceStepToMin = true,
+                    //MinStep = TimeSpan.FromDays(1).Ticks
+                }
+            ];
         }
         else if (SelectedDebt is not null)
         {
@@ -326,6 +338,18 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
         set
         {
             _series = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private Axis[] _xAxes;
+
+    public Axis[] XAxes
+    {
+        get => _xAxes;
+        set
+        {
+            _xAxes = value;
             OnPropertyChanged();
         }
     }

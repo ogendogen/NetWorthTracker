@@ -80,8 +80,8 @@ public partial class MainWindowViewModel : IMainWindowViewModel, INotifyProperty
                 }
             };
             
-            XAxes = new Axis[]
-            {
+            XAxes =
+            [
                 new Axis
                 {
                     Labeler = value => new DateTime((long)value).ToString("dd/MM/yyyy"),
@@ -90,7 +90,7 @@ public partial class MainWindowViewModel : IMainWindowViewModel, INotifyProperty
                     //ForceStepToMin = true,
                     //MinStep = TimeSpan.FromDays(1).Ticks
                 }
-            };
+            ];
             
             OnPropertyChanged(nameof(Series));
             OnPropertyChanged(nameof(XAxes));
