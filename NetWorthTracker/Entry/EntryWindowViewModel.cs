@@ -156,6 +156,22 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
 
     public async void LoadData()
     {
+        XAxes = new Axis[]
+        {
+            new Axis
+            {
+                Labeler = value => {
+                    var ticks = (long)value;
+                    if (ticks >= DateTime.MinValue.Ticks && ticks <= DateTime.MaxValue.Ticks)
+                    {
+                        return new DateTime(ticks).ToString("dd/MM/yyyy");
+                    }
+                    return string.Empty;
+                },
+                LabelsRotation = 15
+            }
+        };
+
         var assetsDefinitions = await _definitionRepository.GetDefinitionsByUserId(User.Id, DefinitionType.Asset);
         var assetsList = assetsDefinitions.Value.Select(assetDefinition => new Asset()
         {
@@ -280,18 +296,6 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
                 new LineSeries<DateTimePoint>
                 {
                     Values = historyResult.Value.Items.Select(x => new DateTimePoint(x.Date, (double)x.Value)).ToArray()
-                }
-            ];
-
-            XAxes =
-            [
-                new Axis
-                {
-                    Labeler = value => new DateTime((long)value).ToString("dd/MM/yyyy"),
-                    LabelsRotation = 15,
-                    // todo: hide steps between
-                    //ForceStepToMin = true,
-                    //MinStep = TimeSpan.FromDays(1).Ticks
                 }
             ];
         }
