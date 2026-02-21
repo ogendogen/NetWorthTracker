@@ -1,8 +1,10 @@
 ﻿using FluentResults;
 using LiveChartsCore;
+using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using NetWorthTracker.Database.Models;
 using NetWorthTracker.Database.Repositories;
+using NetWorthTracker.Database.Services;
 using NetWorthTracker.RelayCommands;
 using System;
 using System.Collections.Generic;
@@ -30,6 +32,7 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
 {
     private readonly IDefinitionRepository _definitionRepository;
     private readonly IEntryRepository _entryRepository;
+    private readonly IHistoryService _historyService;
     private ObservableCollection<Asset> _assets;
     private Asset _selectedAsset;
     private Debt _selectedDebt;
@@ -144,10 +147,11 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    public EntryWindowViewModel(IDefinitionRepository definitionRepository, IEntryRepository entryRepository)
+    public EntryWindowViewModel(IDefinitionRepository definitionRepository, IEntryRepository entryRepository, IHistoryService assetHistoryUnitOfWork)
     {
         _definitionRepository = definitionRepository;
         _entryRepository = entryRepository;
+        _historyService = assetHistoryUnitOfWork;
     }
 
     public async void LoadData()
@@ -258,11 +262,30 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
 
     private ICommand _showHistoryCommand;
     public ICommand ShowHistoryCommand =>
-        _showHistoryCommand ??= new RelayCommand(ExecuteShowHistory);
+        _showHistoryCommand ??= new AsyncRelayCommand(ExecuteShowHistory);
 
-    private void ExecuteShowHistory(object obj)
+    private async Task ExecuteShowHistory()
     {
-        throw new NotImplementedException();
+        if (SelectedAsset is not null)
+        {
+            var historyResult = await _historyService.GetAssetHistory(SelectedAsset.Name, SelectedAsset.Entry.UserId);
+            if (historyResult.IsFailed)
+            {
+                MessageBox.Show($"Nie można odczytać historii! {historyResult.Errors.FirstOrDefault()?.Message}", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+        }
+        else if (SelectedDebt is not null)
+        {
+            var historyResult = await _historyService.GetDebtHistory(SelectedDebt.Name, SelectedDebt.Entry.UserId);
+            if (historyResult.IsFailed)
+            {
+                MessageBox.Show($"Nie można odczytać historii! {historyResult.Errors.FirstOrDefault()?.Message}", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            //Series = historyResult.Value.Values.Select(x => new DateTimePoint(x.Date, x.Value)).ToArray();
+        }
     }
 
     public void OnAssetsDataGridLostFocus()

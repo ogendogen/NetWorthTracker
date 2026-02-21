@@ -3,6 +3,7 @@ using NetWorthTracker.AssetsDefinitions;
 using NetWorthTracker.CreateUser;
 using NetWorthTracker.Database;
 using NetWorthTracker.Database.Repositories;
+using NetWorthTracker.Database.Services;
 using NetWorthTracker.Entry;
 using NetWorthTracker.Login;
 using NetWorthTracker.Main;
@@ -52,6 +53,9 @@ public partial class App : Application
 
         // Register Views
         services.AddSingleton<LoginWindow>();
+
+        // Register units of work
+        services.AddSingleton<IHistoryService, HistoryService>();
     }
 
     private void OnExit(object sender, ExitEventArgs e)
