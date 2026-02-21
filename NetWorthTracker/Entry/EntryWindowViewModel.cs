@@ -274,6 +274,14 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
                 MessageBox.Show($"Nie można odczytać historii! {historyResult.Errors.FirstOrDefault()?.Message}", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+
+            Series =
+            [
+                new LineSeries<DateTimePoint>
+                {
+                    Values = historyResult.Value.Items.Select(x => new DateTimePoint(x.Date, (double)x.Value)).ToArray()
+                }
+            ];
         }
         else if (SelectedDebt is not null)
         {
@@ -284,7 +292,13 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
                 return;
             }
 
-            //Series = historyResult.Value.Values.Select(x => new DateTimePoint(x.Date, x.Value)).ToArray();
+            Series =
+            [
+                new LineSeries<DateTimePoint>
+                {
+                    Values = historyResult.Value.Items.Select(x => new DateTimePoint(x.Date, (double)x.Value)).ToArray()
+                }
+            ];
         }
     }
 
@@ -298,13 +312,23 @@ public class EntryWindowViewModel : IEntryWindowViewModel, INotifyPropertyChange
         SelectedDebt = null!;
     }
 
-    public ISeries[] Series { get; set; } =
+    private ISeries[] _series =
     {
-        new LineSeries<double>
+        new LineSeries<DateTimePoint>
         {
-            Values = new double[] { 2, 5, 4, 6, 8 }
+            Values = new DateTimePoint[] { }
         }
     };
+
+    public ISeries[] Series
+    {
+        get => _series;
+        set
+        {
+            _series = value;
+            OnPropertyChanged();
+        }
+    }
 
     private bool IsEdit => WindowMode == WindowMode.Edit;
     private bool IsCreate => WindowMode == WindowMode.Create;
