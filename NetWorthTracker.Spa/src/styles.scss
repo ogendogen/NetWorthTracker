@@ -1,1 +1,22 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import '@angular/material/prebuilt-themes/azure-blue.css';
+
+:root {
+  color: #1d2939;
+  background: #f5f7f8;
+  font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100dvh;
+}
+
+* {
+  box-sizing: border-box;
+}

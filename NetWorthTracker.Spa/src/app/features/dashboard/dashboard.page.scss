@@ -1,0 +1,50 @@
+.dashboard {
+  max-width: 72rem;
+}
+
+h1 {
+  margin: 0.25rem 0 1.5rem;
+  font-size: 2rem;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #0f5c5c;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.summary-card {
+  min-height: 8rem;
+  border-radius: 0.5rem;
+}
+
+.net-worth-card {
+  background: #0f5c5c;
+  color: #ffffff;
+  --mat-card-subtitle-text-color: #d7f0ed;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 8rem;
+}
+
+.error {
+  color: #b42318;
+}
+
+@media (max-width: 760px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
