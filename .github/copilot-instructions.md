@@ -64,3 +64,8 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - The functional `authInterceptor` attaches bearer tokens only to requests for `API_BASE_URL` and redirects to login after an API `401`.
 - The current API contract is mock-only. Do not present the `test` / `test` credentials, no-op registration, committed development signing key, or mock `/data` values as production-ready behavior.
 - Refer to `.github/architecture.md` before changing authentication, local development URLs, API routes, or the feature-shell structure.
+
+## Workflow Rules
+
+- Do not start, stop, or restart the API or SPA unless the user explicitly asks.
+- Update `.github/copilot-instructions.md` and `.github/architecture.md` whenever a change affects project architecture, API contracts, local development, authentication, or established workflows.

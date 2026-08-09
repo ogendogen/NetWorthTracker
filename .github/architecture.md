@@ -18,6 +18,8 @@ dotnet run --project NetWorthTracker.Api/NetWorthTracker.Api --launch-profile ht
 
 The profile listens on both `https://localhost:7063` and `http://localhost:5062`.
 
+In Development, Scalar starts with the API and is available at `https://localhost:7063/scalar/v1`. The HTTPS launch profile opens this API reference automatically. Scalar reads the development OpenAPI document at `/openapi/v1.json`.
+
 Start the SPA yourself:
 
 ```bash
@@ -40,23 +42,23 @@ The SPA defaults to `http://localhost:4200`.
 
 All API routes are root-level routes, with no `/api` prefix.
 
-| Endpoint               | Auth       | Current behavior                                                                                                                   |
-| ---------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `POST /login`          | Anonymous  | Accepts `{"username":"test","password":"test"}` only. Returns `accessToken`, `expiresAt`, and `userName`; otherwise returns `401`. |
-| `POST /register`       | Anonymous  | Accepts the typed registration request and returns `200 OK`. It does not persist a user or issue a session.                        |
-| `GET /data`            | Bearer JWT | Returns mock net-worth summary data. Requests without a valid token return `401`.                                                  |
-| `GET /weatherforecast` | Anonymous  | ASP.NET template endpoint retained for now; not part of the product contract.                                                      |
+| Endpoint         | Auth       | Current behavior                                                                                                                   |
+| ---------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /login`    | Anonymous  | Accepts `{"username":"test","password":"test"}` only. Returns `accessToken`, `expiresAt`, and `userName`; otherwise returns `401`. |
+| `POST /register` | Anonymous  | Accepts the typed registration request and returns `200 OK`. It does not persist a user or issue a session.                        |
+| `GET /data`      | Bearer JWT | Returns mock net-worth summary data. Requests without a valid token return `401`.                                                  |
 
 JWT configuration lives in `appsettings.Development.json` under `Jwt` and supplies issuer, audience, signing key, and lifetime. The committed signing key is for local scaffolding only. Before any deployed environment, obtain signing configuration from secure external configuration and replace mock identity handling.
 
 The middleware order is intentional:
 
 1. Development OpenAPI mapping.
-2. HTTPS redirection outside Development.
-3. CORS.
-4. Authentication.
-5. Authorization.
-6. Controllers.
+2. Development Scalar API reference mapping.
+3. HTTPS redirection outside Development.
+4. CORS.
+5. Authentication.
+6. Authorization.
+7. Controllers.
 
 ## SPA Structure
 
