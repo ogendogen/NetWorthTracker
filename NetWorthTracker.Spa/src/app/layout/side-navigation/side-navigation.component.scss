@@ -1,0 +1,11 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.active-link {
+  --mat-list-list-item-label-text-color: #0f5c5c;
+  --mat-list-list-item-leading-icon-color: #0f5c5c;
+  background: #e1f2ef;
+  font-weight: 700;
+}

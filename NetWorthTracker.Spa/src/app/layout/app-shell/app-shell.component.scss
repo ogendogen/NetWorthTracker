@@ -1,0 +1,32 @@
+:host,
+.shell {
+  display: block;
+  min-height: 100dvh;
+}
+
+.shell {
+  display: grid;
+  grid-template-rows: 4rem minmax(0, 1fr);
+}
+
+.shell-body {
+  min-height: 0;
+}
+
+.navigation-panel {
+  width: 15rem;
+  border-radius: 0;
+  border-right: 1px solid #d4dfe1;
+  background: #ffffff;
+}
+
+.content-panel {
+  min-height: 100%;
+  padding: 2rem;
+}
+
+@media (max-width: 760px) {
+  .content-panel {
+    padding: 1rem;
+  }
+}

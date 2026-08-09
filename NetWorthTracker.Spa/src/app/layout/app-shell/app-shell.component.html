@@ -1,0 +1,24 @@
+<section class="shell">
+  <app-top-bar
+    [showMenuButton]="isCompact()"
+    [userName]="userName()"
+    (menuToggle)="toggleNavigation()"
+    (logout)="logout()"
+  />
+
+  <mat-sidenav-container class="shell-body">
+    <mat-sidenav
+      class="navigation-panel"
+      [mode]="drawerMode()"
+      [opened]="!isCompact() || drawerOpen()"
+      (closed)="drawerOpen.set(false)"
+    >
+      <app-side-navigation [items]="functionalityItems" (itemSelected)="closeNavigation()" />
+    </mat-sidenav>
+    <mat-sidenav-content>
+      <main class="content-panel">
+        <router-outlet />
+      </main>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</section>
