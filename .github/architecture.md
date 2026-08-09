@@ -50,6 +50,8 @@ All API routes are root-level routes, with no `/api` prefix.
 
 JWT configuration lives in `appsettings.Development.json` under `Jwt` and supplies issuer, audience, signing key, and lifetime. The committed signing key is for local scaffolding only. Before any deployed environment, obtain signing configuration from secure external configuration and replace mock identity handling.
 
+The API uses `StyleCop.Analyzers` as a private development-time analyzer dependency. Its API-local `.editorconfig` preserves the existing modern C# conventions: file-scoped namespaces, underscore-prefixed private fields, no mandatory file headers, no mandatory `this.` prefixes, and no required trailing commas. Keep StyleCop active for all other diagnostics.
+
 The middleware order is intentional:
 
 1. Development OpenAPI mapping.
