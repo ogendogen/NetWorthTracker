@@ -1,4 +1,3 @@
-
 You are an expert in TypeScript, Angular, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
 
 ## TypeScript Best Practices
@@ -53,3 +52,15 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
+
+## NetWorthTracker Architecture
+
+- The repository contains an ASP.NET Core API in `NetWorthTracker.Api/NetWorthTracker.Api` and an Angular SPA in `NetWorthTracker.Spa`.
+- Treat the SPA feature registry at `src/app/features/functionality.registry.ts` as the single source of truth for protected feature routes and left navigation entries. Do not duplicate a feature route separately in the side navigation.
+- Implement each business capability as one lazy standalone page under `src/app/features/<feature-name>/`. Keep the application shell and layout components free of feature-specific business logic.
+- `AppShellComponent` owns only the full-width top bar, left navigation/drawer, and routed content outlet. `TopBarComponent` emits logout and `SideNavigationComponent` renders registry entries.
+- Keep API URLs centralized through `API_BASE_URL` and the environment files; never hard-code API URLs in a feature or service.
+- Use `AuthService` for session lifecycle. It stores a validated access-token session in `sessionStorage` under `net-worth-tracker.session`; guards and the interceptor depend on this behavior.
+- The functional `authInterceptor` attaches bearer tokens only to requests for `API_BASE_URL` and redirects to login after an API `401`.
+- The current API contract is mock-only. Do not present the `test` / `test` credentials, no-op registration, committed development signing key, or mock `/data` values as production-ready behavior.
+- Refer to `.github/architecture.md` before changing authentication, local development URLs, API routes, or the feature-shell structure.
