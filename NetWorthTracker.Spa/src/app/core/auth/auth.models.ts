@@ -9,4 +9,4 @@ export interface LoginResponse {
   userName: string;
 }
 
-export interface AuthSession extends LoginResponse {}
+export type AuthSession = LoginResponse
