@@ -1,0 +1,25 @@
+#!/bin/sh
+
+set -e
+
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR)
+
+if echo "$STAGED_FILES" | grep -qE '\.(ts|html|scss|css)$'; then
+    echo "Running Angular ESLint..."
+
+    (
+        cd NetWorthTracker.Spa
+        npm run lint
+    )
+fi
+
+if echo "$STAGED_FILES" | grep -qE '\.cs$'; then
+    echo "Running .NET checks..."
+
+    find NetWorthTracker.Api -name "*.csproj" -print | while read -r PROJECT; do
+        echo "Checking $PROJECT..."
+        dotnet build "$PROJECT" --no-restore
+    done
+fi
+
+echo "Pre-commit checks passed."
