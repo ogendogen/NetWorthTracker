@@ -1,11 +1,19 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NetWorthTracker.Api.Configuration;
 using NetWorthTracker.Api.Services;
+using NetWorthTracker.Infrastructure;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+if (builder.Environment.IsProduction()
+    && string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("Jwt__SigningKey")))
+{
+    throw new InvalidOperationException("The Jwt__SigningKey environment variable is required in production.");
+}
 
 var jwtSettings = builder.Configuration.GetRequiredSection(JwtSettings.SectionName).Get<JwtSettings>()
     ?? throw new InvalidOperationException("JWT settings are required.");
@@ -40,6 +48,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero
         };
     });
+
+builder.Services.AddDbContext<NetWorthTrackerDbContext>(options =>
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// todo: register mediatr - should automatically detect all handler in 'application' project
+//builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 var app = builder.Build();
 

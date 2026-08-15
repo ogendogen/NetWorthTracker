@@ -48,7 +48,7 @@ All API routes are root-level routes, with no `/api` prefix.
 | `POST /register` | Anonymous  | Accepts the typed registration request and returns `200 OK`. It does not persist a user or issue a session.                        |
 | `GET /data`      | Bearer JWT | Returns mock net-worth summary data. Requests without a valid token return `401`.                                                  |
 
-JWT configuration lives in `appsettings.Development.json` under `Jwt` and supplies issuer, audience, signing key, and lifetime. The committed signing key is for local scaffolding only. Before any deployed environment, obtain signing configuration from secure external configuration and replace mock identity handling.
+JWT configuration lives under the `Jwt` section. Development uses the signing key in `appsettings.Development.json` for local scaffolding. Production must supply `SigningKey` through the `Jwt__SigningKey` environment variable; the API fails at startup when it is missing. For deployed environments, provide the variable through the platform's secure secret configuration and use a stable secret so API restarts do not invalidate existing tokens.
 
 The API uses `StyleCop.Analyzers` as a private development-time analyzer dependency. Its API-local `.editorconfig` preserves the existing modern C# conventions: file-scoped namespaces, underscore-prefixed private fields, no mandatory file headers, no mandatory `this.` prefixes, and no required trailing commas. Keep StyleCop active for all other diagnostics.
 
