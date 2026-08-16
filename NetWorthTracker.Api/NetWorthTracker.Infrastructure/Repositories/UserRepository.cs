@@ -1,23 +1,16 @@
-﻿using NetWorthTracker.Domain.User.Interfaces;
-using NetWorthTracker.Domain.User.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Microsoft.EntityFrameworkCore;
+using NetWorthTracker.Domain.User.Interfaces;
 
 namespace NetWorthTracker.Infrastructure.Repositories;
 
-public class UserRepository : IUserRepository
+using BCrypt = BCrypt.Net.BCrypt;
+
+public class UserRepository(NetWorthTrackerDbContext dbContext) : IUserRepository
 {
-    private readonly NetWorthTrackerDbContext _dbContext;
-
-    public UserRepository(NetWorthTrackerDbContext dbContext)
+    public async Task<bool> LoginAsync(string username, string password, CancellationToken cancellationToken = default)
     {
-        _dbContext = dbContext;
-    }
+        var user = await dbContext.Users.SingleOrDefaultAsync(u => u.Login == username, cancellationToken);
 
-    public bool? LoginAsync(string login, string password, CancellationToken cancellationToken = default)
-    {
-        // todo: hash password before comparing with bcrypt
-        return _dbContext.Users.SingleOrDefault(u => u.Login == login && u.PasswordHash == password) != null;
+        return user is not null && BCrypt.Verify(password, user.PasswordHash);
     }
 }

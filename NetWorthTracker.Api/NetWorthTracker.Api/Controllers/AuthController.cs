@@ -1,37 +1,24 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NetWorthTracker.Api.Models;
-using NetWorthTracker.Api.Services;
+using NetWorthTracker.Application.User.Models.Login;
+using NetWorthTracker.Application.User.Models.Register;
 using NetWorthTracker.Application.User.UseCases.Login;
 
 namespace NetWorthTracker.Api.Controllers;
 
 [ApiController]
 [AllowAnonymous]
-public sealed class AuthController : ControllerBase
+public sealed class AuthController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-    private readonly TokenService _tokenService;
-
-    public AuthController(IMediator mediator, TokenService tokenService)
-    {
-        _mediator = mediator;
-    }
-
     [HttpPost("/login")]
     [ProducesResponseType<LoginResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<LoginResponse>> Login(LoginRequest request)
     {
-        var result = await _mediator.Send(new LoginCommand(request.Username, request.Password));
+        var result = await mediator.Send(new LoginCommand(request.Username, request.Password));
 
-        if (result.IsFailed)
-        {
-            return Unauthorized(result.Errors);
-        }
-
-        return Ok(_tokenService.CreateLoginResponse(request.Username)); // todo: schowac ten serwis gdzies na poziomie aplikacji np. w handlerze
+        return result is null ? Unauthorized() : Ok(result);
     }
 
     [HttpPost("/register")]

@@ -1,9 +1,6 @@
-﻿using FluentResults;
-using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using MediatR;
+using NetWorthTracker.Application.User.Models.Login;
 
 namespace NetWorthTracker.Application.User.UseCases.Login;
 
-public record LoginCommand(string Name, string Password) : IRequest<Result<LoginCommandHandler>>;
+public record LoginCommand(string Username, string Password) : IRequest<LoginResponse?>;

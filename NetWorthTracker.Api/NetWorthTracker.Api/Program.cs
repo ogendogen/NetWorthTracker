@@ -2,9 +2,13 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using NetWorthTracker.Api.Configuration;
-using NetWorthTracker.Api.Services;
+using NetWorthTracker.Application.AssemblyMarker;
+using NetWorthTracker.Application.Interfaces;
+using NetWorthTracker.Domain.User.Interfaces;
 using NetWorthTracker.Infrastructure;
+using NetWorthTracker.Infrastructure.Configurations;
+using NetWorthTracker.Infrastructure.Repositories;
+using NetWorthTracker.Infrastructure.Services;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,12 +20,14 @@ if (builder.Environment.IsProduction()
 }
 
 var jwtSettings = builder.Configuration.GetRequiredSection(JwtSettings.SectionName).Get<JwtSettings>()
-    ?? throw new InvalidOperationException("JWT settings are required.");
+                  ?? throw new InvalidOperationException("JWT settings are required.");
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetRequiredSection(JwtSettings.SectionName));
-builder.Services.AddSingleton<TokenService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("SpaDevelopment", policy => policy
@@ -53,8 +59,9 @@ builder.Services.AddDbContext<NetWorthTrackerDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// todo: register mediatr - should automatically detect all handler in 'application' project
-//builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(
+        typeof(ApplicationAssemblyMarker).Assembly));
 
 var app = builder.Build();
 

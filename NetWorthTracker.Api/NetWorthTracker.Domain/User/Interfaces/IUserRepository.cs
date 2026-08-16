@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NetWorthTracker.Domain.User.Interfaces;
+﻿namespace NetWorthTracker.Domain.User.Interfaces;
 
 public interface IUserRepository
 {
-    bool? LoginAsync(
-        string login,
+    Task<bool> LoginAsync(
+        string username,
         string password,
         CancellationToken cancellationToken = default);
 }
