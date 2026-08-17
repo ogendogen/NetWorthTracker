@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NetWorthTracker.Application.AssemblyMarker;
-using NetWorthTracker.Application.Interfaces;
+using NetWorthTracker.Application.Authentication;
+using NetWorthTracker.Application.Authentication.Interfaces;
+using NetWorthTracker.Application.Authentication.Services;
 using NetWorthTracker.Domain.User.Interfaces;
 using NetWorthTracker.Infrastructure;
 using NetWorthTracker.Infrastructure.Configurations;
 using NetWorthTracker.Infrastructure.Repositories;
-using NetWorthTracker.Infrastructure.Services;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -3,12 +3,11 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using NetWorthTracker.Application.Interfaces;
+using NetWorthTracker.Application.Authentication.Interfaces;
 using NetWorthTracker.Application.User.Models.Login;
-using NetWorthTracker.Infrastructure.Configurations;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
-namespace NetWorthTracker.Infrastructure.Services;
+namespace NetWorthTracker.Application.Authentication.Services;
 
 public sealed class TokenService : ITokenService
 {

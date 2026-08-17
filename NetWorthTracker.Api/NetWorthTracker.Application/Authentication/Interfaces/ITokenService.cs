@@ -1,6 +1,6 @@
 ﻿using NetWorthTracker.Application.User.Models.Login;
 
-namespace NetWorthTracker.Application.Interfaces;
+namespace NetWorthTracker.Application.Authentication.Interfaces;
 
 public interface ITokenService
 {

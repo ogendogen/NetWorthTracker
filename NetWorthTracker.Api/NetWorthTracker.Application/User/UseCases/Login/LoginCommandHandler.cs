@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using NetWorthTracker.Application.Interfaces;
+using NetWorthTracker.Application.Authentication.Interfaces;
 using NetWorthTracker.Application.User.Models.Login;
 using NetWorthTracker.Domain.User.Interfaces;
 
