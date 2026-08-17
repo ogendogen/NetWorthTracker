@@ -10,9 +10,14 @@ using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegiste
 
 namespace NetWorthTracker.Infrastructure.Services;
 
-public sealed class TokenService(IOptions<JwtSettings> jwtSettings) : ITokenService
+public sealed class TokenService : ITokenService
 {
-    private readonly JwtSettings _jwtSettings = jwtSettings.Value;
+    private readonly JwtSettings _jwtSettings;
+
+    public TokenService(IOptions<JwtSettings> jwtSettings)
+    {
+        _jwtSettings = jwtSettings.Value;
+    }
 
     public LoginResponse CreateLoginResponse(string userName)
     {

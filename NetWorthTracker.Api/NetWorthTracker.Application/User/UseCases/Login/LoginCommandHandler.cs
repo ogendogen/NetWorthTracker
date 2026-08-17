@@ -5,15 +5,24 @@ using NetWorthTracker.Domain.User.Interfaces;
 
 namespace NetWorthTracker.Application.User.UseCases.Login;
 
-public class LoginCommandHandler(IUserRepository userRepository, ITokenService tokenService)
+public class LoginCommandHandler
     : IRequestHandler<LoginCommand, LoginResponse?>
 {
+    private readonly ITokenService _tokenService;
+    private readonly IUserRepository _userRepository;
+
+    public LoginCommandHandler(IUserRepository userRepository, ITokenService tokenService)
+    {
+        _userRepository = userRepository;
+        _tokenService = tokenService;
+    }
+
     public async Task<LoginResponse?> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        var result = await userRepository.LoginAsync(request.Username, request.Password, cancellationToken);
+        var result = await _userRepository.LoginAsync(request.Username, request.Password, cancellationToken);
 
         return result
-            ? tokenService.CreateLoginResponse(request
+            ? _tokenService.CreateLoginResponse(request
                 .Username)
             : null;
     }

@@ -1,5 +1,3 @@
 ﻿namespace NetWorthTracker.Application.AssemblyMarker;
 
-public sealed class ApplicationAssemblyMarker
-{
-}
+public sealed class ApplicationAssemblyMarker;
