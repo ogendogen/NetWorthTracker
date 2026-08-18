@@ -12,6 +12,10 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.HasKey(user => user.UserId);
 
+        builder.Property(user => user.UserId)
+            .HasDefaultValueSql("gen_random_uuid()")
+            .IsRequired();
+
         builder.Property(user => user.Login)
             .HasMaxLength(32)
             .IsRequired();

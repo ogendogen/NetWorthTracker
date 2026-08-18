@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 using NetWorthTracker.Domain.User.Models;
 
 namespace NetWorthTracker.Infrastructure;
