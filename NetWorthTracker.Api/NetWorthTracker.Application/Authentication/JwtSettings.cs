@@ -1,4 +1,4 @@
-namespace NetWorthTracker.Api.Configuration;
+namespace NetWorthTracker.Application.Authentication;
 
 public sealed class JwtSettings
 {
