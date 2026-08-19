@@ -164,6 +164,17 @@ This is an initial scaffold. The following are intentionally absent or incomplet
 - Financial CRUD, historical persistence, and real dashboard calculations.
 - Complete automated test coverage. `npm test` is available, but focused auth and feature tests were deferred.
 
+## GitHub Actions and Merge Protection
+
+Pull requests run the `.github/workflows/dotnet-build.yml` workflow. It restores and builds `NetWorthTracker.Api/NetWorthTracker.Api.slnx` in Release configuration using .NET 10, then installs the locked SPA dependencies and runs the Angular production build.
+
+To require this check before merging, create a branch protection rule or repository ruleset for the default branch in GitHub and enable:
+
+- Require a pull request before merging.
+- Require status checks to pass before merging, then select `Build .NET solution` and `Build Angular SPA`.
+- Require branches to be up to date before merging.
+- Include administrators when bypassing branch rules should not be allowed.
+
 ## Validation Commands
 
 Run from the indicated directories:
