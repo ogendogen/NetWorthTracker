@@ -15,7 +15,6 @@
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
         <PackageReference Include="Microsoft.OpenApi" Version="2.11.0" />
         <PackageReference Include="Scalar.AspNetCore" Version="2.16.18" />
-        <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556" PrivateAssets="all" />
     </ItemGroup>
 
     <ItemGroup>
@@ -23,12 +22,5 @@
       <ProjectReference Include="..\NetWorthTracker.Infrastructure\NetWorthTracker.Infrastructure.csproj" />
     </ItemGroup>
 
-    <PropertyGroup>
-        <WarningsAsErrors>
-            CS8981; <!--> Type name 'foo' consists only of lowercase letters <-->
-            SA1300; <!-->  Element 'foo' should begin with an uppercase letter <-->
-            SA1649 <!--> File name should match first type name <-->
-        </WarningsAsErrors>
-    </PropertyGroup>
 
 </Project>

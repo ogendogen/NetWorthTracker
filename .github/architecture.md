@@ -90,7 +90,7 @@ The initial `users` table has a generated UUID primary key, required `Login` (ma
 
 The API currently uses the standard ASP.NET Core logging providers and the existing `Logging` configuration in `appsettings.json`. No Serilog, audit log, correlation ID, or dedicated logging table was introduced by this branch; add and document those separately if observability is required.
 
-The API uses `StyleCop.Analyzers` as a private development-time analyzer dependency. Its API-local `.editorconfig` preserves the existing modern C# conventions: file-scoped namespaces, underscore-prefixed private fields, no mandatory file headers, no mandatory `this.` prefixes, and no required trailing commas. Keep StyleCop active for all other diagnostics.
+The backend solution centralizes `StyleCop.Analyzers` in `NetWorthTracker.Api/Directory.Build.props`, and the shared `NetWorthTracker.Api/.editorconfig` preserves the existing modern C# conventions: file-scoped namespaces, underscore-prefixed private fields, no mandatory file headers, no mandatory `this.` prefixes, and no required trailing commas. Keep StyleCop active for all other diagnostics.
 
 The middleware order is intentional:
 

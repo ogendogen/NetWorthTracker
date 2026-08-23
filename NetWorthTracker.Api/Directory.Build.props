@@ -1,0 +1,13 @@
+<Project>
+  <ItemGroup Condition="'$(MSBuildProjectExtension)' == '.csproj'">
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556" PrivateAssets="all" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.csproj'">
+    <WarningsAsErrors>
+      CS8981;
+      SA1300;
+      SA1649;
+    </WarningsAsErrors>
+  </PropertyGroup>
+</Project>
