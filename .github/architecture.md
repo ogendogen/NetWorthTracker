@@ -23,15 +23,35 @@ The Compose service exposes PostgreSQL on `localhost:5432` with database, user, 
 
 Apply the checked-in EF Core migration from `NetWorthTracker.Api/NetWorthTracker.Infrastructure`:
 
-```bash
+```powershell
+$env:ConnectionStrings__DefaultConnection = sops decrypt `
+  --extract '["ConnectionStrings"]["DefaultConnection"]' `
+  ..\NetWorthTracker.Api\appsettings.secrets.Development.enc.json
 dotnet ef database update
+Remove-Item Env:\ConnectionStrings__DefaultConnection
 ```
 
-`NetWorthTrackerDbContextFactory` is used by EF tooling. It walks up from the current directory to find the API project's `appsettings.json` or `appsettings.Development.json`, then loads environment variables as overrides. Use the same factory when adding migrations:
+`NetWorthTrackerDbContextFactory` is used by EF tooling. It walks up from the current directory to find the API project's `appsettings.json` or `appsettings.Development.json`, then loads environment variables as overrides. It does not execute the API's SOPS startup loader, so extract the development connection string into `ConnectionStrings__DefaultConnection` for each EF command. Use the same approach when adding migrations:
 
-```bash
+```powershell
+$env:ConnectionStrings__DefaultConnection = sops decrypt `
+  --extract '["ConnectionStrings"]["DefaultConnection"]' `
+  ..\NetWorthTracker.Api\appsettings.secrets.Development.enc.json
 dotnet ef migrations add <MigrationName>
+Remove-Item Env:\ConnectionStrings__DefaultConnection
 ```
+
+### SOPS Configuration
+
+The API keeps secret values in the committed environment-specific files `appsettings.secrets.Development.enc.json` and `appsettings.secrets.Production.enc.json`. Plaintext files matching `appsettings.secrets.*.json` are ignored by Git and excluded from build and publish output. Edit an encrypted file from the API project directory with:
+
+```powershell
+sops edit appsettings.secrets.Development.enc.json
+```
+
+At startup, the API selects `appsettings.secrets.{Environment}.enc.json`, invokes the `sops` executable, and adds the decrypted JSON to configuration from memory. The decrypted data is not written to disk. Environment variables and command-line arguments are reapplied afterward and retain higher precedence. Startup fails when the encrypted file, SOPS executable, or matching decryption key is unavailable.
+
+SOPS on Windows discovers age keys at `%APPDATA%\sops\age\keys.txt`. Keep private age keys outside the repository and make the required key available to every developer or deployment identity that starts the API. Production should use a dedicated recipient and controlled key distribution rather than the development private key.
 
 Start the API from the repository root:
 
@@ -71,9 +91,9 @@ All API routes are root-level routes, with no `/api` prefix.
 | `POST /register` | Anonymous  | Accepts the typed registration request and returns `200 OK`. It does not persist a user or issue a session.                        |
 | `GET /data`      | Bearer JWT | Returns mock net-worth summary data. Requests without a valid token return `401`.                                                  |
 
-JWT configuration lives under the `Jwt` section. Development uses the signing key in `appsettings.Development.json` for local scaffolding. Production must supply `SigningKey` through the `Jwt__SigningKey` environment variable; the API fails at startup when it is missing. For deployed environments, provide the variable through the platform's secure secret configuration and use a stable secret so API restarts do not invalidate existing tokens.
+JWT configuration lives under the `Jwt` section. The signing key is loaded from the active environment's encrypted SOPS file and can be overridden through the `Jwt__SigningKey` environment variable. The API fails at startup when the resolved production signing key is empty. Use a stable production secret so API restarts do not invalidate existing tokens.
 
-The API reads `ConnectionStrings:DefaultConnection`. Development points to the Compose PostgreSQL service at `localhost:5432`; deployed environments must provide an appropriate connection string through configuration or environment variables. The API registers `NetWorthTrackerDbContext` with Npgsql, `IUserRepository` with `UserRepository`, and `ITokenService` with `TokenService` in the API composition root.
+The API reads `ConnectionStrings:DefaultConnection` from the active encrypted SOPS file or the higher-precedence `ConnectionStrings__DefaultConnection` environment variable. Development points to the Compose PostgreSQL service at `localhost:5432`; deployed environments must provide an appropriate connection string. The API registers `NetWorthTrackerDbContext` with Npgsql, `IUserRepository` with `UserRepository`, and `ITokenService` with `TokenService` in the API composition root.
 
 ### Backend Architecture
 
@@ -161,6 +181,7 @@ This is an initial scaffold. The following are intentionally absent or incomplet
 - Registration workflow and user creation validation. Login persistence, BCrypt password verification, and the initial `users` migration are present.
 - Structured application logging, audit logging, and correlation IDs.
 - Refresh tokens, password reset, authorization roles, and production secret management.
+- Managed production key distribution and rotation; SOPS startup decryption is present, but deployment identities and production recipients still require operational configuration.
 - Financial CRUD, historical persistence, and real dashboard calculations.
 - Complete automated test coverage. `npm test` is available, but focused auth and feature tests were deferred.
 

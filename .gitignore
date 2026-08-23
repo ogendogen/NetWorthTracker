@@ -490,3 +490,7 @@ baseline.json
 
 # pnpm store
 .pnpm-store
+
+# SOPS plaintext secret files
+**/appsettings.secrets.*.json
+!**/appsettings.secrets.*.enc.json

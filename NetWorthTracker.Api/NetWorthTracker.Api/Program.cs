@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using NetWorthTracker.Api.Configuration;
 using NetWorthTracker.Application.AssemblyMarker;
 using NetWorthTracker.Application.Authentication;
 using NetWorthTracker.Application.Authentication.Interfaces;
@@ -14,10 +15,15 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+await SopsConfiguration.AddForCurrentEnvironmentAsync(
+    builder.Configuration,
+    builder.Environment,
+    args);
+
 if (builder.Environment.IsProduction()
-    && string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("Jwt__SigningKey")))
+    && string.IsNullOrWhiteSpace(builder.Configuration[$"{JwtSettings.SectionName}:SigningKey"]))
 {
-    throw new InvalidOperationException("The Jwt__SigningKey environment variable is required in production.");
+    throw new InvalidOperationException("The JWT signing key is required in production.");
 }
 
 var jwtSettings = builder.Configuration.GetRequiredSection(JwtSettings.SectionName).Get<JwtSettings>()

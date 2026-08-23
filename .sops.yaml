@@ -1,0 +1,3 @@
+creation_rules:
+  - path_regex: appsettings\.secrets\.(Development|Production)\.json$
+    age: age1kcevkgwrqemfp9kv2en9h3hsmtex3fn4y9622yhp2jf8w8r4r43sj4lke0
