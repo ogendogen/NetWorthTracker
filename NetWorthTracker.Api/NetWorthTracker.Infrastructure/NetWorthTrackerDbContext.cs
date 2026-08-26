@@ -10,7 +10,7 @@ public class NetWorthTrackerDbContext : DbContext
     {
     }
 
-    public DbSet<User> Users => Set<User>();
+    public virtual DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
