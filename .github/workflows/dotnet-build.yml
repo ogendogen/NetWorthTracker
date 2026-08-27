@@ -30,6 +30,9 @@ jobs:
       - name: Build solution
         run: dotnet build NetWorthTracker.Api/NetWorthTracker.Api.slnx --configuration Release --no-restore
 
+      - name: Run unit tests
+        run: dotnet run --project NetWorthTracker.Api/NetWorthTracker.UnitTests/NetWorthTracker.UnitTests.csproj --configuration Release --no-build --
+
       - name: Run integration tests
         run: dotnet run --project NetWorthTracker.Api/NetWorthTracker.IntegrationTests/NetWorthTracker.IntegrationTests/NetWorthTracker.IntegrationTests.csproj --configuration Release --no-build --
 

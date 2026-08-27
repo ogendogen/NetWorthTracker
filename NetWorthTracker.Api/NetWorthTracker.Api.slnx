@@ -4,5 +4,5 @@
   <Project Path="NetWorthTracker.Domain/NetWorthTracker.Domain.csproj" Id="86ac5e61-35e9-4a06-8e02-7d3d10fab344" />
   <Project Path="NetWorthTracker.Infrastructure/NetWorthTracker.Infrastructure.csproj" Id="efee0e0a-aa99-467a-8d49-685bfd650764" />
   <Project Path="NetWorthTracker.IntegrationTests/NetWorthTracker.IntegrationTests/NetWorthTracker.IntegrationTests.csproj" />
-  <Project Path="NetWorthTracker.Tests/NetWorthTracker.UnitTests.csproj" Id="5a760c7e-1836-4cec-8838-9c5ef52b1cbd" />
+  <Project Path="NetWorthTracker.UnitTests/NetWorthTracker.UnitTests.csproj" Id="5a760c7e-1836-4cec-8838-9c5ef52b1cbd" />
 </Solution>

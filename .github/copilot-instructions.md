@@ -76,5 +76,6 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 ## Workflow Rules
 
 - Do not start, stop, or restart the API or SPA unless the user explicitly asks.
+- Execute unit tests from the repository root using `dotnet run --project NetWorthTracker.Api/NetWorthTracker.UnitTests/NetWorthTracker.UnitTests.csproj --configuration Release --`.
 - With Docker running, execute integration tests from the repository root using `dotnet run --project NetWorthTracker.Api/NetWorthTracker.IntegrationTests/NetWorthTracker.IntegrationTests/NetWorthTracker.IntegrationTests.csproj --configuration Release --`.
 - Update `.github/copilot-instructions.md` and `.github/architecture.md` whenever a change affects project architecture, API contracts, local development, authentication, or established workflows.

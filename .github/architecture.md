@@ -179,7 +179,7 @@ This is an initial scaffold. The following are intentionally absent or incomplet
 
 ## GitHub Actions and Merge Protection
 
-Pull requests run the `.github/workflows/dotnet-build.yml` workflow. It restores and builds `NetWorthTracker.Api/NetWorthTracker.Api.slnx` in Release configuration using .NET 10, runs the PostgreSQL-backed integration suite through Testcontainers on the GitHub-hosted runner's Docker daemon, then installs the locked SPA dependencies and runs the Angular production build.
+Pull requests run the `.github/workflows/dotnet-build.yml` workflow. It restores and builds `NetWorthTracker.Api/NetWorthTracker.Api.slnx` in Release configuration using .NET 10, runs the unit suite, runs the PostgreSQL-backed integration suite through Testcontainers on the GitHub-hosted runner's Docker daemon, then installs the locked SPA dependencies and runs the Angular production build.
 
 To require this check before merging, create a branch protection rule or repository ruleset for the default branch in GitHub and enable:
 
@@ -198,7 +198,7 @@ dotnet build
 ```
 
 ```bash
-dotnet run --project NetWorthTracker.Api/NetWorthTracker.Tests/NetWorthTracker.UnitTests.csproj --configuration Release --
+dotnet run --project NetWorthTracker.Api/NetWorthTracker.UnitTests/NetWorthTracker.UnitTests.csproj --configuration Release --
 dotnet run --project NetWorthTracker.Api/NetWorthTracker.IntegrationTests/NetWorthTracker.IntegrationTests/NetWorthTracker.IntegrationTests.csproj --configuration Release --
 ```
 
