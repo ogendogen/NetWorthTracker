@@ -62,6 +62,7 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use `IUserRepository` for user persistence and `ITokenService` for JWT creation; keep BCrypt/password persistence details inside Infrastructure's repository implementation.
 - Centralize shared .NET analyzer configuration in `NetWorthTracker.Api/Directory.Build.props` and `NetWorthTracker.Api/.editorconfig` so all projects under the backend solution inherit the same StyleCop and warning rules without duplicating them in project files.
 - Run PostgreSQL with `docker compose -f devops/docker-compose.yml up -d postgres` before database-backed API work. Use `dotnet ef database update` from the Infrastructure project; its `NetWorthTrackerDbContextFactory` locates API configuration in parent directories and applies environment-variable overrides.
+- Run full-stack API integration tests through the TUnit project at `NetWorthTracker.Api/NetWorthTracker.IntegrationTests/NetWorthTracker.IntegrationTests`. Its shared `WebApplicationFactory` must host the real API, provision an isolated PostgreSQL Testcontainer, apply migrations, and seed only deterministic fixture data; integration tests must not use the persistent Compose development database.
 - Treat the SPA feature registry at `src/app/features/functionality.registry.ts` as the single source of truth for protected feature routes and left navigation entries. Do not duplicate a feature route separately in the side navigation.
 - Implement each business capability as one lazy standalone page under `src/app/features/<feature-name>/`. Keep the application shell and layout components free of feature-specific business logic.
 - `AppShellComponent` owns only the full-width top bar, left navigation/drawer, and routed content outlet. `TopBarComponent` emits logout and `SideNavigationComponent` renders registry entries.
@@ -75,4 +76,7 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 ## Workflow Rules
 
 - Do not start, stop, or restart the API or SPA unless the user explicitly asks.
+- Execute unit tests from the repository root using `dotnet run --project NetWorthTracker.Api/NetWorthTracker.UnitTests/NetWorthTracker.UnitTests.csproj --configuration Release --`.
+- With Docker running, execute integration tests from the repository root using `dotnet run --project NetWorthTracker.Api/NetWorthTracker.IntegrationTests/NetWorthTracker.IntegrationTests/NetWorthTracker.IntegrationTests.csproj --configuration Release --`.
+- Keep backend build, unit tests, integration tests, and the SPA build as separate GitHub Actions jobs so pull requests expose four required checks. Unit and integration jobs must depend on a successful backend build.
 - Update `.github/copilot-instructions.md` and `.github/architecture.md` whenever a change affects project architecture, API contracts, local development, authentication, or established workflows.

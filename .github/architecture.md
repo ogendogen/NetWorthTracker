@@ -2,14 +2,15 @@
 
 ## Repository Layout
 
-| Area             | Location                                             | Responsibility                                                                         |
-| ---------------- | ---------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| API              | `NetWorthTracker.Api/NetWorthTracker.Api`            | .NET 10 HTTP API, composition root, controllers, JWT, and mock net-worth data.         |
-| Application      | `NetWorthTracker.Api/NetWorthTracker.Application`    | CQRS/MediatR commands, handlers, application models, and authentication services.      |
-| Domain           | `NetWorthTracker.Api/NetWorthTracker.Domain`         | Domain models and repository contracts; no infrastructure dependencies.                |
-| Infrastructure   | `NetWorthTracker.Api/NetWorthTracker.Infrastructure` | EF Core/PostgreSQL persistence, migrations, DbContext, and repository implementations. |
-| SPA              | `NetWorthTracker.Spa`                                | Angular 21 standalone SPA using Angular Material.                                      |
-| Project guidance | `.github/copilot-instructions.md`                    | Required Angular, TypeScript, accessibility, and local architecture rules.             |
+| Area              | Location                                                                                | Responsibility                                                                            |
+| ----------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| API               | `NetWorthTracker.Api/NetWorthTracker.Api`                                               | .NET 10 HTTP API, composition root, controllers, JWT, and mock net-worth data.            |
+| Application       | `NetWorthTracker.Api/NetWorthTracker.Application`                                       | CQRS/MediatR commands, handlers, application models, and authentication services.         |
+| Domain            | `NetWorthTracker.Api/NetWorthTracker.Domain`                                            | Domain models and repository contracts; no infrastructure dependencies.                   |
+| Infrastructure    | `NetWorthTracker.Api/NetWorthTracker.Infrastructure`                                    | EF Core/PostgreSQL persistence, migrations, DbContext, and repository implementations.    |
+| Integration tests | `NetWorthTracker.Api/NetWorthTracker.IntegrationTests/NetWorthTracker.IntegrationTests` | Full-stack API tests using TUnit, `WebApplicationFactory`, and PostgreSQL Testcontainers. |
+| SPA               | `NetWorthTracker.Spa`                                                                   | Angular 21 standalone SPA using Angular Material.                                         |
+| Project guidance  | `.github/copilot-instructions.md`                                                       | Required Angular, TypeScript, accessibility, and local architecture rules.                |
 
 ## Local Development
 
@@ -51,6 +52,18 @@ npm start
 ```
 
 The SPA defaults to `http://localhost:4200`.
+
+### Integration Tests
+
+The integration suite starts the real API in-process and provisions a disposable PostgreSQL 18 container through Testcontainers. The shared test fixture applies the checked-in EF Core migrations and seeds one BCrypt-backed user before exercising login, JWT validation, and the protected data endpoint. It does not connect to or modify the persistent Compose development database.
+
+Docker must be running. Execute the suite from the repository root:
+
+```bash
+dotnet run --project NetWorthTracker.Api/NetWorthTracker.IntegrationTests/NetWorthTracker.IntegrationTests/NetWorthTracker.IntegrationTests.csproj --configuration Release --
+```
+
+Testcontainers assigns a random host port and removes the database container after the TUnit session. Keep integration tests independent after fixture seeding so they can run in parallel against the session-scoped database.
 
 ### API URL and CORS
 
@@ -166,12 +179,12 @@ This is an initial scaffold. The following are intentionally absent or incomplet
 
 ## GitHub Actions and Merge Protection
 
-Pull requests run the `.github/workflows/dotnet-build.yml` workflow. It restores and builds `NetWorthTracker.Api/NetWorthTracker.Api.slnx` in Release configuration using .NET 10, then installs the locked SPA dependencies and runs the Angular production build.
+Pull requests run four separate jobs from `.github/workflows/dotnet-build.yml`: `Build .NET solution`, `Run .NET unit tests`, `Run .NET integration tests`, and `Build Angular SPA`. The unit and integration jobs depend on a successful backend build and then run in parallel; the SPA build remains independent. The integration job uses Testcontainers with the GitHub-hosted runner's Docker daemon. Keeping builds and test suites in separate jobs makes each result visible as its own pull-request check.
 
 To require this check before merging, create a branch protection rule or repository ruleset for the default branch in GitHub and enable:
 
 - Require a pull request before merging.
-- Require status checks to pass before merging, then select `Build .NET solution` and `Build Angular SPA`.
+- Require status checks to pass before merging, then select `Build .NET solution`, `Run .NET unit tests`, `Run .NET integration tests`, and `Build Angular SPA`.
 - Require branches to be up to date before merging.
 - Include administrators when bypassing branch rules should not be allowed.
 
@@ -182,6 +195,11 @@ Run from the indicated directories:
 ```bash
 cd NetWorthTracker.Api/NetWorthTracker.Api
 dotnet build
+```
+
+```bash
+dotnet run --project NetWorthTracker.Api/NetWorthTracker.UnitTests/NetWorthTracker.UnitTests.csproj --configuration Release --
+dotnet run --project NetWorthTracker.Api/NetWorthTracker.IntegrationTests/NetWorthTracker.IntegrationTests/NetWorthTracker.IntegrationTests.csproj --configuration Release --
 ```
 
 ```bash

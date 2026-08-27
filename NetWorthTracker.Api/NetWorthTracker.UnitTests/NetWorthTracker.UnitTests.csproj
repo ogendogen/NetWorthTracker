@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.11" />
+    <PackageReference Include="TUnit" Version="1.6*" />
+    <PackageReference Include="TUnit.Mocks" Version="1.6*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NetWorthTracker.Api\NetWorthTracker.Api.csproj" />
+    <ProjectReference Include="..\NetWorthTracker.Application\NetWorthTracker.Application.csproj" />
+    <ProjectReference Include="..\NetWorthTracker.Domain\NetWorthTracker.Domain.csproj" />
+    <ProjectReference Include="..\NetWorthTracker.Infrastructure\NetWorthTracker.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
