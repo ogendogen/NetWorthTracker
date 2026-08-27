@@ -78,5 +78,5 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Do not start, stop, or restart the API or SPA unless the user explicitly asks.
 - Execute unit tests from the repository root using `dotnet run --project NetWorthTracker.Api/NetWorthTracker.UnitTests/NetWorthTracker.UnitTests.csproj --configuration Release --`.
 - With Docker running, execute integration tests from the repository root using `dotnet run --project NetWorthTracker.Api/NetWorthTracker.IntegrationTests/NetWorthTracker.IntegrationTests/NetWorthTracker.IntegrationTests.csproj --configuration Release --`.
-- Keep backend build, unit tests, integration tests, and the SPA build as separate GitHub Actions jobs so pull requests expose four independent required checks.
+- Keep backend build, unit tests, integration tests, and the SPA build as separate GitHub Actions jobs so pull requests expose four required checks. Unit and integration jobs must depend on a successful backend build.
 - Update `.github/copilot-instructions.md` and `.github/architecture.md` whenever a change affects project architecture, API contracts, local development, authentication, or established workflows.

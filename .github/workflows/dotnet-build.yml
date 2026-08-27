@@ -32,6 +32,7 @@ jobs:
 
   unit-tests:
     name: Run .NET unit tests
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
@@ -48,6 +49,7 @@ jobs:
 
   integration-tests:
     name: Run .NET integration tests
+    needs: build
     runs-on: ubuntu-latest
 
     steps:

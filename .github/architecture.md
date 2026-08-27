@@ -179,7 +179,7 @@ This is an initial scaffold. The following are intentionally absent or incomplet
 
 ## GitHub Actions and Merge Protection
 
-Pull requests run four independent jobs from `.github/workflows/dotnet-build.yml`: `Build .NET solution`, `Run .NET unit tests`, `Run .NET integration tests`, and `Build Angular SPA`. The integration job uses Testcontainers with the GitHub-hosted runner's Docker daemon. Keeping builds and test suites in separate jobs makes each result visible as its own pull-request check.
+Pull requests run four separate jobs from `.github/workflows/dotnet-build.yml`: `Build .NET solution`, `Run .NET unit tests`, `Run .NET integration tests`, and `Build Angular SPA`. The unit and integration jobs depend on a successful backend build and then run in parallel; the SPA build remains independent. The integration job uses Testcontainers with the GitHub-hosted runner's Docker daemon. Keeping builds and test suites in separate jobs makes each result visible as its own pull-request check.
 
 To require this check before merging, create a branch protection rule or repository ruleset for the default branch in GitHub and enable:
 
