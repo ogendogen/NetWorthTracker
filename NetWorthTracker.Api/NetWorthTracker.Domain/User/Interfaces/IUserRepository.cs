@@ -13,7 +13,7 @@ public interface IUserRepository
         string email,
         CancellationToken cancellationToken = default);
 
-    Task<Models.User?> GetByUsernameAsync(
+    Task<Models.User?> GetByUsernameOrEmailAsync(
         string username,
         string email,
         CancellationToken cancellationToken = default);

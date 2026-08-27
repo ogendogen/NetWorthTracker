@@ -36,6 +36,6 @@ public sealed class AuthController : ControllerBase
     {
         var result = await _mediator.Send(new RegisterCommand(request.Username, request.Password, request.Email));
 
-        return Ok(result);
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 }
