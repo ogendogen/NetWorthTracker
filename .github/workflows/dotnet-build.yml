@@ -30,6 +30,9 @@ jobs:
       - name: Build solution
         run: dotnet build NetWorthTracker.Api/NetWorthTracker.Api.slnx --configuration Release --no-restore
 
+      - name: Run integration tests
+        run: dotnet run --project NetWorthTracker.Api/NetWorthTracker.IntegrationTests/NetWorthTracker.IntegrationTests/NetWorthTracker.IntegrationTests.csproj --configuration Release --no-build --
+
   angular-build:
     name: Build Angular SPA
     runs-on: ubuntu-latest
