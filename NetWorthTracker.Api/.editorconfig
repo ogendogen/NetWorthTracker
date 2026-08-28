@@ -1,0 +1,15 @@
+root = true
+
+[*.cs]
+dotnet_diagnostic.SA0001.severity = none # Disable XML comment analysis
+dotnet_diagnostic.SA1101.severity = none # Disable requirement to prefix local members with 'this.'
+dotnet_diagnostic.SA1200.severity = none # Disable requirement for using directives to be inside the namespace
+dotnet_diagnostic.SA1309.severity = none # Disable requirement for field names not to begin with an underscore
+dotnet_diagnostic.SA1413.severity = none # Disable requirement for trailing commas in multi-line initializers
+dotnet_diagnostic.SA1600.severity = none # Disable requirement for XML documentation comments
+dotnet_diagnostic.SA1633.severity = none # Disable requirement for a file header
+
+dotnet_diagnostic.IDE0290.severity = none # Disable Roslyn primary constructor suggestion
+csharp_style_prefer_primary_constructors = false # Prefer traditional constructors over primary constructors
+
+resharper_convert_to_primary_constructor_highlighting = none # Disable Rider primary constructor suggestion

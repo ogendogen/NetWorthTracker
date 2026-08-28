@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NetWorthTracker.Api.Configuration;
 using NetWorthTracker.Application.AssemblyMarker;
@@ -26,12 +27,17 @@ if (builder.Environment.IsProduction()
     throw new InvalidOperationException("The JWT signing key is required in production.");
 }
 
-var jwtSettings = builder.Configuration.GetRequiredSection(JwtSettings.SectionName).Get<JwtSettings>()
-                  ?? throw new InvalidOperationException("JWT settings are required.");
-
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetRequiredSection(JwtSettings.SectionName));
+builder.Services.AddOptions<JwtSettings>()
+    .BindConfiguration(JwtSettings.SectionName)
+    .Validate(
+        settings => !string.IsNullOrWhiteSpace(settings.Issuer)
+                    && !string.IsNullOrWhiteSpace(settings.Audience)
+                    && !string.IsNullOrWhiteSpace(settings.SigningKey)
+                    && settings.LifetimeMinutes > 0,
+        "JWT settings are required.")
+    .ValidateOnStart();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
@@ -47,8 +53,11 @@ builder.Services.AddCors(options =>
         .AllowAnyMethod());
 });
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+    .AddJwtBearer();
+builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+    .Configure<IOptions<JwtSettings>>((options, jwtOptions) =>
     {
+        var jwtSettings = jwtOptions.Value;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -90,3 +99,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+/// <summary>
+/// Exposes the application entry point to integration tests.
+/// </summary>
+public partial class Program;
