@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile(
     $"appsettings.secrets.{builder.Environment.EnvironmentName}.json",
-    optional: false,
+    optional: builder.Environment.IsEnvironment("Testing"),
     reloadOnChange: false);
 builder.Configuration.AddEnvironmentVariables();
 builder.Configuration.AddCommandLine(args);
