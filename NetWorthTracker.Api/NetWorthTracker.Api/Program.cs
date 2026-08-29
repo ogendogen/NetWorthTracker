@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using NetWorthTracker.Api.Configuration;
 using NetWorthTracker.Application.AssemblyMarker;
 using NetWorthTracker.Application.Authentication;
 using NetWorthTracker.Application.Authentication.Interfaces;
@@ -16,10 +15,12 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-await SopsConfiguration.AddForCurrentEnvironmentAsync(
-    builder.Configuration,
-    builder.Environment,
-    args);
+builder.Configuration.AddJsonFile(
+    $"appsettings.secrets.{builder.Environment.EnvironmentName}.json",
+    optional: false,
+    reloadOnChange: false);
+builder.Configuration.AddEnvironmentVariables();
+builder.Configuration.AddCommandLine(args);
 
 if (builder.Environment.IsProduction()
     && string.IsNullOrWhiteSpace(builder.Configuration[$"{JwtSettings.SectionName}:SigningKey"]))

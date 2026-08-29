@@ -24,9 +24,9 @@
 
     <ItemGroup>
         <Content Remove="appsettings.secrets.*.json" />
-        <Content Include="appsettings.secrets.*.enc.json">
+        <Content Include="appsettings.secrets.*.json" Exclude="appsettings.secrets.*.enc.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+            <CopyToPublishDirectory>Never</CopyToPublishDirectory>
         </Content>
     </ItemGroup>
 
