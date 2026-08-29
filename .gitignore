@@ -500,3 +500,4 @@ devops/postgres.env
 
 # Exception for SOPS
 !devops/postgres.enc.env
+!devops/postgres.production.enc.env
