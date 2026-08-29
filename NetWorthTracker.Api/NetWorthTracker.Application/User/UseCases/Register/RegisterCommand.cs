@@ -1,5 +1,5 @@
-﻿using MediatR;
-using NetWorthTracker.Application.Common;
+using FluentResults;
+using MediatR;
 using NetWorthTracker.Application.User.Models.Register;
 
 namespace NetWorthTracker.Application.User.UseCases.Register;

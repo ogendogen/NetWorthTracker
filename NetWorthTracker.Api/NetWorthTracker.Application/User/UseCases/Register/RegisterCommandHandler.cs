@@ -1,5 +1,5 @@
-﻿using MediatR;
-using NetWorthTracker.Application.Common;
+using FluentResults;
+using MediatR;
 using NetWorthTracker.Application.User.Models.Register;
 using NetWorthTracker.Domain.User.Interfaces;
 
@@ -17,7 +17,6 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Re
     public async Task<Result<RegisterResponse>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         //todo : validate command
-
         var existingUser = await _userRepository.GetByUsernameOrEmailAsync(
             request.Username,
             request.Email,
@@ -25,15 +24,16 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Re
 
         if (existingUser is not null)
         {
-            return Result<RegisterResponse>.Failure(
-                new Error("UserAlreadyExists", "User with provided credentials already exists."));
+            return Result.Fail<RegisterResponse>(
+                "User with provided credentials already exists.");
         }
 
         var success =
             await _userRepository.RegisterAsync(request.Username, request.Password, request.Email, cancellationToken);
 
+        //todo : log failures
         return success
-            ? Result<RegisterResponse>.Success(new RegisterResponse(true))
-            : Result<RegisterResponse>.Failure(new Error("RegistrationFailed", "User registration failed."));
+            ? Result.Ok(new RegisterResponse(true))
+            : Result.Fail<RegisterResponse>("User registration failed.");
     }
 }

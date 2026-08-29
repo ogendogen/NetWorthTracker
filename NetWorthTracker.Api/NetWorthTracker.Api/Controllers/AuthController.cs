@@ -1,3 +1,4 @@
+using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,6 +37,6 @@ public sealed class AuthController : ControllerBase
     {
         var result = await _mediator.Send(new RegisterCommand(request.Username, request.Password, request.Email));
 
-        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Errors.FirstOrDefault());
     }
 }

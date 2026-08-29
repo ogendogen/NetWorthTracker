@@ -1,4 +1,5 @@
-﻿using NetWorthTracker.Application.User.Models.Register;
+using FluentResults;
+using NetWorthTracker.Application.User.Models.Register;
 using NetWorthTracker.Application.User.UseCases.Register;
 using NetWorthTracker.Domain.User.Interfaces;
 
@@ -29,7 +30,7 @@ public class RegisterCommandHandlerTests
         var result = await registerCommandHandler.Handle(command, cancellationToken);
 
         // Assert
-        await Assert.That(result.Error).IsNull();
+        await Assert.That(result.IsFailed).IsFalse();
 
         var value = result.Value;
         await Assert.That(value).IsNotNull();
@@ -48,7 +49,7 @@ public class RegisterCommandHandlerTests
         const string username = "username";
         const string password = "password";
         const string email = "testmail@test.com";
-        const string expectedErrorCode = "UserAlreadyExists";
+        const string expectedErrorMessage = "User with provided credentials already exists.";
         var cancellationToken = new CancellationTokenSource().Token;
 
         var userRepoMock = IUserRepository.Mock();
@@ -62,11 +63,11 @@ public class RegisterCommandHandlerTests
         var result = await registerCommandHandler.Handle(command, cancellationToken);
 
         // Assert
-        await Assert.That(result.Value).IsNull();
+        await Assert.That(result.IsFailed).IsTrue();
 
-        var error = result.Error;
+        var error = result.Errors.Single();
         await Assert.That(error).IsNotNull();
-        await Assert.That(error.Code).IsEqualTo(expectedErrorCode);
+        await Assert.That(error.Message).IsEqualTo(expectedErrorMessage);
 
         userRepoMock.GetByUsernameOrEmailAsync(username, email,
             cancellationToken).WasCalled(Times.Once);
@@ -81,7 +82,7 @@ public class RegisterCommandHandlerTests
         const string username = "username";
         const string password = "password";
         const string email = "testmail@test.com";
-        const string expectedErrorCode = "RegistrationFailed";
+        const string expectedErrorMessage = "User registration failed.";
 
         var cancellationToken = new CancellationTokenSource().Token;
 
@@ -98,11 +99,11 @@ public class RegisterCommandHandlerTests
         var result = await registerCommandHandler.Handle(command, cancellationToken);
 
         // Assert
-        await Assert.That(result.Value).IsNull();
+        await Assert.That(result.IsFailed).IsTrue();
 
-        var error = result.Error;
+        var error = result.Errors.Single();
         await Assert.That(error).IsNotNull();
-        await Assert.That(error.Code).IsEqualTo(expectedErrorCode);
+        await Assert.That(error.Message).IsEqualTo(expectedErrorMessage);
 
         userRepoMock.GetByUsernameOrEmailAsync(username, email,
             cancellationToken).WasCalled(Times.Once);
