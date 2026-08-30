@@ -24,14 +24,23 @@ age --version
 
 Request the development age private key from an administrator through the approved secure channel. Do not commit, email, or copy the private key into this repository.
 
-Create the SOPS age key directory and save the administrator-provided key as `%APPDATA%\sops\age\keys.txt`:
+SOPS can obtain an age X25519 private identity in these ways:
+
+- **Default Windows key file (recommended for local development):** `%APPDATA%\sops\age\keys.txt`.
+- **Explicit key file:** set `SOPS_AGE_KEY_FILE` to a file path. This is useful for CI or a separately managed production identity.
+- **Process environment variable:** set `SOPS_AGE_KEY` to the complete identity. Avoid persisting this variable because process environments can be exposed through diagnostics and child processes.
+- **Command output:** set `SOPS_AGE_KEY_CMD` to a command that writes the identity to standard output. The command can use `SOPS_AGE_RECIPIENT` to determine which recipient SOPS needs. Use this with a secret manager rather than storing a key in a file.
+
+For files encrypted to SSH recipients, SOPS can instead read an SSH private key from `SOPS_AGE_SSH_PRIVATE_KEY_FILE` or `SOPS_AGE_SSH_PRIVATE_KEY_CMD`; it otherwise tries `~/.ssh/id_ed25519` and `~/.ssh/id_rsa`. This repository uses age X25519 recipients, so the SSH options do not apply to its current encrypted files.
+
+For this development setup, create the default key directory and save the administrator-provided development identity as `%APPDATA%\sops\age\keys.txt`:
 
 ```powershell
 New-Item -ItemType Directory -Force -Path "$env:APPDATA\sops\age"
 notepad "$env:APPDATA\sops\age\keys.txt"
 ```
 
-Paste the complete key contents, including the `# public key:` comment and `AGE-SECRET-KEY-...` line, save the file, and close the editor. Verify SOPS can use it:
+The key file may contain multiple identities, one `AGE-SECRET-KEY-...` line each; lines beginning with `#` are comments. Paste the complete administrator-provided identity, including its `# public key:` comment when supplied, save the file, and close the editor. Verify SOPS can use it:
 
 ```powershell
 sops decrypt --output $null devops/postgres.enc.env
