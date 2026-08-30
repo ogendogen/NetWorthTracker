@@ -68,7 +68,7 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Keep API URLs centralized through `API_BASE_URL` and the environment files; never hard-code API URLs in a feature or service.
 - Use `AuthService` for session lifecycle. It stores a validated access-token session in `sessionStorage` under `net-worth-tracker.session`; guards and the interceptor depend on this behavior.
 - The functional `authInterceptor` attaches bearer tokens only to requests for `API_BASE_URL` and redirects to login after an API `401`.
-- Login is database-backed through the initial PostgreSQL `users` table and BCrypt password verification, but registration is still a no-op scaffold. Do not present registration, development JWT settings, SOPS key distribution, or mock `/data` values as production-ready behavior.
+- Login is database-backed through the initial PostgreSQL `users` table and BCrypt password verification. Registration persists BCrypt-hashed users but does not issue a session, validate input, map duplicate-user exceptions to stable HTTP errors, or confirm email. Do not present those gaps, the committed development signing key, or mock `/data` values as production-ready behavior.
 - The API uses built-in ASP.NET Core logging only. Do not claim that this branch introduced structured, audit, or database logging.
 - Refer to `.github/architecture.md` before changing backend layer boundaries, EF migrations, authentication, local development URLs, API routes, or the feature-shell structure.
 

@@ -9,4 +9,14 @@ export interface LoginResponse {
   userName: string;
 }
 
-export type AuthSession = LoginResponse
+export interface RegisterRequest {
+  username: string;
+  password: string;
+  email: string;
+}
+
+export interface RegisterResponse {
+  success: boolean;
+}
+
+export type AuthSession = LoginResponse;

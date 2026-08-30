@@ -2,7 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { API_BASE_URL } from '../../app.config';
-import { AuthSession, LoginRequest, LoginResponse } from './auth.models';
+import {
+  AuthSession,
+  LoginRequest,
+  LoginResponse,
+  RegisterRequest,
+  RegisterResponse,
+} from './auth.models';
 
 const SESSION_STORAGE_KEY = 'net-worth-tracker.session';
 
@@ -26,6 +32,10 @@ export class AuthService {
         return session;
       }),
     );
+  }
+
+  register(credentials: RegisterRequest): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(`${this.apiBaseUrl}/register`, credentials);
   }
 
   logout(): void {

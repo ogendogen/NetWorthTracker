@@ -93,11 +93,11 @@ Testcontainers assigns a random host port and removes the database container aft
 
 All API routes are root-level routes, with no `/api` prefix.
 
-| Endpoint         | Auth       | Current behavior                                                                                                                   |
-| ---------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `POST /login`    | Anonymous  | Accepts `{"username":"test","password":"test"}` only. Returns `accessToken`, `expiresAt`, and `userName`; otherwise returns `401`. |
-| `POST /register` | Anonymous  | Accepts the typed registration request and returns `200 OK`. It does not persist a user or issue a session.                        |
-| `GET /data`      | Bearer JWT | Returns mock net-worth summary data. Requests without a valid token return `401`.                                                  |
+| Endpoint         | Auth       | Current behavior                                                                                                                |
+| ---------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /login`    | Anonymous  | Verifies a persisted user's BCrypt password. Returns `accessToken`, `expiresAt`, and `userName`; otherwise returns `401`.       |
+| `POST /register` | Anonymous  | Accepts `username`, `password`, and `email`, persists a BCrypt-hashed user, and returns `success`. It does not issue a session. |
+| `GET /data`      | Bearer JWT | Returns mock net-worth summary data. Requests without a valid token return `401`.                                               |
 
 JWT configuration lives under the `Jwt` section. The signing key is loaded from the active environment's local plaintext secrets file and can be overridden through the `Jwt__SigningKey` environment variable. The API fails at startup when the resolved production signing key is empty. Use a stable production secret so API restarts do not invalidate existing tokens.
 
@@ -114,7 +114,7 @@ The backend follows a dependency direction of API -> Infrastructure -> Applicati
 
 The initial `users` table has a generated UUID primary key, required `Login` (maximum 32), `PasswordHash` (maximum 256), `Email` (maximum 320), `IsEmailConfirmed`, and `CreatedAt` columns. `Login` and `Email` each have unique indexes; UUIDs use `gen_random_uuid()` and `CreatedAt` uses `CURRENT_TIMESTAMP`.
 
-`POST /login` is now database-backed: the repository looks up the login and verifies the supplied password with BCrypt before the application handler creates a JWT response. `POST /register` remains scaffolding only: it accepts a typed request but does not create a user. Do not describe registration as available until a registration command, validation, password hashing, and persistence are implemented.
+`POST /login` is database-backed: the repository looks up the login and verifies the supplied password with BCrypt before the application handler creates a JWT response. `POST /register` checks for an existing login or email, hashes the password with BCrypt, and persists the user before returning a success flag. Registration does not issue a JWT or create a session. Input validation and stable HTTP mapping for duplicate-user failures are not implemented yet.
 
 The API currently uses the standard ASP.NET Core logging providers and the existing `Logging` configuration in `appsettings.json`. No Serilog, audit log, correlation ID, or dedicated logging table was introduced by this branch; add and document those separately if observability is required.
 
@@ -141,15 +141,17 @@ src/app/
   layout/       App shell, top bar, side navigation
 ```
 
-### Authentication Flow
+### Authentication and Registration Flow
 
-1. A user submits the reactive login form.
-2. `AuthService` calls `POST /login` and writes the successful response to `sessionStorage` as `net-worth-tracker.session`.
-3. `AuthService` validates both `expiresAt` and the JWT `exp` claim when restoring or using a session.
-4. `authGuard` protects the application shell and all child functionality routes; guests are sent to `/login` with a return URL.
-5. `guestGuard` sends an authenticated user away from `/login` to `/dashboard`.
-6. `authInterceptor` adds `Authorization: Bearer <access token>` only to requests beginning with `API_BASE_URL`.
-7. An API `401` clears the session and sends the user to login.
+1. A guest can open the lazy `/register` route from the login page and submit the reactive registration form.
+2. `AuthService` calls `POST /register` without changing session state. Success redirects to `/login?registered=true`; the login page displays a confirmation without prefilling credentials.
+3. A user submits the reactive login form.
+4. `AuthService` calls `POST /login` and writes the successful response to `sessionStorage` as `net-worth-tracker.session`.
+5. `AuthService` validates both `expiresAt` and the JWT `exp` claim when restoring or using a session.
+6. `authGuard` protects the application shell and all child functionality routes; guests are sent to `/login` with a return URL.
+7. `guestGuard` sends an authenticated user away from `/login` and `/register` to `/dashboard`.
+8. `authInterceptor` adds `Authorization: Bearer <access token>` only to requests beginning with `API_BASE_URL`.
+9. An API `401` clears the session and sends the user to login.
 
 Session storage is intentional for this scaffold: closing the browser session signs the user out. There are no refresh tokens or persistent login behavior yet.
 
@@ -186,7 +188,7 @@ The app shell follows the product draft: a full-width top bar above a fixed left
 
 This is an initial scaffold. The following are intentionally absent or incomplete:
 
-- Registration workflow and user creation validation. Login persistence, BCrypt password verification, and the initial `users` migration are present.
+- Registration input validation, email confirmation, and stable duplicate-user error responses. Registration persistence, BCrypt password hashing, and the initial `users` migration are present.
 - Structured application logging, audit logging, and correlation IDs.
 - Refresh tokens, password reset, authorization roles, and production secret management.
 - Managed production key distribution and rotation; deployment identities and production recipients still require operational configuration to decrypt and materialize secrets before startup.

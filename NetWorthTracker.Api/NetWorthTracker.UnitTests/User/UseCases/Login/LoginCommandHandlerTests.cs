@@ -2,10 +2,8 @@ using NetWorthTracker.Application.Authentication.Interfaces;
 using NetWorthTracker.Application.User.Models.Login;
 using NetWorthTracker.Application.User.UseCases.Login;
 using NetWorthTracker.Domain.User.Interfaces;
-using TUnit.Mocks.Arguments;
-using TUnit.Mocks.Verification;
 
-namespace NetWorthTracker.Tests.User.UseCases.Login;
+namespace NetWorthTracker.UnitTests.User.UseCases.Login;
 
 public class LoginCommandHandlerTests
 {
