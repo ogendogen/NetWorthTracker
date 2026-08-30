@@ -1,9 +1,11 @@
+using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NetWorthTracker.Application.User.Models.Login;
 using NetWorthTracker.Application.User.Models.Register;
 using NetWorthTracker.Application.User.UseCases.Login;
+using NetWorthTracker.Application.User.UseCases.Register;
 
 namespace NetWorthTracker.Api.Controllers;
 
@@ -29,9 +31,12 @@ public sealed class AuthController : ControllerBase
     }
 
     [HttpPost("/register")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult Register(RegisterRequest request)
+    [ProducesResponseType<RegisterResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<RegisterResponse>> Register(RegisterRequest request)
     {
-        return Ok();
+        var result = await _mediator.Send(new RegisterCommand(request.Username, request.Password, request.Email));
+
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Errors.FirstOrDefault());
     }
 }

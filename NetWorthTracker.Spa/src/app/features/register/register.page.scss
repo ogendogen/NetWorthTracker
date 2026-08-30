@@ -3,7 +3,7 @@
   min-height: 100dvh;
 }
 
-.login-page {
+.register-page {
   display: grid;
   min-height: 100dvh;
   place-items: center;
@@ -11,8 +11,8 @@
   background: #e8f1f0;
 }
 
-.login-card {
-  width: min(100%, 25rem);
+.register-card {
+  width: min(100%, 28rem);
 }
 
 form {
@@ -25,18 +25,10 @@ button {
   min-height: 2.75rem;
 }
 
-.login-error {
+.validation-error,
+.registration-error {
   margin: 0;
   color: #b42318;
-}
-
-.login-success {
-  margin: 1.5rem 0 0;
-  color: #176b45;
-}
-
-.login-success + form {
-  margin-top: 1rem;
 }
 
 .auth-link {

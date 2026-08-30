@@ -1,18 +1,20 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, Validators, NonNullableFormBuilder } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ActivatedRoute, Router } from '@angular/router';
-import { finalize } from 'rxjs';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { finalize, map } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 
 @Component({
   selector: 'app-login-page',
   imports: [
     ReactiveFormsModule,
+    RouterLink,
     MatButtonModule,
     MatCardModule,
     MatFormFieldModule,
@@ -35,6 +37,10 @@ export class LoginPageComponent {
   });
   readonly isSubmitting = signal(false);
   readonly loginFailed = signal(false);
+  readonly registrationSucceeded = toSignal(
+    this.route.queryParamMap.pipe(map((params) => params.get('registered') === 'true')),
+    { initialValue: false },
+  );
 
   submit(): void {
     if (this.form.invalid) {

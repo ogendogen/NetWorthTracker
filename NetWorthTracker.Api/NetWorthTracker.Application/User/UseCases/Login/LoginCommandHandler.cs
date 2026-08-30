@@ -19,6 +19,8 @@ public class LoginCommandHandler
 
     public async Task<LoginResponse?> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
+        //todo : validate command
+
         var result = await _userRepository.LoginAsync(request.Username, request.Password, cancellationToken);
 
         return result
