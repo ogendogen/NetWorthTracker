@@ -22,5 +22,20 @@
       <ProjectReference Include="..\NetWorthTracker.Infrastructure\NetWorthTracker.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Remove="appsettings.secrets.*.json" />
+        <Content Include="appsettings.secrets.*.json" Exclude="appsettings.secrets.*.enc.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+        </Content>
+    </ItemGroup>
+
+    <PropertyGroup>
+        <WarningsAsErrors>
+            CS8981; <!--> Type name 'foo' consists only of lowercase letters <-->
+            SA1300; <!-->  Element 'foo' should begin with an uppercase letter <-->
+            SA1649 <!--> File name should match first type name <-->
+        </WarningsAsErrors>
+    </PropertyGroup>
 
 </Project>

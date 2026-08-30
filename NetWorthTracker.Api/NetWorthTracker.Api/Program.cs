@@ -15,10 +15,17 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddJsonFile(
+    $"appsettings.secrets.{builder.Environment.EnvironmentName}.json",
+    optional: builder.Environment.IsEnvironment("Testing"),
+    reloadOnChange: false);
+builder.Configuration.AddEnvironmentVariables();
+builder.Configuration.AddCommandLine(args);
+
 if (builder.Environment.IsProduction()
-    && string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("Jwt__SigningKey")))
+    && string.IsNullOrWhiteSpace(builder.Configuration[$"{JwtSettings.SectionName}:SigningKey"]))
 {
-    throw new InvalidOperationException("The Jwt__SigningKey environment variable is required in production.");
+    throw new InvalidOperationException("The JWT signing key is required in production.");
 }
 
 builder.Services.AddControllers();

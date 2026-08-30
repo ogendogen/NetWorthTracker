@@ -1,0 +1,12 @@
+creation_rules:
+# Development
+  - path_regex: appsettings\.secrets\.Development\.json$
+    age: age1kcevkgwrqemfp9kv2en9h3hsmtex3fn4y9622yhp2jf8w8r4r43sj4lke0
+  - path_regex: '(^|.*[\\/])postgres\.env$'
+    age: age1kcevkgwrqemfp9kv2en9h3hsmtex3fn4y9622yhp2jf8w8r4r43sj4lke0
+
+# Production
+  - path_regex: appsettings\.secrets\.Production\.json$
+    age: age1h9fydqgsjtxghw2czl9cpqh0lsuqfhrjmzp3mg8cylqk0qluk4yqun8xdn
+  - path_regex: '(^|.*[\\/])postgres\.production\.env$'
+    age: age1h9fydqgsjtxghw2czl9cpqh0lsuqfhrjmzp3mg8cylqk0qluk4yqun8xdn

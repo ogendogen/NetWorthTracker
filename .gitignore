@@ -490,3 +490,14 @@ baseline.json
 
 # pnpm store
 .pnpm-store
+
+# SOPS plaintext secret files
+**/appsettings.secrets.*.json
+!**/appsettings.secrets.*.enc.json
+
+# Postgres Env plaintext
+devops/postgres.env
+
+# Exception for SOPS
+!devops/postgres.enc.env
+!devops/postgres.production.enc.env

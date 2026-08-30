@@ -13,6 +13,7 @@ public sealed class NetWorthTrackerDbContextFactory : IDesignTimeDbContextFactor
             .SetBasePath(configurationPath)
             .AddJsonFile("appsettings.json", optional: true)
             .AddJsonFile("appsettings.Development.json", optional: true)
+            .AddJsonFile("appsettings.secrets.Development.json", optional: true)
             .AddEnvironmentVariables()
             .Build();
 
