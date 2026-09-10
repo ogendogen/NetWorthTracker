@@ -17,6 +17,7 @@ public sealed class NetWorthTrackerApiFactory : WebApplicationFactory<Program>, 
     public const string JwtSigningKey = "integration-tests-only-signing-key-2026";
     public const string TestPassword = "integration-password";
     public const string TestUserName = "integration-user";
+    private const string TestUserEmail = "integration-user@example.com";
 
     private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder("postgres:18").Build();
 
@@ -33,7 +34,7 @@ public sealed class NetWorthTrackerApiFactory : WebApplicationFactory<Program>, 
             Guid.NewGuid(),
             TestUserName,
             BCrypt.Net.BCrypt.HashPassword(TestPassword),
-            "integration-user@example.com",
+            TestUserEmail,
             true,
             DateTimeOffset.UtcNow));
         await dbContext.SaveChangesAsync();

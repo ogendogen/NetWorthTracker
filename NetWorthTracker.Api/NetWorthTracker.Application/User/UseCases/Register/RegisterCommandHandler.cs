@@ -1,22 +1,28 @@
 using FluentResults;
+using FluentValidation;
 using MediatR;
+using NetWorthTracker.Application.Common.Handlers;
 using NetWorthTracker.Application.User.Models.Register;
 using NetWorthTracker.Domain.User.Interfaces;
 
 namespace NetWorthTracker.Application.User.UseCases.Register;
 
-public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<RegisterResponse>>
+public class RegisterCommandHandler : ValidatedHandler<RegisterCommand, RegisterResponse>
 {
     private readonly IUserRepository _userRepository;
 
-    public RegisterCommandHandler(IUserRepository userRepository)
+    public RegisterCommandHandler(
+        IUserRepository userRepository,
+        IEnumerable<IValidator<RegisterCommand>>? validators = null)
+        : base(validators)
     {
         _userRepository = userRepository;
     }
 
-    public async Task<Result<RegisterResponse>> Handle(RegisterCommand request, CancellationToken cancellationToken)
+    protected override async Task<Result<RegisterResponse>> Handler(
+        RegisterCommand request,
+        CancellationToken cancellationToken)
     {
-        //todo : validate command
         var existingUser = await _userRepository.GetByUsernameOrEmailAsync(
             request.Username,
             request.Email,

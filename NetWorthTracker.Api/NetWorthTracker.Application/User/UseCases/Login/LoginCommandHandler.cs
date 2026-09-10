@@ -1,31 +1,41 @@
-﻿using MediatR;
+﻿using FluentResults;
+using FluentValidation;
+using MediatR;
 using NetWorthTracker.Application.Authentication.Interfaces;
+using NetWorthTracker.Application.Common.Handlers;
 using NetWorthTracker.Application.User.Models.Login;
 using NetWorthTracker.Domain.User.Interfaces;
 
 namespace NetWorthTracker.Application.User.UseCases.Login;
 
-public class LoginCommandHandler
-    : IRequestHandler<LoginCommand, LoginResponse?>
+public class LoginCommandHandler : ValidatedHandler<LoginCommand, LoginResponse>
 {
     private readonly ITokenService _tokenService;
     private readonly IUserRepository _userRepository;
 
-    public LoginCommandHandler(IUserRepository userRepository, ITokenService tokenService)
+    public LoginCommandHandler(
+        IUserRepository userRepository,
+        ITokenService tokenService,
+        IEnumerable<IValidator<LoginCommand>>? validators = null)
+        : base(validators)
     {
         _userRepository = userRepository;
         _tokenService = tokenService;
     }
 
-    public async Task<LoginResponse?> Handle(LoginCommand request, CancellationToken cancellationToken)
+    protected override async Task<Result<LoginResponse>> Handler(
+        LoginCommand request,
+        CancellationToken cancellationToken)
     {
-        //todo : validate command
-
         var result = await _userRepository.LoginAsync(request.Username, request.Password, cancellationToken);
 
-        return result
-            ? _tokenService.CreateLoginResponse(request
-                .Username)
-            : null;
+        if (!result)
+        {
+            return Result.Fail("User with provided credentials does not exist.");
+        }
+
+        var token = _tokenService.CreateLoginResponse(request.Username);
+
+        return Result.Ok(new LoginResponse(token.AccessToken, token.ExpiresAt, token.UserName));
     }
 }
