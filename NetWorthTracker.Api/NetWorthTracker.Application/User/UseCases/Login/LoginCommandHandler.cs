@@ -1,6 +1,4 @@
 ﻿using FluentResults;
-using FluentValidation;
-using MediatR;
 using NetWorthTracker.Application.Authentication.Interfaces;
 using NetWorthTracker.Application.Common.Handlers;
 using NetWorthTracker.Application.User.Models.Login;
@@ -16,8 +14,8 @@ public class LoginCommandHandler : ValidatedHandler<LoginCommand, LoginResponse>
     public LoginCommandHandler(
         IUserRepository userRepository,
         ITokenService tokenService,
-        IEnumerable<IValidator<LoginCommand>>? validators = null)
-        : base(validators)
+        IServiceProvider? services = null)
+        : base(services)
     {
         _userRepository = userRepository;
         _tokenService = tokenService;

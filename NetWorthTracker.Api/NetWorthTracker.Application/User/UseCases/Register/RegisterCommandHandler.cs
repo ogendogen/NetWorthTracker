@@ -1,6 +1,4 @@
 using FluentResults;
-using FluentValidation;
-using MediatR;
 using NetWorthTracker.Application.Common.Handlers;
 using NetWorthTracker.Application.User.Models.Register;
 using NetWorthTracker.Domain.User.Interfaces;
@@ -13,8 +11,8 @@ public class RegisterCommandHandler : ValidatedHandler<RegisterCommand, Register
 
     public RegisterCommandHandler(
         IUserRepository userRepository,
-        IEnumerable<IValidator<RegisterCommand>>? validators = null)
-        : base(validators)
+        IServiceProvider? services = null)
+        : base(services)
     {
         _userRepository = userRepository;
     }
