@@ -1,4 +1,3 @@
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -11,7 +10,11 @@ using NetWorthTracker.Domain.User.Interfaces;
 using NetWorthTracker.Infrastructure;
 using NetWorthTracker.Infrastructure.Configurations;
 using NetWorthTracker.Infrastructure.Repositories;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Resources;
 using Scalar.AspNetCore;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -79,6 +82,28 @@ builder.Services.AddDbContext<NetWorthTrackerDbContext>(options =>
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(
         typeof(ApplicationAssemblyMarker).Assembly));
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddOpenTelemetry(x => x.AddOtlpExporter(y =>
+{
+    x.SetResourceBuilder(ResourceBuilder.CreateEmpty()
+        .AddService("NetWorthTracker.Api")
+        .AddTelemetrySdk()
+        .AddEnvironmentVariableDetector()
+        .AddAttributes(new Dictionary<string, object>
+        {
+            ["host.type"] = Environment.MachineName,
+            ["deployment.environment"] = builder.Environment.EnvironmentName,
+        }));
+
+    x.IncludeScopes = true;
+    x.IncludeFormattedMessage = true;
+
+    y.Endpoint = new Uri(builder.Configuration.GetValue<string>("Seq:ApiUrl")!);
+    y.Protocol = OtlpExportProtocol.HttpProtobuf;
+    y.Headers = $"X-Seq-ApiKey={builder.Configuration.GetValue<string>("Seq:ApiKey")}";
+}));
 
 var app = builder.Build();
 

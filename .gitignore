@@ -495,9 +495,10 @@ baseline.json
 **/appsettings.secrets.*.json
 !**/appsettings.secrets.*.enc.json
 
-# Postgres Env plaintext
-devops/postgres.env
+# Compose environment plaintext
+devops/variables.env
+devops/variables.production.env
 
-# Exception for SOPS
-!devops/postgres.enc.env
-!devops/postgres.production.enc.env
+# Exceptions for SOPS
+!devops/variables.enc.env
+!devops/variables.production.enc.env

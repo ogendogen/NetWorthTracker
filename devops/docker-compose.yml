@@ -18,5 +18,54 @@ services:
       timeout: 5s
       retries: 5
 
+  seq:
+    image: datalust/seq:latest
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      SEQ_FIRSTRUN_ADMINUSERNAME: ${SEQ_FIRSTRUN_ADMINUSERNAME}
+      SEQ_FIRSTRUN_ADMINPASSWORDHASH: ${SEQ_FIRSTRUN_ADMINPASSWORDHASH}
+    ports:
+      - "5341:5341"
+      - "8081:80"
+    volumes:
+      - seq-data:/data
+    healthcheck:
+      test:
+        - CMD
+        - bash
+        - -c
+        - >-
+          exec 3<>/dev/tcp/127.0.0.1/80 &&
+          printf 'GET /health HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 &&
+          grep -q '200 OK' <&3
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  seq-init:
+    image: datalust/seqcli:latest
+    profiles: ["setup"]
+    depends_on:
+      seq:
+        condition: service_healthy
+    environment:
+      SEQ_API_KEY: ${SEQ_API_KEY}
+      SEQ_ADMIN_USERNAME: ${SEQ_FIRSTRUN_ADMINUSERNAME}
+      SEQ_ADMIN_PASSWORD: ${SEQ_FIRSTRUN_ADMINPASSWORD}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        printf '%s' "$$SEQ_ADMIN_PASSWORD" |
+        /bin/seqcli/seqcli apikey create
+        --title "NetWorthTracker API"
+        --token "$$SEQ_API_KEY"
+        --permissions Ingest
+        --connect-username "$$SEQ_ADMIN_USERNAME"
+        --connect-password-stdin
+        --server http://seq
+
 volumes:
   postgres-data:
+  seq-data:
