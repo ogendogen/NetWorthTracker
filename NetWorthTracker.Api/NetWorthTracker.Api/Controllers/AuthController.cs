@@ -27,7 +27,7 @@ public sealed class AuthController : ControllerBase
     {
         var result = await _mediator.Send(new LoginCommand(request.Username, request.Password));
 
-        return result is null ? Unauthorized() : Ok(result);
+        return result.IsSuccess ? Ok(result.Value) : Unauthorized();
     }
 
     [HttpPost("/register")]
@@ -37,6 +37,6 @@ public sealed class AuthController : ControllerBase
     {
         var result = await _mediator.Send(new RegisterCommand(request.Username, request.Password, request.Email));
 
-        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Errors.FirstOrDefault());
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Errors);
     }
 }
