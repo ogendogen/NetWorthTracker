@@ -69,7 +69,7 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use `AuthService` for session lifecycle. It stores a validated access-token session in `sessionStorage` under `net-worth-tracker.session`; guards and the interceptor depend on this behavior.
 - The functional `authInterceptor` attaches bearer tokens only to requests for `API_BASE_URL` and redirects to login after an API `401`.
 - Login is database-backed through the initial PostgreSQL `users` table and BCrypt password verification. Registration persists BCrypt-hashed users but does not issue a session, validate input, map duplicate-user exceptions to stable HTTP errors, or confirm email. Do not present those gaps, the committed development signing key, or mock `/data` values as production-ready behavior.
-- The API uses built-in ASP.NET Core logging only. Do not claim that this branch introduced structured, audit, or database logging.
+- The API uses Microsoft.Extensions.Logging with console output and OpenTelemetry OTLP/HTTP log export to Seq, configured by `Seq:ApiUrl` and `Seq:ApiKey`. Configure resources, scope inclusion, and formatted messages in the outer `AddOpenTelemetry` callback; keep exporter settings inside `AddOtlpExporter`. Activity scopes include `TraceId`, `SpanId`, and `ParentId` for request-log correlation. Do not claim audit logging, database logging, or request-span export is implemented.
 - Refer to `.github/architecture.md` before changing backend layer boundaries, EF migrations, authentication, local development URLs, API routes, or the feature-shell structure.
 
 ## Workflow Rules

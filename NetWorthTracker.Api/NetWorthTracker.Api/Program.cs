@@ -90,7 +90,13 @@ builder.Services.AddValidatorsFromAssembly(typeof(ApplicationAssemblyMarker).Ass
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
-builder.Logging.AddOpenTelemetry(x => x.AddOtlpExporter(y =>
+builder.Services.Configure<LoggerFactoryOptions>(options =>
+{
+    options.ActivityTrackingOptions = ActivityTrackingOptions.TraceId
+                                     | ActivityTrackingOptions.SpanId
+                                     | ActivityTrackingOptions.ParentId;
+});
+builder.Logging.AddOpenTelemetry(x =>
 {
     x.SetResourceBuilder(ResourceBuilder.CreateEmpty()
         .AddService("NetWorthTracker.Api")
@@ -105,10 +111,13 @@ builder.Logging.AddOpenTelemetry(x => x.AddOtlpExporter(y =>
     x.IncludeScopes = true;
     x.IncludeFormattedMessage = true;
 
-    y.Endpoint = new Uri(builder.Configuration.GetValue<string>("Seq:ApiUrl")!);
-    y.Protocol = OtlpExportProtocol.HttpProtobuf;
-    y.Headers = $"X-Seq-ApiKey={builder.Configuration.GetValue<string>("Seq:ApiKey")}";
-}));
+    x.AddOtlpExporter(y =>
+    {
+        y.Endpoint = new Uri(builder.Configuration.GetValue<string>("Seq:ApiUrl")!);
+        y.Protocol = OtlpExportProtocol.HttpProtobuf;
+        y.Headers = $"X-Seq-ApiKey={builder.Configuration.GetValue<string>("Seq:ApiKey")}";
+    });
+});
 
 var app = builder.Build();
 
