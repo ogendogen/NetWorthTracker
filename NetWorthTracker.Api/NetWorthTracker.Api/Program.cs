@@ -110,28 +110,6 @@ builder.Logging.AddOpenTelemetry(x => x.AddOtlpExporter(y =>
     y.Headers = $"X-Seq-ApiKey={builder.Configuration.GetValue<string>("Seq:ApiKey")}";
 }));
 
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-builder.Logging.AddOpenTelemetry(x => x.AddOtlpExporter(y =>
-{
-    x.SetResourceBuilder(ResourceBuilder.CreateEmpty()
-        .AddService("NetWorthTracker.Api")
-        .AddTelemetrySdk()
-        .AddEnvironmentVariableDetector()
-        .AddAttributes(new Dictionary<string, object>
-        {
-            ["host.type"] = Environment.MachineName,
-            ["deployment.environment"] = builder.Environment.EnvironmentName,
-        }));
-
-    x.IncludeScopes = true;
-    x.IncludeFormattedMessage = true;
-
-    y.Endpoint = new Uri(builder.Configuration.GetValue<string>("Seq:ApiUrl")!);
-    y.Protocol = OtlpExportProtocol.HttpProtobuf;
-    y.Headers = $"X-Seq-ApiKey={builder.Configuration.GetValue<string>("Seq:ApiKey")}";
-}));
-
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

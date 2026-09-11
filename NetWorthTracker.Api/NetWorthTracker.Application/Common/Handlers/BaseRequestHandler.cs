@@ -32,13 +32,18 @@ public abstract class BaseRequestHandler<TRequest, TResponse>
 
     public async Task<Result<TResponse>> Handle(TRequest request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Handling request of type {RequestType}", typeof(TRequest).Name);
-        _logger.LogInformation("Request data: {@RequestData}", HideSensitiveData(request));
+        _logger.LogInformation("Handling request of type {RequestType}. Data: {@RequestData}", typeof(TRequest).Name, HideSensitiveData(request));
         var validators = _services?.GetServices<IValidator<TRequest>>() ?? Array.Empty<IValidator<TRequest>>();
 
-        await Task.WhenAll(
+        var validationResults = await Task.WhenAll(
             validators.Select(validator =>
-                validator.ValidateAndThrowAsync(request, cancellationToken)));
+                validator.ValidateAsync(request, cancellationToken)));
+
+        if (validationResults.Any(x => !x.IsValid))
+        {
+            _logger.LogWarning("Validation failed for request of type {RequestType}. Errors: {Errors}", typeof(TRequest).Name, validationResults.Where(x => !x.IsValid).SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
+            return Result.Fail<TResponse>("Validation failed").WithErrors(validationResults.Where(x => !x.IsValid).SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
+        }
 
         return await Handler(request, cancellationToken);
     }
