@@ -17,7 +17,7 @@ public class RegisterCommandHandler : ValidatedHandler<RegisterCommand, Register
         _userRepository = userRepository;
     }
 
-    protected override async Task<Result<RegisterResponse>> Handler(
+    protected override async ValueTask<Result<RegisterResponse>> Handler(
         RegisterCommand request,
         CancellationToken cancellationToken)
     {

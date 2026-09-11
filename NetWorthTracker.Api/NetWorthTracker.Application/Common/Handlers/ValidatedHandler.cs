@@ -1,6 +1,6 @@
 using FluentResults;
 using FluentValidation;
-using MediatR;
+using Mediator;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace NetWorthTracker.Application.Common.Handlers;
@@ -16,7 +16,7 @@ public abstract class ValidatedHandler<TRequest, TResponse>
         _services = services;
     }
 
-    public async Task<Result<TResponse>> Handle(TRequest request, CancellationToken cancellationToken)
+    public async ValueTask<Result<TResponse>> Handle(TRequest request, CancellationToken cancellationToken)
     {
         var validators = _services?.GetServices<IValidator<TRequest>>() ?? [];
 
@@ -27,7 +27,7 @@ public abstract class ValidatedHandler<TRequest, TResponse>
         return await Handler(request, cancellationToken);
     }
 
-    protected abstract Task<Result<TResponse>> Handler(
+    protected abstract ValueTask<Result<TResponse>> Handler(
         TRequest request,
         CancellationToken cancellationToken);
 }

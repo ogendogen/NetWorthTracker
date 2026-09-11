@@ -21,7 +21,7 @@ public class LoginCommandHandler : ValidatedHandler<LoginCommand, LoginResponse>
         _tokenService = tokenService;
     }
 
-    protected override async Task<Result<LoginResponse>> Handler(
+    protected override async ValueTask<Result<LoginResponse>> Handler(
         LoginCommand request,
         CancellationToken cancellationToken)
     {
