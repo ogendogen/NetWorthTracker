@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using NetWorthTracker.Api.Middleware;
 using NetWorthTracker.Application.AssemblyMarker;
 using NetWorthTracker.Application.Authentication;
 using NetWorthTracker.Application.Authentication.Interfaces;
@@ -120,6 +121,8 @@ builder.Logging.AddOpenTelemetry(x =>
 });
 
 var app = builder.Build();
+
+app.UseMiddleware<HttpRequestLoggingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
