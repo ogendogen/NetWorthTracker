@@ -8,6 +8,7 @@ using NetWorthTracker.Application.AssemblyMarker;
 using NetWorthTracker.Application.Authentication;
 using NetWorthTracker.Application.Authentication.Interfaces;
 using NetWorthTracker.Application.Authentication.Services;
+using NetWorthTracker.Application.Common.Handlers;
 using NetWorthTracker.Domain.User.Interfaces;
 using NetWorthTracker.Infrastructure;
 using NetWorthTracker.Infrastructure.Repositories;
@@ -80,8 +81,11 @@ builder.Services.AddDbContext<NetWorthTrackerDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddMediatR(cfg =>
+{
     cfg.RegisterServicesFromAssembly(
-        typeof(ApplicationAssemblyMarker).Assembly));
+        typeof(ApplicationAssemblyMarker).Assembly);
+    cfg.AddOpenBehavior(typeof(RequestLoggingBehavior<,>));
+});
 builder.Services.AddValidatorsFromAssembly(typeof(ApplicationAssemblyMarker).Assembly);
 
 builder.Logging.ClearProviders();
