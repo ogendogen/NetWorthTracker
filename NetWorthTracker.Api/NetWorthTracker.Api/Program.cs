@@ -82,10 +82,10 @@ builder.Services.AddDbContext<NetWorthTrackerDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddMediator(options =>
-{
-    options.ServiceLifetime = ServiceLifetime.Scoped;
-});
+builder.Services.AddMediator(options => options.ServiceLifetime = ServiceLifetime.Scoped);
+builder.Services.AddScoped(
+    typeof(IPipelineBehavior<,>),
+    typeof(RequestLoggingBehavior<,>));
 builder.Services.AddValidatorsFromAssembly(typeof(ApplicationAssemblyMarker).Assembly);
 
 builder.Logging.ClearProviders();
