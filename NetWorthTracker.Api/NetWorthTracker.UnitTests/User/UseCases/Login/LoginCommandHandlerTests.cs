@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using NetWorthTracker.Application.Authentication.Interfaces;
 using NetWorthTracker.Application.User.Models.Login;
 using NetWorthTracker.Application.User.UseCases.Login;
@@ -17,8 +18,12 @@ public class LoginCommandHandlerTests
         var cancellationToken = new CancellationTokenSource().Token;
         var userRepository = IUserRepository.Mock();
         var tokenService = ITokenService.Mock();
+        var logger = ILogger<LoginCommandHandler>.Mock();
         userRepository.LoginAsync(username, password, cancellationToken).Returns(false);
-        var handler = new LoginCommandHandler(userRepository.Object, tokenService.Object);
+        var handler = new LoginCommandHandler(
+            userRepository.Object,
+            tokenService.Object,
+            logger: logger.Object);
         var command = new LoginCommand(username, password);
 
         // Act

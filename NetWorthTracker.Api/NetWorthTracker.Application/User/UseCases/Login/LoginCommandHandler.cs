@@ -1,4 +1,5 @@
 ﻿using FluentResults;
+using Microsoft.Extensions.Logging;
 using NetWorthTracker.Application.Authentication.Interfaces;
 using NetWorthTracker.Application.Common.Handlers;
 using NetWorthTracker.Application.User.Models.Login;
@@ -6,7 +7,7 @@ using NetWorthTracker.Domain.User.Interfaces;
 
 namespace NetWorthTracker.Application.User.UseCases.Login;
 
-public class LoginCommandHandler : ValidatedHandler<LoginCommand, LoginResponse>
+public class LoginCommandHandler : BaseRequestHandler<LoginCommand, LoginResponse>
 {
     private readonly ITokenService _tokenService;
     private readonly IUserRepository _userRepository;
@@ -14,8 +15,9 @@ public class LoginCommandHandler : ValidatedHandler<LoginCommand, LoginResponse>
     public LoginCommandHandler(
         IUserRepository userRepository,
         ITokenService tokenService,
-        IServiceProvider? services = null)
-        : base(services)
+        IServiceProvider? services = null,
+        ILogger<LoginCommandHandler>? logger = null)
+        : base(services, logger!)
     {
         _userRepository = userRepository;
         _tokenService = tokenService;

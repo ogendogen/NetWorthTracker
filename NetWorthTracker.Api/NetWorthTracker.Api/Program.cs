@@ -5,14 +5,18 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using NetWorthTracker.Api.Middleware;
 using NetWorthTracker.Application.AssemblyMarker;
 using NetWorthTracker.Application.Authentication;
 using NetWorthTracker.Application.Authentication.Interfaces;
 using NetWorthTracker.Application.Authentication.Services;
+using NetWorthTracker.Application.Common.Handlers;
 using NetWorthTracker.Domain.User.Interfaces;
 using NetWorthTracker.Infrastructure;
-using NetWorthTracker.Infrastructure.Configurations;
 using NetWorthTracker.Infrastructure.Repositories;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Resources;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -84,7 +88,40 @@ builder.Services.AddMediator(options =>
 });
 builder.Services.AddValidatorsFromAssembly(typeof(ApplicationAssemblyMarker).Assembly);
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Services.Configure<LoggerFactoryOptions>(options =>
+{
+    options.ActivityTrackingOptions = ActivityTrackingOptions.TraceId
+                                     | ActivityTrackingOptions.SpanId
+                                     | ActivityTrackingOptions.ParentId;
+});
+builder.Logging.AddOpenTelemetry(x =>
+{
+    x.SetResourceBuilder(ResourceBuilder.CreateEmpty()
+        .AddService("NetWorthTracker.Api")
+        .AddTelemetrySdk()
+        .AddEnvironmentVariableDetector()
+        .AddAttributes(new Dictionary<string, object>
+        {
+            ["host.type"] = Environment.MachineName,
+            ["deployment.environment"] = builder.Environment.EnvironmentName,
+        }));
+
+    x.IncludeScopes = true;
+    x.IncludeFormattedMessage = true;
+
+    x.AddOtlpExporter(y =>
+    {
+        y.Endpoint = new Uri(builder.Configuration.GetValue<string>("Seq:ApiUrl")!);
+        y.Protocol = OtlpExportProtocol.HttpProtobuf;
+        y.Headers = $"X-Seq-ApiKey={builder.Configuration.GetValue<string>("Seq:ApiKey")}";
+    });
+});
+
 var app = builder.Build();
+
+app.UseMiddleware<HttpRequestLoggingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
