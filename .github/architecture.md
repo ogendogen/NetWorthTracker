@@ -116,19 +116,22 @@ The initial `users` table has a generated UUID primary key, required `Login` (ma
 
 `POST /login` is database-backed: the repository looks up the login and verifies the supplied password with BCrypt before the application handler creates a JWT response. `POST /register` checks for an existing login or email, hashes the password with BCrypt, and persists the user before returning a success flag. Registration does not issue a JWT or create a session. Input validation and stable HTTP mapping for duplicate-user failures are not implemented yet.
 
-The API currently uses the standard ASP.NET Core logging providers and the existing `Logging` configuration in `appsettings.json`. No Serilog, audit log, correlation ID, or dedicated logging table was introduced by this branch; add and document those separately if observability is required.
+The API uses Microsoft.Extensions.Logging with console output and OpenTelemetry OTLP/HTTP log export to Seq. Log levels use the existing `Logging` configuration in `appsettings.json`; the exporter uses `Seq:ApiUrl` and `Seq:ApiKey`. Resource settings, scope inclusion, and formatted-message inclusion are configured in the outer `AddOpenTelemetry` callback before exporter initialization. Only endpoint, protocol, and headers are configured inside `AddOtlpExporter`. `HttpRequestLoggingMiddleware` records the HTTP method, path, final status code, and elapsed milliseconds for each completed request. It logs unhandled exceptions with a `500` result before rethrowing them and does not include query strings or request/response bodies.
+
+Activity tracking includes `TraceId`, `SpanId`, and `ParentId` in logging scopes. With `IncludeScopes` enabled, new logs emitted within an active request carry these properties alongside native OTLP trace metadata. Seq exposes native trace metadata through its Trace menu and `@TraceId` expression (`@tr` in compact JSON); scope properties also appear in the event property list. Logs outside an active activity, such as startup logs, need not have trace IDs. Request-span export, audit logging, and a dedicated logging table are not configured.
 
 The backend solution centralizes `StyleCop.Analyzers` in `NetWorthTracker.Api/Directory.Build.props`, and the shared `NetWorthTracker.Api/.editorconfig` preserves the existing modern C# conventions: file-scoped namespaces, underscore-prefixed private fields, no mandatory file headers, no mandatory `this.` prefixes, and no required trailing commas. Keep StyleCop active for all other diagnostics.
 
 The middleware order is intentional:
 
-1. Development OpenAPI mapping.
-2. Development Scalar API reference mapping.
-3. HTTPS redirection outside Development.
-4. CORS.
-5. Authentication.
-6. Authorization.
-7. Controllers.
+1. HTTP request result logging.
+2. Development OpenAPI mapping.
+3. Development Scalar API reference mapping.
+4. HTTPS redirection outside Development.
+5. CORS.
+6. Authentication.
+7. Authorization.
+8. Controllers.
 
 ## SPA Structure
 
@@ -189,7 +192,7 @@ The app shell follows the product draft: a full-width top bar above a fixed left
 This is an initial scaffold. The following are intentionally absent or incomplete:
 
 - Registration input validation, email confirmation, and stable duplicate-user error responses. Registration persistence, BCrypt password hashing, and the initial `users` migration are present.
-- Structured application logging, audit logging, and correlation IDs.
+- Request-span export, audit logging, and a dedicated logging table; request-log trace correlation is configured through OpenTelemetry and activity scopes.
 - Refresh tokens, password reset, authorization roles, and production secret management.
 - Managed production key distribution and rotation; deployment identities and production recipients still require operational configuration to decrypt and materialize secrets before startup.
 - Financial CRUD, historical persistence, and real dashboard calculations.

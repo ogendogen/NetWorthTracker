@@ -57,7 +57,9 @@ public sealed class NetWorthTrackerApiFactory : WebApplicationFactory<Program>, 
                 ["Jwt:Audience"] = JwtAudience,
                 ["Jwt:Issuer"] = JwtIssuer,
                 ["Jwt:LifetimeMinutes"] = "15",
-                ["Jwt:SigningKey"] = JwtSigningKey
+                ["Jwt:SigningKey"] = JwtSigningKey,
+                ["Seq:ApiUrl"] = "http://localhost:5341",
+                ["Seq:ApiKey"] = "integration-tests-only-api-key"
             });
         });
     }

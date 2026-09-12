@@ -1,18 +1,20 @@
 using FluentResults;
+using Microsoft.Extensions.Logging;
 using NetWorthTracker.Application.Common.Handlers;
 using NetWorthTracker.Application.User.Models.Register;
 using NetWorthTracker.Domain.User.Interfaces;
 
 namespace NetWorthTracker.Application.User.UseCases.Register;
 
-public class RegisterCommandHandler : ValidatedHandler<RegisterCommand, RegisterResponse>
+public class RegisterCommandHandler : BaseRequestHandler<RegisterCommand, RegisterResponse>
 {
     private readonly IUserRepository _userRepository;
 
     public RegisterCommandHandler(
         IUserRepository userRepository,
-        IServiceProvider? services = null)
-        : base(services)
+        IServiceProvider? services = null,
+        ILogger<RegisterCommandHandler>? logger = null)
+        : base(services, logger!)
     {
         _userRepository = userRepository;
     }

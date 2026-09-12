@@ -1,0 +1,43 @@
+﻿using FluentResults;
+using MediatR;
+using Microsoft.Extensions.Logging;
+
+namespace NetWorthTracker.Application.Common.Handlers;
+
+public sealed class RequestLoggingBehavior<TRequest, TResponse>(
+    ILogger<RequestLoggingBehavior<TRequest, TResponse>> logger)
+    : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : notnull
+{
+    public async Task<TResponse> Handle(
+        TRequest request,
+        RequestHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
+    {
+        logger.LogInformation(
+            "Handling request {RequestType} with data {RequestData}",
+            typeof(TRequest).Name,
+            request);
+
+        var response = await next();
+
+        if (response is IResultBase result)
+        {
+            if (result.IsSuccess)
+            {
+                logger.LogInformation(
+                    "Request {RequestType} completed successfully",
+                    typeof(TRequest).Name);
+            }
+            else if (result.IsFailed)
+            {
+                logger.LogError(
+                    "Request {RequestType} failed with errors {Errors}",
+                    typeof(TRequest).Name,
+                    string.Join(", ", result.Errors.Select(e => e.Message)));
+            }
+        }
+
+        return response;
+    }
+}
