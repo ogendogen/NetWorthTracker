@@ -33,14 +33,9 @@ public class RequestLoggingBehaviorTests
         await Assert.That(response).IsEqualTo(expectedResponse);
         await Assert.That(forwardedMessage).IsEqualTo(message);
         await Assert.That(forwardedCancellationToken).IsEqualTo(cancellationToken);
-        await Assert.That(logger.Entries).Count().IsEqualTo(2);
+        await Assert.That(logger.Entries).Count().IsEqualTo(1);
 
-        var handlingEntry = logger.Entries[0];
-        await Assert.That(handlingEntry.LogLevel).IsEqualTo(LogLevel.Information);
-        await Assert.That(handlingEntry.Properties["RequestType"]).IsEqualTo(typeof(TestMessage<Result<string>>).Name);
-        await Assert.That(handlingEntry.Properties["RequestData"]).IsEqualTo(message);
-
-        var completionEntry = logger.Entries[1];
+        var completionEntry = logger.Entries[0];
         await Assert.That(completionEntry.LogLevel).IsEqualTo(LogLevel.Information);
         await Assert.That(completionEntry.Properties["RequestType"]).IsEqualTo(typeof(TestMessage<Result<string>>).Name);
     }
@@ -61,16 +56,16 @@ public class RequestLoggingBehaviorTests
 
         // Assert
         await Assert.That(response).IsEqualTo(expectedResponse);
-        await Assert.That(logger.Entries).Count().IsEqualTo(2);
+        await Assert.That(logger.Entries).Count().IsEqualTo(1);
 
-        var failureEntry = logger.Entries[1];
+        var failureEntry = logger.Entries[0];
         await Assert.That(failureEntry.LogLevel).IsEqualTo(LogLevel.Error);
         await Assert.That(failureEntry.Properties["RequestType"]).IsEqualTo(typeof(TestMessage<Result<string>>).Name);
         await Assert.That(failureEntry.Properties["Errors"]).IsEqualTo("First error, Second error");
     }
 
     [Test]
-    public async Task GivenNonResultResponse_WhenHandlingMessage_ThenOnlyLogsHandlingMessage()
+    public async Task GivenNonResultResponse_WhenHandlingMessage_ThenDoesNotLog()
     {
         // Arrange
         var message = new TestMessage<string>("request data");
@@ -85,10 +80,7 @@ public class RequestLoggingBehaviorTests
 
         // Assert
         await Assert.That(response).IsEqualTo(expectedResponse);
-        var entry = logger.Entries.Single();
-        await Assert.That(entry.LogLevel).IsEqualTo(LogLevel.Information);
-        await Assert.That(entry.Properties["RequestType"]).IsEqualTo(typeof(TestMessage<string>).Name);
-        await Assert.That(entry.Properties["RequestData"]).IsEqualTo(message);
+        await Assert.That(logger.Entries).IsEmpty();
     }
 
     private sealed record TestMessage<TResponse>(string Data) : IRequest<TResponse>;
