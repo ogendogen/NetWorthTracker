@@ -14,18 +14,28 @@ public sealed class RequestLoggingBehavior<TRequest, TResponse>(
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
+        logger.LogInformation(
+            "Handling request {RequestType} with data {RequestData}",
+            typeof(TRequest).Name,
+            request);
+
         var response = await next();
 
-        logger.LogInformation(
-            "Completed MediatR request {RequestType}",
-            typeof(TRequest).Name);
-
-        if (response is IResultBase result && result.IsFailed)
+        if (response is IResultBase result)
         {
-            logger.LogError(
-                "Request {RequestType} failed with errors {Errors}",
-                typeof(TRequest).Name,
-                string.Join(", ", result.Errors.Select(e => e.Message)));
+            if (result.IsSuccess)
+            {
+                logger.LogInformation(
+                    "Request {RequestType} completed successfully",
+                    typeof(TRequest).Name);
+            }
+            else if (result.IsFailed)
+            {
+                logger.LogError(
+                    "Request {RequestType} failed with errors {Errors}",
+                    typeof(TRequest).Name,
+                    string.Join(", ", result.Errors.Select(e => e.Message)));
+            }
         }
 
         return response;
