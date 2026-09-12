@@ -1,5 +1,6 @@
 using System.Text;
 using FluentValidation;
+using Mediator;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -81,12 +82,10 @@ builder.Services.AddDbContext<NetWorthTrackerDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddMediatR(cfg =>
-{
-    cfg.RegisterServicesFromAssembly(
-        typeof(ApplicationAssemblyMarker).Assembly);
-    cfg.AddOpenBehavior(typeof(RequestLoggingBehavior<,>));
-});
+builder.Services.AddMediator(options => options.ServiceLifetime = ServiceLifetime.Scoped);
+builder.Services.AddScoped(
+    typeof(IPipelineBehavior<,>),
+    typeof(RequestLoggingBehavior<,>));
 builder.Services.AddValidatorsFromAssembly(typeof(ApplicationAssemblyMarker).Assembly);
 
 builder.Logging.ClearProviders();

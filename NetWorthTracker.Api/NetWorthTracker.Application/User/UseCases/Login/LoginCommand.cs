@@ -1,5 +1,5 @@
 ﻿using FluentResults;
-using MediatR;
+using Mediator;
 using NetWorthTracker.Application.User.Models.Login;
 
 namespace NetWorthTracker.Application.User.UseCases.Login;

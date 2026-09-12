@@ -23,7 +23,7 @@ public class LoginCommandHandler : BaseRequestHandler<LoginCommand, LoginRespons
         _tokenService = tokenService;
     }
 
-    protected override async Task<Result<LoginResponse>> Handler(
+    protected override async ValueTask<Result<LoginResponse>> Handler(
         LoginCommand request,
         CancellationToken cancellationToken)
     {

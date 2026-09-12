@@ -19,7 +19,7 @@ public class RegisterCommandHandler : BaseRequestHandler<RegisterCommand, Regist
         _userRepository = userRepository;
     }
 
-    protected override async Task<Result<RegisterResponse>> Handler(
+    protected override async ValueTask<Result<RegisterResponse>> Handler(
         RegisterCommand request,
         CancellationToken cancellationToken)
     {

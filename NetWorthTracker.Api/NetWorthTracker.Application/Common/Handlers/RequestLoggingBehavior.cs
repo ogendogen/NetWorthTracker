@@ -1,25 +1,20 @@
 ﻿using FluentResults;
-using MediatR;
+using Mediator;
 using Microsoft.Extensions.Logging;
 
 namespace NetWorthTracker.Application.Common.Handlers;
 
-public sealed class RequestLoggingBehavior<TRequest, TResponse>(
-    ILogger<RequestLoggingBehavior<TRequest, TResponse>> logger)
-    : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : notnull
+public sealed class RequestLoggingBehavior<TMessage, TResponse>(
+    ILogger<RequestLoggingBehavior<TMessage, TResponse>> logger)
+    : IPipelineBehavior<TMessage, TResponse>
+    where TMessage : IMessage
 {
-    public async Task<TResponse> Handle(
-        TRequest request,
-        RequestHandlerDelegate<TResponse> next,
+    public async ValueTask<TResponse> Handle(
+        TMessage message,
+        MessageHandlerDelegate<TMessage, TResponse> next,
         CancellationToken cancellationToken)
     {
-        logger.LogInformation(
-            "Handling request {RequestType} with data {RequestData}",
-            typeof(TRequest).Name,
-            request);
-
-        var response = await next();
+        var response = await next(message, cancellationToken);
 
         if (response is IResultBase result)
         {
@@ -27,13 +22,13 @@ public sealed class RequestLoggingBehavior<TRequest, TResponse>(
             {
                 logger.LogInformation(
                     "Request {RequestType} completed successfully",
-                    typeof(TRequest).Name);
+                    typeof(TMessage).Name);
             }
             else if (result.IsFailed)
             {
                 logger.LogError(
                     "Request {RequestType} failed with errors {Errors}",
-                    typeof(TRequest).Name,
+                    typeof(TMessage).Name,
                     string.Join(", ", result.Errors.Select(e => e.Message)));
             }
         }

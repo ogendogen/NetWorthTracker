@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using FluentResults;
 using FluentValidation;
-using MediatR;
+using Mediator;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NetWorthTracker.Application.Common.Constants;
@@ -30,7 +30,7 @@ public abstract class BaseRequestHandler<TRequest, TResponse>
         _logger = logger;
     }
 
-    public async Task<Result<TResponse>> Handle(TRequest request, CancellationToken cancellationToken)
+    public async ValueTask<Result<TResponse>> Handle(TRequest request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Handling request of type {RequestType}. Data: {@RequestData}", typeof(TRequest).Name, HideSensitiveData(request));
         var validators = _services?.GetServices<IValidator<TRequest>>() ?? Array.Empty<IValidator<TRequest>>();
@@ -41,14 +41,15 @@ public abstract class BaseRequestHandler<TRequest, TResponse>
 
         if (validationResults.Any(x => !x.IsValid))
         {
-            _logger.LogWarning("Validation failed for request of type {RequestType}. Errors: {Errors}", typeof(TRequest).Name, validationResults.Where(x => !x.IsValid).SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
-            return Result.Fail<TResponse>("Validation failed").WithErrors(validationResults.Where(x => !x.IsValid).SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
+            var errors = validationResults.Where(x => !x.IsValid).SelectMany(x => x.Errors).Select(e => e.ErrorMessage);
+            _logger.LogWarning("Validation failed for request of type {RequestType}. Errors: {Errors}", typeof(TRequest).Name, string.Join(", ", errors));
+            return Result.Fail<TResponse>("Validation failed").WithErrors(errors);
         }
 
         return await Handler(request, cancellationToken);
     }
 
-    protected abstract Task<Result<TResponse>> Handler(
+    protected abstract ValueTask<Result<TResponse>> Handler(
         TRequest request,
         CancellationToken cancellationToken);
 
