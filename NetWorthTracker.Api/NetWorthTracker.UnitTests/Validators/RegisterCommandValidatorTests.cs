@@ -29,7 +29,7 @@ public class RegisterCommandValidatorTests : ValidatorTestsBase
         var command = new RegisterCommand(new string('u', 33), "Password1!", "testmail@test.com");
 
         await AssertValidationErrorsHaveMessagesAsync(new RegisterCommandValidator(), command,
-            "Provided login cannot be longer than 32 characters");
+            "Provided username cannot be longer than 32 characters");
     }
 
     [Test]
