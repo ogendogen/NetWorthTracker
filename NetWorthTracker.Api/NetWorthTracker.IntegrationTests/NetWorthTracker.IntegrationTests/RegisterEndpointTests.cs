@@ -18,7 +18,7 @@ public class RegisterEndpointTests
         // Act
         var response = await client.PostAsJsonAsync(
             "/register",
-            new RegisterRequest("user2137", "password7312",
+            new RegisterRequest("user2137", "Password7312!",
                 "newmail@email.com"));
 
         // Assert
