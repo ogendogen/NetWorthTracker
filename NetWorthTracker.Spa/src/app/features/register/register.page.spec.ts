@@ -39,8 +39,8 @@ describe('RegisterPageComponent', () => {
     component.form.setValue({
       username: 'new-user',
       email: 'new-user@example.test',
-      password: 'secret',
-      confirmPassword: 'different',
+      password: 'Secret1!',
+      confirmPassword: 'Different1!',
     });
 
     component.submit();
@@ -58,8 +58,8 @@ describe('RegisterPageComponent', () => {
     component.form.setValue({
       username: 'new-user',
       email: 'new-user@example.test',
-      password: 'secret',
-      confirmPassword: 'secret',
+      password: 'Secret1!',
+      confirmPassword: 'Secret1!',
     });
 
     component.submit();
@@ -67,7 +67,7 @@ describe('RegisterPageComponent', () => {
     expect(authService.register).toHaveBeenCalledWith({
       username: 'new-user',
       email: 'new-user@example.test',
-      password: 'secret',
+      password: 'Secret1!',
     });
     expect(navigate).toHaveBeenCalledWith(['/login'], { queryParams: { registered: true } });
   });
@@ -80,8 +80,8 @@ describe('RegisterPageComponent', () => {
     component.form.setValue({
       username: 'new-user',
       email: 'new-user@example.test',
-      password: 'secret',
-      confirmPassword: 'secret',
+      password: 'Secret1!',
+      confirmPassword: 'Secret1!',
     });
 
     component.submit();
@@ -102,8 +102,8 @@ describe('RegisterPageComponent', () => {
     component.form.setValue({
       username: 'new-user',
       email: 'new-user@example.test',
-      password: 'secret',
-      confirmPassword: 'secret',
+      password: 'Secret1!',
+      confirmPassword: 'Secret1!',
     });
 
     component.submit();
@@ -113,5 +113,30 @@ describe('RegisterPageComponent', () => {
       .nativeElement as HTMLParagraphElement;
     expect(error.getAttribute('role')).toBe('alert');
     expect(error.textContent).toContain('We could not create your account.');
+  });
+
+  it('enforces the configured username and password requirements', () => {
+    const fixture = TestBed.createComponent(RegisterPageComponent);
+    const component = fixture.componentInstance;
+
+    component.form.controls.username.setValue('ab');
+    expect(component.form.controls.username.hasError('minlength')).toBe(true);
+    expect(component.getValidationMessage('username')).toBe(
+      'validation.register.username.minLength',
+    );
+
+    component.form.controls.password.setValue('Aa1!aaa');
+    expect(component.form.controls.password.hasError('minlength')).toBe(true);
+
+    for (const password of ['lowercase1!', 'UPPERCASE1!', 'Letters!', 'Letters1']) {
+      component.form.controls.password.setValue(password);
+      expect(component.form.controls.password.hasError('pattern')).toBe(true);
+    }
+
+    component.form.controls.password.setValue(`Aa1!${'a'.repeat(60)}`);
+    expect(component.form.controls.password.valid).toBe(true);
+
+    component.form.controls.password.setValue(`Aa1!${'a'.repeat(61)}`);
+    expect(component.form.controls.password.hasError('maxlength')).toBe(true);
   });
 });

@@ -1,14 +1,16 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ReactiveFormsModule, Validators, NonNullableFormBuilder } from '@angular/forms';
+import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TranslatePipe } from '@ngx-translate/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize, map } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
+import { LoginFieldName, loginFields } from './login.fields.config';
 
 @Component({
   selector: 'app-login-page',
@@ -20,6 +22,7 @@ import { AuthService } from '../../core/auth/auth.service';
     MatFormFieldModule,
     MatInputModule,
     MatProgressSpinnerModule,
+    TranslatePipe,
   ],
   templateUrl: './login.page.html',
   styleUrl: './login.page.scss',
@@ -31,9 +34,10 @@ export class LoginPageComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
+  readonly loginFields = loginFields;
   readonly form = this.formBuilder.group({
-    username: ['', Validators.required],
-    password: ['', Validators.required],
+    username: ['', loginFields.username.validators],
+    password: ['', loginFields.password.validators],
   });
   readonly isSubmitting = signal(false);
   readonly loginFailed = signal(false);
@@ -41,6 +45,14 @@ export class LoginPageComponent {
     this.route.queryParamMap.pipe(map((params) => params.get('registered') === 'true')),
     { initialValue: false },
   );
+
+  getValidationMessage(field: LoginFieldName): string {
+    const control = this.form.controls[field];
+    return (
+      loginFields[field].validationMessages.find(({ error }) => control.hasError(error))
+        ?.translationKey ?? ''
+    );
+  }
 
   submit(): void {
     if (this.form.invalid) {
