@@ -41,18 +41,24 @@
       }
     }
   },
-  "validation": {
+    "validation": {
     "login": {
       "username": {
-        "required": "Enter your username."
+        "required": "Enter your username.",
+        "minLength": "Username must be at least 3 characters.",
+        "maxLength": "Username must be 32 characters or fewer."
       },
       "password": {
-        "required": "Enter your password."
+        "required": "Enter your password.",
+        "minLength": "Password must be at least 8 characters.",
+        "maxLength": "Password must be 64 characters or fewer.",
+        "complexity": "Password must include uppercase and lowercase letters, a number, and a special symbol."
       }
     },
     "register": {
       "username": {
         "required": "Enter a username.",
+        "minLength": "Username must be at least 3 characters.",
         "maxLength": "Username must be 32 characters or fewer."
       },
       "email": {
@@ -61,7 +67,10 @@
         "maxLength": "Email address must be 320 characters or fewer."
       },
       "password": {
-        "required": "Enter a password."
+        "required": "Enter a password.",
+        "minLength": "Password must be at least 8 characters.",
+        "maxLength": "Password must be 64 characters or fewer.",
+        "complexity": "Password must include uppercase and lowercase letters, a number, and a special symbol."
       },
       "confirmPassword": {
         "required": "Confirm your password."

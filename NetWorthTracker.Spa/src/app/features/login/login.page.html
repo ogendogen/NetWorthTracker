@@ -9,24 +9,30 @@
         <p class="login-success" role="status">{{ 'login.registrationSuccess' | translate }}</p>
       }
       <form [formGroup]="form" (ngSubmit)="submit()">
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>{{ loginFields.username.labelKey | translate }}</mat-label>
           <input
             matInput
             [type]="loginFields.username.type"
             formControlName="username"
             [autocomplete]="loginFields.username.autocomplete"
+            [minLength]="loginFields.username.minLength ?? 0"
+            [maxLength]="loginFields.username.maxLength ?? 0"
+            required
           />
           <mat-error>{{ getValidationMessage('username') | translate }}</mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>{{ loginFields.password.labelKey | translate }}</mat-label>
           <input
             matInput
             [type]="loginFields.password.type"
             formControlName="password"
             [autocomplete]="loginFields.password.autocomplete"
+            [minLength]="loginFields.password.minLength ?? 0"
+            [maxLength]="loginFields.password.maxLength ?? 0"
+            required
           />
           <mat-error>{{ getValidationMessage('password') | translate }}</mat-error>
         </mat-form-field>

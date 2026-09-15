@@ -39,6 +39,7 @@ export class RegisterPageComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
+  readonly registerFields = registerFields;
   readonly form = this.formBuilder.group(
     {
       username: ['', registerFields.username.validators],
