@@ -49,4 +49,20 @@ describe('LoginPageComponent', () => {
     expect(status.getAttribute('role')).toBe('status');
     expect(status.textContent).toContain('Account created. Sign in to continue.');
   });
+
+  it('marks empty fields as invalid after submitting', () => {
+    const fixture = TestBed.createComponent(LoginPageComponent);
+    fixture.detectChanges();
+
+    const component = fixture.componentInstance;
+    component.submit();
+    fixture.detectChanges();
+
+    const fields = fixture.debugElement.queryAll(By.css('mat-form-field'));
+    expect(component.form.controls.username.touched).toBe(true);
+    expect(component.form.controls.password.touched).toBe(true);
+    expect(
+      fields.every((field) => field.nativeElement.classList.contains('mat-mdc-form-field-invalid')),
+    ).toBe(true);
+  });
 });
