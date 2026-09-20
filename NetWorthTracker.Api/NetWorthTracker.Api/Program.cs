@@ -11,6 +11,9 @@ using NetWorthTracker.Application.Authentication;
 using NetWorthTracker.Application.Authentication.Interfaces;
 using NetWorthTracker.Application.Authentication.Services;
 using NetWorthTracker.Application.Common.Handlers;
+using NetWorthTracker.Application.Common.Models;
+using NetWorthTracker.Application.Common.Services;
+using NetWorthTracker.Domain.Common.Interfaces;
 using NetWorthTracker.Domain.User.Interfaces;
 using NetWorthTracker.Infrastructure;
 using NetWorthTracker.Infrastructure.Repositories;
@@ -47,6 +50,7 @@ builder.Services.AddOptions<JwtSettings>()
     .ValidateOnStart();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddSingleton<IEmailService, EmailService>();
 
 builder.Services.AddCors(options =>
 {
@@ -96,6 +100,7 @@ builder.Services.Configure<LoggerFactoryOptions>(options =>
                                      | ActivityTrackingOptions.SpanId
                                      | ActivityTrackingOptions.ParentId;
 });
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Email"));
 builder.Logging.AddOpenTelemetry(x =>
 {
     x.SetResourceBuilder(ResourceBuilder.CreateEmpty()
