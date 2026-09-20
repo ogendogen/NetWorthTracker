@@ -9,5 +9,5 @@ public interface ITokenService
 
     string GenerateEmailToken(string userEmail);
 
-    Result<string?> ValidateEmailToken(string token);
+    Result<string?> ValidateEmailToken(string token, out string email);
 }

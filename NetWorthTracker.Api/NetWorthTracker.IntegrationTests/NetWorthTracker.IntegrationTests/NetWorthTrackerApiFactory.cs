@@ -30,13 +30,15 @@ public sealed class NetWorthTrackerApiFactory : WebApplicationFactory<Program>, 
         var dbContext = scope.ServiceProvider.GetRequiredService<NetWorthTrackerDbContext>();
 
         await dbContext.Database.MigrateAsync();
-        dbContext.Users.Add(new User(
-            Guid.NewGuid(),
-            TestUserName,
-            BCrypt.Net.BCrypt.HashPassword(TestPassword),
-            TestUserEmail,
-            true,
-            DateTimeOffset.UtcNow));
+        dbContext.Users.Add(new User
+        {
+            UserId = Guid.NewGuid(),
+            Login = TestUserName,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(TestPassword),
+            Email = TestUserEmail,
+            IsEmailConfirmed = true,
+            CreatedAt = DateTimeOffset.UtcNow
+        });
         await dbContext.SaveChangesAsync();
     }
 

@@ -68,13 +68,15 @@ public class UserRepositoryTests
 
     private static UserModel CreateUser(string username, string password)
     {
-        return new UserModel(
-            Guid.NewGuid(),
-            username,
-            BCrypt.HashPassword(password, workFactor: 4),
-            $"{username}@example.com",
-            true,
-            DateTimeOffset.UtcNow);
+        return new UserModel
+        {
+            UserId = Guid.NewGuid(),
+            Login = username,
+            PasswordHash = BCrypt.HashPassword(password, workFactor: 4),
+            Email = $"{username}@example.com",
+            IsEmailConfirmed = true,
+            CreatedAt = DateTimeOffset.UtcNow
+        };
     }
 
     private sealed class TestDbContext : NetWorthTrackerDbContext

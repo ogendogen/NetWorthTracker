@@ -70,8 +70,9 @@ public sealed class TokenService : ITokenService
         return tokenHandler.WriteToken(token);
     }
 
-    public Result<string?> ValidateEmailToken(string token)
+    public Result<string?> ValidateEmailToken(string token, out string? email)
     {
+        email = null;
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_jwtSettings.SigningKey);
 
@@ -99,6 +100,7 @@ public sealed class TokenService : ITokenService
                 return Result.Fail("Invalid email token purpose");
             }
 
+            email = principal.FindFirst(ClaimTypes.Email)?.Value;
             return Result.Ok(principal.FindFirst(ClaimTypes.Email)?.Value);
         }
         catch (Exception)

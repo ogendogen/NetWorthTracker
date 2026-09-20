@@ -17,4 +17,8 @@ public interface IUserRepository
         string username,
         string email,
         CancellationToken cancellationToken = default);
+
+    Task<bool> ConfirmEmailByEmail(
+        string email,
+        CancellationToken cancellationToken = default);
 }

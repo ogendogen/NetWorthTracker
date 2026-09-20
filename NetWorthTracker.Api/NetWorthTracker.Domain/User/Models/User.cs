@@ -1,13 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NetWorthTracker.Domain.User.Models;
 
-public record User(
-    Guid UserId,
-    string Login,
-    string PasswordHash,
-    string Email,
-    bool IsEmailConfirmed,
-    DateTimeOffset CreatedAt);
+public class User
+{
+    public Guid UserId { get; set; }
+
+    public string Login { get; set; } = string.Empty;
+
+    public string PasswordHash { get; set; } = string.Empty;
+
+    public string Email { get; set; } = string.Empty;
+
+    public bool IsEmailConfirmed { get; set; }
+
+    public DateTimeOffset CreatedAt { get; set; }
+}

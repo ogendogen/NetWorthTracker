@@ -62,7 +62,15 @@ public class RegisterCommandHandlerTests
 
         var userRepoMock = IUserRepository.Mock();
         userRepoMock.GetByUsernameOrEmailAsync(username, email, cancellationToken)
-            .Returns(new Domain.User.Models.User(Guid.NewGuid(), username, password, email, true, DateTimeOffset.Now));
+            .Returns(new Domain.User.Models.User
+            {
+                UserId = Guid.NewGuid(),
+                Login = username,
+                PasswordHash = password,
+                Email = email,
+                IsEmailConfirmed = true,
+                CreatedAt = DateTimeOffset.Now
+            });
 
         var logger = ILogger<RegisterCommandHandler>.Mock();
         var emailService = IEmailService.Mock();
