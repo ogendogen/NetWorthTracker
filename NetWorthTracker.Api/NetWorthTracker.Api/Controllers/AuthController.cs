@@ -43,7 +43,7 @@ public sealed class AuthController : ControllerBase
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Errors);
     }
 
-    [HttpPost("/confirm-email")]
+    [HttpGet("/confirm-email")]
     [ProducesResponseType<ConfirmEmailResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ConfirmEmailResponse>> ConfirmEmail(ConfirmEmailRequest request)
