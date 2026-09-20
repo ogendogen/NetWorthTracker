@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NetWorthTracker.Application.Authentication;
@@ -28,7 +29,8 @@ public class TokenServiceTests
         };
         var options = IOptions<JwtSettings>.Mock();
         options.Value.Returns(jwtSettings);
-        var tokenService = new TokenService(options.Object);
+        var logger = ILogger<TokenService>.Mock();
+        var tokenService = new TokenService(options.Object, logger.Object);
         var earliestExpiry = DateTimeOffset.UtcNow.AddMinutes(lifetimeMinutes);
 
         // Act

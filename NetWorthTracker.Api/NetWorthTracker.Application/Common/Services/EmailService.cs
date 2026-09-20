@@ -19,10 +19,10 @@ public class EmailService : IEmailService
         _logger = logger;
     }
 
-    public void SendPostRegistrationEmail(string username, string toAddress)
+    public void SendPostRegistrationEmail(string username, string toAddress, string confirmationToken)
     {
         var subject = "Welcome to NetWorthTracker!";
-        var body = $"Hello {username},\n\nThank you for registering with NetWorthTracker. We're excited to have you on board!\n\nBest regards,\nThe NetWorthTracker Team";
+        var body = $"Hello {username},\n\nThank you for registering with NetWorthTracker. We're excited to have you on board!\n\nPlease confirm your email by using the following token: {confirmationToken}\n\nBest regards,\nThe NetWorthTracker Team";
         SendEmail(new MailboxAddress(username, toAddress), subject, body);
     }
 

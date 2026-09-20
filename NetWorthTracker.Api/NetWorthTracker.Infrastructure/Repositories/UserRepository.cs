@@ -32,7 +32,7 @@ public class UserRepository : IUserRepository
             Login: username,
             PasswordHash: encryptedPassword,
             Email: email,
-            IsEmailConfirmed: true, // todo: hardcoded for now, set it to false once we implement email confirmation
+            IsEmailConfirmed: false, // todo: hardcoded for now, set it to false once we implement email confirmation
             CreatedAt: DateTime.UtcNow
         );
 

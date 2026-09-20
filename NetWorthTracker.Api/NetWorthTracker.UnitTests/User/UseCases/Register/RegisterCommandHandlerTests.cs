@@ -1,6 +1,7 @@
 using FluentResults;
 using Microsoft.CodeCoverage.Core;
 using Microsoft.Extensions.Logging;
+using NetWorthTracker.Application.Authentication.Interfaces;
 using NetWorthTracker.Application.User.Models.Register;
 using NetWorthTracker.Application.User.UseCases.Register;
 using NetWorthTracker.Domain.Common.Interfaces;
@@ -28,8 +29,9 @@ public class RegisterCommandHandlerTests
 
         var logger = ILogger<RegisterCommandHandler>.Mock();
         var emailService = IEmailService.Mock();
+        var tokenService = ITokenService.Mock();
 
-        var registerCommandHandler = new RegisterCommandHandler(userRepoMock, emailService.Object, logger: logger.Object);
+        var registerCommandHandler = new RegisterCommandHandler(userRepoMock, emailService.Object, tokenService.Object, logger: logger.Object);
         var command = new RegisterCommand(username, password, email);
 
         // Act
@@ -64,8 +66,9 @@ public class RegisterCommandHandlerTests
 
         var logger = ILogger<RegisterCommandHandler>.Mock();
         var emailService = IEmailService.Mock();
+        var tokenService = ITokenService.Mock();
 
-        var registerCommandHandler = new RegisterCommandHandler(userRepoMock, emailService.Object, logger: logger.Object);
+        var registerCommandHandler = new RegisterCommandHandler(userRepoMock, emailService.Object, tokenService.Object, logger: logger.Object);
         var command = new RegisterCommand(username, password, email);
 
         // Act
@@ -103,8 +106,9 @@ public class RegisterCommandHandlerTests
 
         var logger = ILogger<RegisterCommandHandler>.Mock();
         var emailService = IEmailService.Mock();
+        var tokenService = ITokenService.Mock();
 
-        var registerCommandHandler = new RegisterCommandHandler(userRepoMock, emailService.Object, logger: logger.Object);
+        var registerCommandHandler = new RegisterCommandHandler(userRepoMock, emailService.Object, tokenService.Object, logger: logger.Object);
         var command = new RegisterCommand(username, password, email);
 
         // Act

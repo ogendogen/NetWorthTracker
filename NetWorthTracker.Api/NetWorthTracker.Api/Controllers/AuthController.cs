@@ -2,8 +2,11 @@ using FluentResults;
 using Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NetWorthTracker.Application.Authentication.Interfaces;
+using NetWorthTracker.Application.User.Models.ConfirmEmail;
 using NetWorthTracker.Application.User.Models.Login;
 using NetWorthTracker.Application.User.Models.Register;
+using NetWorthTracker.Application.User.UseCases.ConfirmEmail;
 using NetWorthTracker.Application.User.UseCases.Login;
 using NetWorthTracker.Application.User.UseCases.Register;
 
@@ -36,6 +39,16 @@ public sealed class AuthController : ControllerBase
     public async Task<ActionResult<RegisterResponse>> Register(RegisterRequest request)
     {
         var result = await _mediator.Send(new RegisterCommand(request.Username, request.Password, request.Email));
+
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Errors);
+    }
+
+    [HttpPost("/confirm-email")]
+    [ProducesResponseType<ConfirmEmailResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ConfirmEmailResponse>> ConfirmEmail(ConfirmEmailRequest request)
+    {
+        var result = await _mediator.Send(new ConfirmEmailCommand(request.Token));
 
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Errors);
     }

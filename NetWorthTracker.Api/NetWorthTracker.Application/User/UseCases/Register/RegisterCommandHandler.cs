@@ -1,5 +1,6 @@
 using FluentResults;
 using Microsoft.Extensions.Logging;
+using NetWorthTracker.Application.Authentication.Interfaces;
 using NetWorthTracker.Application.Common.Handlers;
 using NetWorthTracker.Application.User.Models.Register;
 using NetWorthTracker.Domain.Common.Interfaces;
@@ -10,16 +11,19 @@ namespace NetWorthTracker.Application.User.UseCases.Register;
 public class RegisterCommandHandler : BaseRequestHandler<RegisterCommand, RegisterResponse>
 {
     private readonly IUserRepository _userRepository;
+    private readonly ITokenService _tokenService;
     private readonly IEmailService _emailService;
 
     public RegisterCommandHandler(
         IUserRepository userRepository,
         IEmailService emailService,
+        ITokenService tokenService,
         IServiceProvider? services = null,
         ILogger<RegisterCommandHandler>? logger = null)
         : base(services, logger!)
     {
         _userRepository = userRepository;
+        _tokenService = tokenService;
         _emailService = emailService;
     }
 
@@ -42,7 +46,8 @@ public class RegisterCommandHandler : BaseRequestHandler<RegisterCommand, Regist
 
         if (success)
         {
-            _emailService.SendPostRegistrationEmail(request.Username, request.Email);
+            var confirmationToken = _tokenService.GenerateEmailToken(request.Email);
+            _emailService.SendPostRegistrationEmail(request.Username, request.Email, confirmationToken);
         }
 
         //todo : log failures
