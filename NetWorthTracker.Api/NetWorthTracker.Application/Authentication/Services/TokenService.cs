@@ -81,6 +81,8 @@ public sealed class TokenService : ITokenService
             IssuerSigningKey = new SymmetricSecurityKey(key),
             ValidateIssuer = true,
             ValidateAudience = true,
+            ValidAudience = _jwtSettings.Audience,
+            ValidIssuer = _jwtSettings.Issuer,
             RequireExpirationTime = true,
             ValidateLifetime = true,
             ClockSkew = TimeSpan.FromSeconds(1)
