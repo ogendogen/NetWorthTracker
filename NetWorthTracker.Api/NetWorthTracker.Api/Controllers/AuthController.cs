@@ -17,10 +17,12 @@ namespace NetWorthTracker.Api.Controllers;
 public sealed class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly IConfiguration _configuration;
 
-    public AuthController(IMediator mediator)
+    public AuthController(IMediator mediator, IConfiguration configuration)
     {
         _mediator = mediator;
+        _configuration = configuration;
     }
 
     [HttpPost("/login")]
@@ -44,12 +46,12 @@ public sealed class AuthController : ControllerBase
     }
 
     [HttpGet("/confirm-email")]
-    [ProducesResponseType<ConfirmEmailResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ConfirmEmailResponse>(StatusCodes.Status302Found)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ConfirmEmailResponse>> ConfirmEmail(ConfirmEmailRequest request)
+    public async Task<ActionResult<ConfirmEmailResponse>> ConfirmEmail([FromQuery] string token)
     {
-        var result = await _mediator.Send(new ConfirmEmailCommand(request.Token));
+        var result = await _mediator.Send(new ConfirmEmailCommand(token));
 
-        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Errors);
+        return result.IsSuccess && result.Value.IsEmailConfirmed ? Redirect($"{_configuration["FrontendUrl"]}/email-confirmed") : Redirect($"{_configuration["FrontendUrl"]}/email-confirmation-failed");
     }
 }

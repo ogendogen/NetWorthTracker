@@ -147,14 +147,16 @@ src/app/
 ### Authentication and Registration Flow
 
 1. A guest can open the lazy `/register` route from the login page and submit the reactive registration form.
-2. `AuthService` calls `POST /register` without changing session state. Success redirects to `/login?registered=true`; the login page displays a confirmation without prefilling credentials.
-3. A user submits the reactive login form.
-4. `AuthService` calls `POST /login` and writes the successful response to `sessionStorage` as `net-worth-tracker.session`.
-5. `AuthService` validates both `expiresAt` and the JWT `exp` claim when restoring or using a session.
-6. `authGuard` protects the application shell and all child functionality routes; guests are sent to `/login` with a return URL.
-7. `guestGuard` sends an authenticated user away from `/login` and `/register` to `/dashboard`.
-8. `authInterceptor` adds `Authorization: Bearer <access token>` only to requests beginning with `API_BASE_URL`.
-9. An API `401` clears the session and sends the user to login.
+2. `AuthService` calls `POST /register` without changing session state. The API persists the user and emails a confirmation link to `GET /confirm-email?token=...`. Registration success redirects to `/login?registered=true`; the login page displays a confirmation without prefilling credentials.
+3. The confirmation endpoint validates the email token, marks the email as confirmed, and redirects the browser to the public SPA route `/email-confirmed`.
+4. The email-confirmed page reports success, offers an immediate sign-in link, and redirects to `/login` after a ten-second countdown.
+5. A user submits the reactive login form.
+6. `AuthService` calls `POST /login` and writes the successful response to `sessionStorage` as `net-worth-tracker.session`.
+7. `AuthService` validates both `expiresAt` and the JWT `exp` claim when restoring or using a session.
+8. `authGuard` protects the application shell and all child functionality routes; guests are sent to `/login` with a return URL.
+9. `guestGuard` sends an authenticated user away from `/login` and `/register` to `/dashboard`.
+10. `authInterceptor` adds `Authorization: Bearer <access token>` only to requests beginning with `API_BASE_URL`.
+11. An API `401` clears the session and sends the user to login.
 
 Session storage is intentional for this scaffold: closing the browser session signs the user out. There are no refresh tokens or persistent login behavior yet.
 
@@ -191,7 +193,7 @@ The app shell follows the product draft: a full-width top bar above a fixed left
 
 This is an initial scaffold. The following are intentionally absent or incomplete:
 
-- Registration input validation, email confirmation, and stable duplicate-user error responses. Registration persistence, BCrypt password hashing, and the initial `users` migration are present.
+- Server-side registration input validation and stable duplicate-user error responses. Registration persistence, BCrypt password hashing, email confirmation, and the initial `users` migration are present.
 - Request-span export, audit logging, and a dedicated logging table; request-log trace correlation is configured through OpenTelemetry and activity scopes.
 - Refresh tokens, password reset, authorization roles, and production secret management.
 - Managed production key distribution and rotation; deployment identities and production recipients still require operational configuration to decrypt and materialize secrets before startup.

@@ -1,0 +1,40 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+.email-confirmed-page {
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+  padding: 1.5rem;
+  background: #e8f1f0;
+}
+
+.email-confirmed-card {
+  width: min(100%, 25rem);
+  text-align: center;
+}
+
+mat-card-header {
+  justify-content: center;
+}
+
+mat-card-content {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+}
+
+.confirmation-message {
+  margin: 1.5rem 0 0;
+  color: #176b45;
+}
+
+.redirect-message {
+  margin: 0;
+}
+
+a {
+  min-height: 2.75rem;
+}

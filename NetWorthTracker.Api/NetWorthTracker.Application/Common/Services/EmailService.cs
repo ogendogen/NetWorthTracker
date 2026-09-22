@@ -1,5 +1,6 @@
 ﻿using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
@@ -12,17 +13,19 @@ public class EmailService : IEmailService
 {
     private readonly EmailSettings _emailSettings;
     private readonly ILogger<EmailService> _logger;
+    private readonly IConfiguration _configuration;
 
-    public EmailService(IOptions<EmailSettings> emailSettings, ILogger<EmailService> logger)
+    public EmailService(IOptions<EmailSettings> emailSettings, ILogger<EmailService> logger, IConfiguration configuration)
     {
         _emailSettings = emailSettings.Value;
         _logger = logger;
+        _configuration = configuration;
     }
 
     public void SendPostRegistrationEmail(string username, string toAddress, string confirmationToken)
     {
         var subject = "Welcome to NetWorthTracker!";
-        var body = $"Hello {username},\n\nThank you for registering with NetWorthTracker. We're excited to have you on board!\n\nPlease confirm your email by using the following token: {confirmationToken}\n\nBest regards,\nThe NetWorthTracker Team";
+        var body = $"Hello {username},\n\nThank you for registering with NetWorthTracker. We're excited to have you on board!\n\nPlease confirm your email by clicking the following link: {_configuration["ApiUrl"]}/confirm-email?token={confirmationToken}\n\nBest regards,\nThe NetWorthTracker Team";
         SendEmail(new MailboxAddress(username, toAddress), subject, body);
     }
 

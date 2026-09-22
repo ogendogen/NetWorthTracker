@@ -41,7 +41,13 @@
       }
     }
   },
-    "validation": {
+  "emailConfirmation": {
+    "title": "Email confirmed",
+    "success": "Your email address has been confirmed successfully.",
+    "redirect": "Automatic sign-in redirect in {{ seconds }}s.",
+    "signIn": "Sign in now"
+  },
+  "validation": {
     "login": {
       "username": {
         "required": "Enter your username.",
