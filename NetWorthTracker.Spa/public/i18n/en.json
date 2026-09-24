@@ -47,6 +47,11 @@
     "redirect": "Automatic sign-in redirect in {{ seconds }}s.",
     "signIn": "Sign in now"
   },
+  "emailConfirmationFailed": {
+    "title": "Email confirmation failed",
+    "message": "We couldn't confirm your email address. The confirmation link may be invalid or expired.",
+    "signIn": "Sign in"
+  },
   "validation": {
     "login": {
       "username": {

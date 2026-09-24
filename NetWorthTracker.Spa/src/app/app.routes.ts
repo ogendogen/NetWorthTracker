@@ -23,6 +23,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'email-confirmation-failed',
+    loadComponent: () =>
+      import('./features/email-confirmation-failed/email-confirmation-failed.page').then(
+        (module) => module.EmailConfirmationFailedPageComponent,
+      ),
+  },
+  {
     path: '',
     canActivate: [authGuard],
     canActivateChild: [authGuard],

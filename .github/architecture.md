@@ -148,8 +148,8 @@ src/app/
 
 1. A guest can open the lazy `/register` route from the login page and submit the reactive registration form.
 2. `AuthService` calls `POST /register` without changing session state. The API persists the user and emails a confirmation link to `GET /confirm-email?token=...`. Registration success redirects to `/login?registered=true`; the login page displays a confirmation without prefilling credentials.
-3. The confirmation endpoint validates the email token, marks the email as confirmed, and redirects the browser to the public SPA route `/email-confirmed`.
-4. The email-confirmed page reports success, offers an immediate sign-in link, and redirects to `/login` after a ten-second countdown.
+3. The confirmation endpoint validates the email token and marks the email as confirmed. Success redirects the browser to the public SPA route `/email-confirmed`; failure redirects to `/email-confirmation-failed`.
+4. The email-confirmed page reports success, offers an immediate sign-in link, and redirects to `/login` after a ten-second countdown. The email-confirmation-failed page explains that the link may be invalid or expired and offers a sign-in link without an automatic redirect.
 5. A user submits the reactive login form.
 6. `AuthService` calls `POST /login` and writes the successful response to `sessionStorage` as `net-worth-tracker.session`.
 7. `AuthService` validates both `expiresAt` and the JWT `exp` claim when restoring or using a session.
