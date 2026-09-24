@@ -4,7 +4,6 @@
   },
   "login": {
     "subtitle": "Sign in to view your financial overview",
-    "registrationSuccess": "Account created. Sign in to continue.",
     "invalidCredentials": "The username or password is incorrect.",
     "signIn": "Sign in",
     "signingIn": "Signing in",
@@ -40,6 +39,13 @@
         "label": "Confirm password"
       }
     }
+  },
+  "registrationSuccess": {
+    "title": "Check your email",
+    "emailSent": "A confirmation email has been sent to your email address.",
+    "instruction": "Click the link in the email to confirm your address.",
+    "expiry": "The confirmation link is valid for 24 hours.",
+    "signIn": "Go to sign in"
   },
   "emailConfirmation": {
     "title": "Email confirmed",

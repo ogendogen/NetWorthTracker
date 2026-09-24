@@ -16,6 +16,13 @@ export const routes: Routes = [
       import('./features/register/register.page').then((module) => module.RegisterPageComponent),
   },
   {
+    path: 'registration-success',
+    loadComponent: () =>
+      import('./features/registration-success/registration-success.page').then(
+        (module) => module.RegistrationSuccessPageComponent,
+      ),
+  },
+  {
     path: 'email-confirmed',
     loadComponent: () =>
       import('./features/email-confirmed/email-confirmed.page').then(

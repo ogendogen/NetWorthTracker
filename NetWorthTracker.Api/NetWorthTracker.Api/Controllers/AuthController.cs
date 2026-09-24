@@ -36,7 +36,7 @@ public sealed class AuthController : ControllerBase
     }
 
     [HttpPost("/register")]
-    [ProducesResponseType<RegisterResponse>(StatusCodes.Status302Found)]
+    [ProducesResponseType<RegisterResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<RegisterResponse>> Register(RegisterRequest request)
     {

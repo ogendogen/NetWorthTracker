@@ -1,0 +1,16 @@
+<main class="registration-success-page">
+  <mat-card class="registration-success-card">
+    <mat-card-header>
+      <mat-card-title>{{ 'common.productName' | translate }}</mat-card-title>
+      <mat-card-subtitle>{{ 'registrationSuccess.title' | translate }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p class="registration-success-message" role="status">
+        {{ 'registrationSuccess.emailSent' | translate }}
+      </p>
+      <p>{{ 'registrationSuccess.instruction' | translate }}</p>
+      <p>{{ 'registrationSuccess.expiry' | translate }}</p>
+      <a mat-flat-button routerLink="/login">{{ 'registrationSuccess.signIn' | translate }}</a>
+    </mat-card-content>
+  </mat-card>
+</main>

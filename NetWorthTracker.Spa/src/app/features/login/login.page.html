@@ -5,9 +5,6 @@
       <mat-card-subtitle>{{ 'login.subtitle' | translate }}</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-      @if (registrationSucceeded()) {
-        <p class="login-success" role="status">{{ 'login.registrationSuccess' | translate }}</p>
-      }
       <form [formGroup]="form" (ngSubmit)="submit()">
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>{{ loginFields.username.labelKey | translate }}</mat-label>

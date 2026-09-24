@@ -93,11 +93,11 @@ Testcontainers assigns a random host port and removes the database container aft
 
 All API routes are root-level routes, with no `/api` prefix.
 
-| Endpoint         | Auth       | Current behavior                                                                                                                |
-| ---------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `POST /login`    | Anonymous  | Verifies a persisted user's BCrypt password. Returns `accessToken`, `expiresAt`, and `userName`; otherwise returns `401`.       |
-| `POST /register` | Anonymous  | Accepts `username`, `password`, and `email`, persists a BCrypt-hashed user, and returns `success`. It does not issue a session. |
-| `GET /data`      | Bearer JWT | Returns mock net-worth summary data. Requests without a valid token return `401`.                                               |
+| Endpoint         | Auth       | Current behavior                                                                                                                              |
+| ---------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /login`    | Anonymous  | Verifies a persisted user's BCrypt password. Returns `accessToken`, `expiresAt`, and `userName`; otherwise returns `401`.                     |
+| `POST /register` | Anonymous  | Accepts `username`, `password`, and `email`, persists a BCrypt-hashed user, and returns HTTP 200 with `success`. It does not issue a session. |
+| `GET /data`      | Bearer JWT | Returns mock net-worth summary data. Requests without a valid token return `401`.                                                             |
 
 JWT configuration lives under the `Jwt` section. The signing key is loaded from the active environment's local plaintext secrets file and can be overridden through the `Jwt__SigningKey` environment variable. The API fails at startup when the resolved production signing key is empty. Use a stable production secret so API restarts do not invalidate existing tokens.
 
@@ -147,7 +147,7 @@ src/app/
 ### Authentication and Registration Flow
 
 1. A guest can open the lazy `/register` route from the login page and submit the reactive registration form.
-2. `AuthService` calls `POST /register` without changing session state. The API persists the user and emails a confirmation link to `GET /confirm-email?token=...`. Registration success redirects to `/login?registered=true`; the login page displays a confirmation without prefilling credentials.
+2. `AuthService` calls `POST /register` without changing session state. The API returns a JSON success response after persisting the user and emailing a confirmation link to `GET /confirm-email?token=...`. The SPA navigates to the public `/registration-success` page, which asks the user to click the link and states that it is valid for 24 hours.
 3. The confirmation endpoint validates the email token and marks the email as confirmed. Success redirects the browser to the public SPA route `/email-confirmed`; failure redirects to `/email-confirmation-failed`.
 4. The email-confirmed page reports success, offers an immediate sign-in link, and redirects to `/login` after a ten-second countdown. The email-confirmation-failed page explains that the link may be invalid or expired and offers a sign-in link without an automatic redirect.
 5. A user submits the reactive login form.

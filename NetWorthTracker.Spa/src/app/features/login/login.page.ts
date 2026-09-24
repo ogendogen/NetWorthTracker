@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -8,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { finalize, map } from 'rxjs';
+import { finalize } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { LoginFieldName, loginFields } from './login.fields.config';
 
@@ -41,10 +40,6 @@ export class LoginPageComponent {
   });
   readonly isSubmitting = signal(false);
   readonly loginFailed = signal(false);
-  readonly registrationSucceeded = toSignal(
-    this.route.queryParamMap.pipe(map((params) => params.get('registered') === 'true')),
-    { initialValue: false },
-  );
 
   getValidationMessage(field: LoginFieldName): string {
     const control = this.form.controls[field];

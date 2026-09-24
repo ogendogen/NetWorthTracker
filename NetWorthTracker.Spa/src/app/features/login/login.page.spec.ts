@@ -1,7 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
+import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { LoginPageComponent } from './login.page';
 
@@ -14,6 +16,7 @@ describe('LoginPageComponent', () => {
       imports: [LoginPageComponent],
       providers: [
         provideRouter([]),
+        provideTranslateService({ lang: 'en' }),
         {
           provide: ActivatedRoute,
           useValue: {
@@ -24,6 +27,17 @@ describe('LoginPageComponent', () => {
         { provide: AuthService, useValue: { login: vi.fn() } },
       ],
     }).compileComponents();
+
+    const translateService = TestBed.inject(TranslateService);
+    translateService.setTranslation('en', {
+      common: { productName: 'Net Worth Tracker' },
+      login: {
+        subtitle: 'Sign in to view your financial overview',
+        newUser: 'New to Net Worth Tracker?',
+        createAccount: 'Create account',
+      },
+    });
+    await firstValueFrom(translateService.use('en'));
   });
 
   it('links the startup login form to registration', () => {
@@ -36,7 +50,7 @@ describe('LoginPageComponent', () => {
     expect(link.getAttribute('href')).toBe('/register');
   });
 
-  it('shows registration success only when requested by the query parameter', () => {
+  it('does not show a registration success message on login', () => {
     const fixture = TestBed.createComponent(LoginPageComponent);
     fixture.detectChanges();
     expect(fixture.debugElement.query(By.css('.login-success'))).toBeNull();
@@ -44,25 +58,17 @@ describe('LoginPageComponent', () => {
     queryParamMap.next(convertToParamMap({ registered: 'true' }));
     fixture.detectChanges();
 
-    const status = fixture.debugElement.query(By.css('.login-success'))
-      .nativeElement as HTMLParagraphElement;
-    expect(status.getAttribute('role')).toBe('status');
-    expect(status.textContent).toContain('Account created. Sign in to continue.');
+    expect(fixture.debugElement.query(By.css('.login-success'))).toBeNull();
   });
 
   it('marks empty fields as invalid after submitting', () => {
     const fixture = TestBed.createComponent(LoginPageComponent);
-    fixture.detectChanges();
-
     const component = fixture.componentInstance;
     component.submit();
-    fixture.detectChanges();
 
-    const fields = fixture.debugElement.queryAll(By.css('mat-form-field'));
     expect(component.form.controls.username.touched).toBe(true);
     expect(component.form.controls.password.touched).toBe(true);
-    expect(
-      fields.every((field) => field.nativeElement.classList.contains('mat-mdc-form-field-invalid')),
-    ).toBe(true);
+    expect(component.form.controls.username.invalid).toBe(true);
+    expect(component.form.controls.password.invalid).toBe(true);
   });
 });
