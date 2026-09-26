@@ -1,0 +1,36 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+.email-confirmation-failed-page {
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+  padding: 1.5rem;
+  background: #e8f1f0;
+}
+
+.email-confirmation-failed-card {
+  width: min(100%, 25rem);
+  text-align: center;
+}
+
+mat-card-header {
+  justify-content: center;
+}
+
+mat-card-content {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+}
+
+.confirmation-failed-message {
+  margin: 1.5rem 0 0;
+  color: #9b2c2c;
+}
+
+a {
+  min-height: 2.75rem;
+}

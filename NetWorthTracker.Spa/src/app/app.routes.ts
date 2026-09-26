@@ -16,6 +16,27 @@ export const routes: Routes = [
       import('./features/register/register.page').then((module) => module.RegisterPageComponent),
   },
   {
+    path: 'registration-success',
+    loadComponent: () =>
+      import('./features/registration-success/registration-success.page').then(
+        (module) => module.RegistrationSuccessPageComponent,
+      ),
+  },
+  {
+    path: 'email-confirmed',
+    loadComponent: () =>
+      import('./features/email-confirmed/email-confirmed.page').then(
+        (module) => module.EmailConfirmedPageComponent,
+      ),
+  },
+  {
+    path: 'email-confirmation-failed',
+    loadComponent: () =>
+      import('./features/email-confirmation-failed/email-confirmation-failed.page').then(
+        (module) => module.EmailConfirmationFailedPageComponent,
+      ),
+  },
+  {
     path: '',
     canActivate: [authGuard],
     canActivateChild: [authGuard],

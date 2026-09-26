@@ -23,5 +23,7 @@ public class RegisterEndpointTests
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        var result = await response.Content.ReadFromJsonAsync<RegisterResponse>();
+        await Assert.That(result?.Success).IsTrue();
     }
 }

@@ -1,7 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { provideRouter, Router } from '@angular/router';
+import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 import { Observable, of, Subject, throwError } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { RegisterRequest, RegisterResponse } from '../../core/auth/auth.models';
 import { RegisterPageComponent } from './register.page';
@@ -15,8 +17,21 @@ describe('RegisterPageComponent', () => {
     authService.register.mockReset();
     await TestBed.configureTestingModule({
       imports: [RegisterPageComponent],
-      providers: [provideRouter([]), { provide: AuthService, useValue: authService }],
+      providers: [
+        provideRouter([]),
+        provideTranslateService({ lang: 'en' }),
+        { provide: AuthService, useValue: authService },
+      ],
     }).compileComponents();
+
+    const translateService = TestBed.inject(TranslateService);
+    translateService.setTranslation('en', {
+      common: { productName: 'Net Worth Tracker' },
+      register: {
+        registrationFailed: 'We could not create your account. Check your details and try again.',
+      },
+    });
+    await firstValueFrom(translateService.use('en'));
   });
 
   it('requires every field and does not submit an invalid form', () => {
@@ -49,12 +64,12 @@ describe('RegisterPageComponent', () => {
     expect(authService.register).not.toHaveBeenCalled();
   });
 
-  it('submits only API fields and redirects to login on success', () => {
+  it('submits only API fields and navigates to the registration success page', () => {
     authService.register.mockReturnValue(of({ success: true }));
     const fixture = TestBed.createComponent(RegisterPageComponent);
     const component = fixture.componentInstance;
     const router = TestBed.inject(Router);
-    const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+    const navigateByUrl = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
     component.form.setValue({
       username: 'new-user',
       email: 'new-user@example.test',
@@ -69,7 +84,7 @@ describe('RegisterPageComponent', () => {
       email: 'new-user@example.test',
       password: 'Secret1!',
     });
-    expect(navigate).toHaveBeenCalledWith(['/login'], { queryParams: { registered: true } });
+    expect(navigateByUrl).toHaveBeenCalledWith('/registration-success');
   });
 
   it('keeps the submit action disabled while registration is pending', () => {

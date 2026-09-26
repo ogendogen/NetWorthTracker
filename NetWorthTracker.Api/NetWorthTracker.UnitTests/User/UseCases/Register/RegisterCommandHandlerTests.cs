@@ -1,8 +1,10 @@
 using FluentResults;
 using Microsoft.CodeCoverage.Core;
 using Microsoft.Extensions.Logging;
+using NetWorthTracker.Application.Authentication.Interfaces;
 using NetWorthTracker.Application.User.Models.Register;
 using NetWorthTracker.Application.User.UseCases.Register;
+using NetWorthTracker.Domain.Common.Interfaces;
 using NetWorthTracker.Domain.User.Interfaces;
 
 namespace NetWorthTracker.UnitTests.User.UseCases.Register;
@@ -26,8 +28,10 @@ public class RegisterCommandHandlerTests
             cancellationToken).Returns(true);
 
         var logger = ILogger<RegisterCommandHandler>.Mock();
+        var emailService = IEmailService.Mock();
+        var tokenService = ITokenService.Mock();
 
-        var registerCommandHandler = new RegisterCommandHandler(userRepoMock, logger: logger.Object);
+        var registerCommandHandler = new RegisterCommandHandler(userRepoMock, emailService.Object, tokenService.Object, logger: logger.Object);
         var command = new RegisterCommand(username, password, email);
 
         // Act
@@ -58,11 +62,21 @@ public class RegisterCommandHandlerTests
 
         var userRepoMock = IUserRepository.Mock();
         userRepoMock.GetByUsernameOrEmailAsync(username, email, cancellationToken)
-            .Returns(new Domain.User.Models.User(Guid.NewGuid(), username, password, email, true, DateTimeOffset.Now));
+            .Returns(new Domain.User.Models.User
+            {
+                UserId = Guid.NewGuid(),
+                Login = username,
+                PasswordHash = password,
+                Email = email,
+                IsEmailConfirmed = true,
+                CreatedAt = DateTimeOffset.Now
+            });
 
         var logger = ILogger<RegisterCommandHandler>.Mock();
+        var emailService = IEmailService.Mock();
+        var tokenService = ITokenService.Mock();
 
-        var registerCommandHandler = new RegisterCommandHandler(userRepoMock, logger: logger.Object);
+        var registerCommandHandler = new RegisterCommandHandler(userRepoMock, emailService.Object, tokenService.Object, logger: logger.Object);
         var command = new RegisterCommand(username, password, email);
 
         // Act
@@ -99,8 +113,10 @@ public class RegisterCommandHandlerTests
             cancellationToken).Returns(false);
 
         var logger = ILogger<RegisterCommandHandler>.Mock();
+        var emailService = IEmailService.Mock();
+        var tokenService = ITokenService.Mock();
 
-        var registerCommandHandler = new RegisterCommandHandler(userRepoMock, logger: logger.Object);
+        var registerCommandHandler = new RegisterCommandHandler(userRepoMock, emailService.Object, tokenService.Object, logger: logger.Object);
         var command = new RegisterCommand(username, password, email);
 
         // Act

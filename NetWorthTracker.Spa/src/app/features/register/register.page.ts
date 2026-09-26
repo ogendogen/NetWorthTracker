@@ -1,8 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import {
-  NonNullableFormBuilder,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -84,7 +81,7 @@ export class RegisterPageComponent {
       .subscribe({
         next: (response) => {
           if (response.success) {
-            void this.router.navigate(['/login'], { queryParams: { registered: true } });
+            void this.router.navigateByUrl('/registration-success');
           } else {
             this.registrationFailed.set(true);
           }

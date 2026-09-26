@@ -4,7 +4,6 @@
   },
   "login": {
     "subtitle": "Sign in to view your financial overview",
-    "registrationSuccess": "Account created. Sign in to continue.",
     "invalidCredentials": "The username or password is incorrect.",
     "signIn": "Sign in",
     "signingIn": "Signing in",
@@ -41,7 +40,25 @@
       }
     }
   },
-    "validation": {
+  "registrationSuccess": {
+    "title": "Check your email",
+    "emailSent": "A confirmation email has been sent to your email address.",
+    "instruction": "Click the link in the email to confirm your address.",
+    "expiry": "The confirmation link is valid for 24 hours.",
+    "signIn": "Go to sign in"
+  },
+  "emailConfirmation": {
+    "title": "Email confirmed",
+    "success": "Your email address has been confirmed successfully.",
+    "redirect": "Automatic sign-in redirect in {{ seconds }}s.",
+    "signIn": "Sign in now"
+  },
+  "emailConfirmationFailed": {
+    "title": "Email confirmation failed",
+    "message": "We couldn't confirm your email address. The confirmation link may be invalid or expired.",
+    "signIn": "Sign in"
+  },
+  "validation": {
     "login": {
       "username": {
         "required": "Enter your username.",

@@ -93,11 +93,11 @@ Testcontainers assigns a random host port and removes the database container aft
 
 All API routes are root-level routes, with no `/api` prefix.
 
-| Endpoint         | Auth       | Current behavior                                                                                                                |
-| ---------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `POST /login`    | Anonymous  | Verifies a persisted user's BCrypt password. Returns `accessToken`, `expiresAt`, and `userName`; otherwise returns `401`.       |
-| `POST /register` | Anonymous  | Accepts `username`, `password`, and `email`, persists a BCrypt-hashed user, and returns `success`. It does not issue a session. |
-| `GET /data`      | Bearer JWT | Returns mock net-worth summary data. Requests without a valid token return `401`.                                               |
+| Endpoint         | Auth       | Current behavior                                                                                                                              |
+| ---------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /login`    | Anonymous  | Verifies a persisted user's BCrypt password. Returns `accessToken`, `expiresAt`, and `userName`; otherwise returns `401`.                     |
+| `POST /register` | Anonymous  | Accepts `username`, `password`, and `email`, persists a BCrypt-hashed user, and returns HTTP 200 with `success`. It does not issue a session. |
+| `GET /data`      | Bearer JWT | Returns mock net-worth summary data. Requests without a valid token return `401`.                                                             |
 
 JWT configuration lives under the `Jwt` section. The signing key is loaded from the active environment's local plaintext secrets file and can be overridden through the `Jwt__SigningKey` environment variable. The API fails at startup when the resolved production signing key is empty. Use a stable production secret so API restarts do not invalidate existing tokens.
 
@@ -147,14 +147,16 @@ src/app/
 ### Authentication and Registration Flow
 
 1. A guest can open the lazy `/register` route from the login page and submit the reactive registration form.
-2. `AuthService` calls `POST /register` without changing session state. Success redirects to `/login?registered=true`; the login page displays a confirmation without prefilling credentials.
-3. A user submits the reactive login form.
-4. `AuthService` calls `POST /login` and writes the successful response to `sessionStorage` as `net-worth-tracker.session`.
-5. `AuthService` validates both `expiresAt` and the JWT `exp` claim when restoring or using a session.
-6. `authGuard` protects the application shell and all child functionality routes; guests are sent to `/login` with a return URL.
-7. `guestGuard` sends an authenticated user away from `/login` and `/register` to `/dashboard`.
-8. `authInterceptor` adds `Authorization: Bearer <access token>` only to requests beginning with `API_BASE_URL`.
-9. An API `401` clears the session and sends the user to login.
+2. `AuthService` calls `POST /register` without changing session state. The API returns a JSON success response after persisting the user and emailing a confirmation link to `GET /confirm-email?token=...`. The SPA navigates to the public `/registration-success` page, which asks the user to click the link and states that it is valid for 24 hours.
+3. The confirmation endpoint validates the email token and marks the email as confirmed. Success redirects the browser to the public SPA route `/email-confirmed`; failure redirects to `/email-confirmation-failed`.
+4. The email-confirmed page reports success, offers an immediate sign-in link, and redirects to `/login` after a ten-second countdown. The email-confirmation-failed page explains that the link may be invalid or expired and offers a sign-in link without an automatic redirect.
+5. A user submits the reactive login form.
+6. `AuthService` calls `POST /login` and writes the successful response to `sessionStorage` as `net-worth-tracker.session`.
+7. `AuthService` validates both `expiresAt` and the JWT `exp` claim when restoring or using a session.
+8. `authGuard` protects the application shell and all child functionality routes; guests are sent to `/login` with a return URL.
+9. `guestGuard` sends an authenticated user away from `/login` and `/register` to `/dashboard`.
+10. `authInterceptor` adds `Authorization: Bearer <access token>` only to requests beginning with `API_BASE_URL`.
+11. An API `401` clears the session and sends the user to login.
 
 Session storage is intentional for this scaffold: closing the browser session signs the user out. There are no refresh tokens or persistent login behavior yet.
 
@@ -191,7 +193,7 @@ The app shell follows the product draft: a full-width top bar above a fixed left
 
 This is an initial scaffold. The following are intentionally absent or incomplete:
 
-- Registration input validation, email confirmation, and stable duplicate-user error responses. Registration persistence, BCrypt password hashing, and the initial `users` migration are present.
+- Server-side registration input validation and stable duplicate-user error responses. Registration persistence, BCrypt password hashing, email confirmation, and the initial `users` migration are present.
 - Request-span export, audit logging, and a dedicated logging table; request-log trace correlation is configured through OpenTelemetry and activity scopes.
 - Refresh tokens, password reset, authorization roles, and production secret management.
 - Managed production key distribution and rotation; deployment identities and production recipients still require operational configuration to decrypt and materialize secrets before startup.

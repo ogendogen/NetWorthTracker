@@ -27,14 +27,15 @@ public class UserRepository : IUserRepository
     {
         var encryptedPassword = BCrypt.HashPassword(password);
 
-        var newUser = new User(
-            UserId: Guid.NewGuid(),
-            Login: username,
-            PasswordHash: encryptedPassword,
-            Email: email,
-            IsEmailConfirmed: true, // todo: hardcoded for now, set it to false once we implement email confirmation
-            CreatedAt: DateTime.UtcNow
-        );
+        var newUser = new User
+        {
+            UserId = Guid.NewGuid(),
+            Login = username,
+            PasswordHash = encryptedPassword,
+            Email = email,
+            IsEmailConfirmed = false,
+            CreatedAt = DateTime.UtcNow
+        };
 
         await _context.Users.AddAsync(newUser, cancellationToken);
         var result = await _context.SaveChangesAsync(cancellationToken);
@@ -47,4 +48,17 @@ public class UserRepository : IUserRepository
     public async Task<User?> GetByUsernameOrEmailAsync(string username, string email,
         CancellationToken cancellationToken = default) =>
         await _context.Users.SingleOrDefaultAsync(u => u.Login == username || u.Email == email, cancellationToken);
+
+    public async Task<bool> ConfirmEmailByEmail(string email, CancellationToken cancellationToken = default)
+    {
+        var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == email, cancellationToken);
+        if (user is null)
+        {
+            return false;
+        }
+
+        user.IsEmailConfirmed = true;
+        var result = await _context.SaveChangesAsync(cancellationToken);
+        return result > 0;
+    }
 }
