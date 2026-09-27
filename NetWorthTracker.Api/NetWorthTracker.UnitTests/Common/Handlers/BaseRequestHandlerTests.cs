@@ -10,22 +10,23 @@ namespace NetWorthTracker.UnitTests.Common.Handlers;
 public class BaseRequestHandlerTests
 {
     [Test]
-    public async Task GivenNoValidators_WhenHandlingRequest_ThenReturnsValidationFailureWithoutInvokingHandler()
+    public async Task GivenNoValidators_WhenHandlingRequest_ThenInvokesHandlerAndReturnsItsResult()
     {
         // Arrange
         var request = CreateRequest();
         var cancellationToken = new CancellationTokenSource().Token;
+        var expectedResult = Result.Ok("response data");
         var logger = new TestLogger<BaseRequestHandler<TestRequest, string>>();
-        var handler = new TestRequestHandler(null, logger, Result.Ok("response data"));
+        var handler = new TestRequestHandler(null, logger, expectedResult);
 
         // Act
         var result = await handler.Handle(request, cancellationToken);
 
         // Assert
-        await Assert.That(result.IsFailed).IsTrue();
-        await Assert.That(result.Errors.Single().Message).IsEqualTo("Validation failed");
-        await Assert.That(handler.CallCount).IsEqualTo(0);
-        await Assert.That(handler.HandledRequest).IsNull();
+        await Assert.That(result).IsEqualTo(expectedResult);
+        await Assert.That(handler.CallCount).IsEqualTo(1);
+        await Assert.That(handler.HandledRequest).IsEqualTo(request);
+        await Assert.That(handler.CancellationToken).IsEqualTo(cancellationToken);
     }
 
     [Test]
@@ -35,7 +36,7 @@ public class BaseRequestHandlerTests
         var request = CreateRequest();
         var cancellationToken = new CancellationTokenSource().Token;
         var validator = new TrackingValidator();
-        using var services = new ServiceCollection()
+        await using var services = new ServiceCollection()
             .AddSingleton<IValidator<TestRequest>>(validator)
             .BuildServiceProvider();
         var logger = new TestLogger<BaseRequestHandler<TestRequest, string>>();
@@ -62,7 +63,7 @@ public class BaseRequestHandlerTests
         firstValidator.RuleFor(candidate => candidate.Data).NotEmpty().WithMessage(firstError);
         var secondValidator = new InlineValidator<TestRequest>();
         secondValidator.RuleFor(candidate => candidate.Data).NotEmpty().WithMessage(secondError);
-        using var services = new ServiceCollection()
+        await using var services = new ServiceCollection()
             .AddSingleton<IValidator<TestRequest>>(firstValidator)
             .AddSingleton<IValidator<TestRequest>>(secondValidator)
             .BuildServiceProvider();
@@ -104,7 +105,8 @@ public class BaseRequestHandlerTests
         await Assert.That(requestData["Password"]!.GetValue<string>()).IsEqualTo("***");
         await Assert.That(requestData["Details"]!["Password"]!.GetValue<string>()).IsEqualTo("***");
         await Assert.That(requestData["Items"]![0]!["Password"]!.GetValue<string>()).IsEqualTo("***");
-        await Assert.That(requestData["Details"]!["VisibleValue"]!.GetValue<string>()).IsEqualTo(request.Details.VisibleValue);
+        await Assert.That(requestData["Details"]!["VisibleValue"]!.GetValue<string>())
+            .IsEqualTo(request.Details.VisibleValue);
     }
 
     private static TestRequest CreateRequest(string data = "request data") =>

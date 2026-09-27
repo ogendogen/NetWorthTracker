@@ -21,10 +21,9 @@ public sealed class ExceptionHandlingMiddleware(
 
             logger.LogError(
                 exception,
-                "An unhandled exception occurred while processing {RequestMethod} {RequestPath}. Responding with {StatusCode}.",
+                "An unhandled exception occurred while processing {RequestMethod} {RequestPath}.",
                 context.Request.Method,
-                context.Request.Path,
-                response.StatusCode);
+                context.Request.Path);
 
             context.Response.Clear();
             context.Response.StatusCode = response.StatusCode;
