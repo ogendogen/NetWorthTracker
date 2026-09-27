@@ -41,7 +41,7 @@ public abstract class BaseRequestHandler<TRequest, TResponse>
             validators.Select(validator =>
                 validator.ValidateAsync(request, cancellationToken)));
 
-        if (validationResults.Length > 0 && validationResults.All(x => x.IsValid))
+        if (validationResults.Length == 0 || validationResults.All(x => x.IsValid))
         {
             return await Handler(request, cancellationToken);
         }
