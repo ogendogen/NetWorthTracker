@@ -1,5 +1,7 @@
 using FluentResults;
+using FluentValidation;
 using Microsoft.CodeCoverage.Core;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NetWorthTracker.Application.Authentication.Interfaces;
 using NetWorthTracker.Application.User.Models.Register;
@@ -16,7 +18,7 @@ public class RegisterCommandHandlerTests
     {
         // Arrange
         const string username = "username";
-        const string password = "password";
+        const string password = "Password1!";
         const string email = "testmail@test.com";
         var expectedResponse = new RegisterResponse(Success: true);
         var cancellationToken = new CancellationTokenSource().Token;
@@ -30,8 +32,14 @@ public class RegisterCommandHandlerTests
         var logger = ILogger<RegisterCommandHandler>.Mock();
         var emailService = IEmailService.Mock();
         var tokenService = ITokenService.Mock();
+        using var services = CreateServices();
 
-        var registerCommandHandler = new RegisterCommandHandler(userRepoMock, emailService.Object, tokenService.Object, logger: logger.Object);
+        var registerCommandHandler = new RegisterCommandHandler(
+            userRepoMock,
+            emailService.Object,
+            tokenService.Object,
+            services,
+            logger.Object);
         var command = new RegisterCommand(username, password, email);
 
         // Act
@@ -55,7 +63,7 @@ public class RegisterCommandHandlerTests
     {
         // Arrange
         const string username = "username";
-        const string password = "password";
+        const string password = "Password1!";
         const string email = "testmail@test.com";
         const string expectedErrorMessage = "User with provided credentials already exists.";
         var cancellationToken = new CancellationTokenSource().Token;
@@ -75,8 +83,14 @@ public class RegisterCommandHandlerTests
         var logger = ILogger<RegisterCommandHandler>.Mock();
         var emailService = IEmailService.Mock();
         var tokenService = ITokenService.Mock();
+        using var services = CreateServices();
 
-        var registerCommandHandler = new RegisterCommandHandler(userRepoMock, emailService.Object, tokenService.Object, logger: logger.Object);
+        var registerCommandHandler = new RegisterCommandHandler(
+            userRepoMock,
+            emailService.Object,
+            tokenService.Object,
+            services,
+            logger.Object);
         var command = new RegisterCommand(username, password, email);
 
         // Act
@@ -100,7 +114,7 @@ public class RegisterCommandHandlerTests
     {
         // Arrange
         const string username = "username";
-        const string password = "password";
+        const string password = "Password1!";
         const string email = "testmail@test.com";
         const string expectedErrorMessage = "User registration failed.";
 
@@ -115,8 +129,14 @@ public class RegisterCommandHandlerTests
         var logger = ILogger<RegisterCommandHandler>.Mock();
         var emailService = IEmailService.Mock();
         var tokenService = ITokenService.Mock();
+        using var services = CreateServices();
 
-        var registerCommandHandler = new RegisterCommandHandler(userRepoMock, emailService.Object, tokenService.Object, logger: logger.Object);
+        var registerCommandHandler = new RegisterCommandHandler(
+            userRepoMock,
+            emailService.Object,
+            tokenService.Object,
+            services,
+            logger.Object);
         var command = new RegisterCommand(username, password, email);
 
         // Act
@@ -134,4 +154,9 @@ public class RegisterCommandHandlerTests
         userRepoMock.RegisterAsync(username, password, email,
             cancellationToken).WasCalled(Times.Once);
     }
+
+    private static ServiceProvider CreateServices() =>
+        new ServiceCollection()
+            .AddSingleton<IValidator<RegisterCommand>, RegisterCommandValidator>()
+            .BuildServiceProvider();
 }

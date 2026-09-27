@@ -10,23 +10,22 @@ namespace NetWorthTracker.UnitTests.Common.Handlers;
 public class BaseRequestHandlerTests
 {
     [Test]
-    public async Task GivenNoValidators_WhenHandlingRequest_ThenInvokesHandlerAndReturnsItsResult()
+    public async Task GivenNoValidators_WhenHandlingRequest_ThenReturnsValidationFailureWithoutInvokingHandler()
     {
         // Arrange
         var request = CreateRequest();
         var cancellationToken = new CancellationTokenSource().Token;
-        var expectedResult = Result.Ok("response data");
         var logger = new TestLogger<BaseRequestHandler<TestRequest, string>>();
-        var handler = new TestRequestHandler(null, logger, expectedResult);
+        var handler = new TestRequestHandler(null, logger, Result.Ok("response data"));
 
         // Act
         var result = await handler.Handle(request, cancellationToken);
 
         // Assert
-        await Assert.That(result).IsEqualTo(expectedResult);
-        await Assert.That(handler.CallCount).IsEqualTo(1);
-        await Assert.That(handler.HandledRequest).IsEqualTo(request);
-        await Assert.That(handler.CancellationToken).IsEqualTo(cancellationToken);
+        await Assert.That(result.IsFailed).IsTrue();
+        await Assert.That(result.Errors.Single().Message).IsEqualTo("Validation failed");
+        await Assert.That(handler.CallCount).IsEqualTo(0);
+        await Assert.That(handler.HandledRequest).IsNull();
     }
 
     [Test]
@@ -97,7 +96,7 @@ public class BaseRequestHandlerTests
         await handler.Handle(request, CancellationToken.None);
 
         // Assert
-        var informationEntry = logger.Entries.Single();
+        var informationEntry = logger.Entries.Single(entry => entry.LogLevel == LogLevel.Information);
         var requestData = JsonNode.Parse((string)informationEntry.Properties["@RequestData"]!)!.AsObject();
         await Assert.That(informationEntry.LogLevel).IsEqualTo(LogLevel.Information);
         await Assert.That(informationEntry.Properties["RequestType"]).IsEqualTo(typeof(TestRequest).Name);

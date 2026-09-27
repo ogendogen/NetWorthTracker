@@ -15,6 +15,7 @@ public abstract class BaseRequestHandler<TRequest, TResponse>
     where TRequest : IRequest<Result<TResponse>>
 {
     private const string RedactedValue = "***";
+
     private static readonly HashSet<string> SensitivePropertyNames = typeof(SensitiveFields)
         .GetFields(BindingFlags.Public | BindingFlags.Static)
         .Where(field => field.FieldType == typeof(string))
@@ -32,21 +33,27 @@ public abstract class BaseRequestHandler<TRequest, TResponse>
 
     public async ValueTask<Result<TResponse>> Handle(TRequest request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Handling request of type {RequestType}. Data: {@RequestData}", typeof(TRequest).Name, HideSensitiveData(request));
+        _logger.LogInformation("Handling request of type {RequestType}. Data: {@RequestData}", typeof(TRequest).Name,
+            HideSensitiveData(request));
         var validators = _services?.GetServices<IValidator<TRequest>>() ?? Array.Empty<IValidator<TRequest>>();
 
         var validationResults = await Task.WhenAll(
             validators.Select(validator =>
                 validator.ValidateAsync(request, cancellationToken)));
 
-        if (validationResults.Any(x => !x.IsValid))
+        if (validationResults.Length > 0 && validationResults.All(x => x.IsValid))
         {
-            var errors = validationResults.Where(x => !x.IsValid).SelectMany(x => x.Errors).Select(e => e.ErrorMessage);
-            _logger.LogWarning("Validation failed for request of type {RequestType}. Errors: {Errors}", typeof(TRequest).Name, string.Join(", ", errors));
-            return Result.Fail<TResponse>("Validation failed").WithErrors(errors);
+            return await Handler(request, cancellationToken);
         }
 
-        return await Handler(request, cancellationToken);
+        var errors = validationResults.Where(x => !x.IsValid).SelectMany(x => x.Errors)
+            .Select(e => e.ErrorMessage)
+            .ToList();
+
+        _logger.LogWarning("Validation failed for request of type {RequestType}. Errors: {Errors}",
+            typeof(TRequest).Name, string.Join(", ", errors));
+
+        return Result.Fail<TResponse>("Validation failed").WithErrors(errors);
     }
 
     protected abstract ValueTask<Result<TResponse>> Handler(

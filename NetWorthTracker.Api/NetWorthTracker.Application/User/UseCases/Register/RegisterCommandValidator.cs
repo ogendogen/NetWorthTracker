@@ -6,30 +6,46 @@ public sealed class RegisterCommandValidator : AbstractValidator<RegisterCommand
 {
     public RegisterCommandValidator()
     {
+        ConfigureUsernameRules();
+        ConfigurePasswordRules();
+        ConfigureEmailRules();
+    }
+
+    private void ConfigureUsernameRules()
+    {
         RuleFor(x => x.Username)
+            .Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("Provided username cannot be empty")
             .MaximumLength(32).WithMessage("Provided username cannot be longer than 32 characters");
+    }
 
+    private void ConfigurePasswordRules()
+    {
         RuleFor(x => x.Password)
+            .Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("Provided password cannot be empty")
             .MinimumLength(8).WithMessage("Provided password must have at least 8 characters")
             .MaximumLength(64).WithMessage("Provided password cannot be longer than 64 characters")
             .Must(ContainsUppercase).WithMessage("Provided password must contain at least one uppercase letter")
             .Must(ContainsNumber).WithMessage("Provided password must contain at least one number")
             .Must(ContainsSpecialCharacter).WithMessage("Provided password must contain at least one special character");
+    }
 
+    private void ConfigureEmailRules()
+    {
         RuleFor(x => x.Email)
+            .Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("Provided email cannot be empty")
             .EmailAddress().WithMessage("Provided email is not a valid email address")
             .MaximumLength(320).WithMessage("Provided email address cannot be longer than 320 characters");
     }
 
-    private static bool ContainsUppercase(string? password) =>
+    private bool ContainsUppercase(string? password) =>
         password?.Any(char.IsUpper) == true;
 
-    private static bool ContainsNumber(string? password) =>
+    private bool ContainsNumber(string? password) =>
         password?.Any(char.IsDigit) == true;
 
-    private static bool ContainsSpecialCharacter(string? password) =>
+    private bool ContainsSpecialCharacter(string? password) =>
         password?.Any(character => char.IsPunctuation(character) || char.IsSymbol(character)) == true;
 }
