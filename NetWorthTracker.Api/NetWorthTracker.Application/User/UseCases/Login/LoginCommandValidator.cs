@@ -13,7 +13,6 @@ public sealed class LoginCommandValidator : AbstractValidator<LoginCommand>
     private void ConfigureUsernameRules()
     {
         RuleFor(x => x.Username)
-            .Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("Provided username cannot be empty")
             .MaximumLength(32).WithMessage("Provided username cannot be longer than 32 characters");
     }
@@ -21,7 +20,6 @@ public sealed class LoginCommandValidator : AbstractValidator<LoginCommand>
     private void ConfigurePasswordRules()
     {
         RuleFor(x => x.Password)
-            .Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("Provided password cannot be empty")
             .MaximumLength(64).WithMessage("Provided password cannot be longer than 64 characters");
     }

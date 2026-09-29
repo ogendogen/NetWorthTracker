@@ -14,7 +14,6 @@ public sealed class RegisterCommandValidator : AbstractValidator<RegisterCommand
     private void ConfigureUsernameRules()
     {
         RuleFor(x => x.Username)
-            .Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("Provided username cannot be empty")
             .MaximumLength(32).WithMessage("Provided username cannot be longer than 32 characters");
     }
@@ -22,19 +21,18 @@ public sealed class RegisterCommandValidator : AbstractValidator<RegisterCommand
     private void ConfigurePasswordRules()
     {
         RuleFor(x => x.Password)
-            .Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("Provided password cannot be empty")
             .MinimumLength(8).WithMessage("Provided password must have at least 8 characters")
             .MaximumLength(64).WithMessage("Provided password cannot be longer than 64 characters")
             .Must(ContainsUppercase).WithMessage("Provided password must contain at least one uppercase letter")
             .Must(ContainsNumber).WithMessage("Provided password must contain at least one number")
-            .Must(ContainsSpecialCharacter).WithMessage("Provided password must contain at least one special character");
+            .Must(ContainsSpecialCharacter)
+            .WithMessage("Provided password must contain at least one special character");
     }
 
     private void ConfigureEmailRules()
     {
         RuleFor(x => x.Email)
-            .Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("Provided email cannot be empty")
             .EmailAddress().WithMessage("Provided email is not a valid email address")
             .MaximumLength(320).WithMessage("Provided email address cannot be longer than 320 characters");
