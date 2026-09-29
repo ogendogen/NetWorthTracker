@@ -36,7 +36,7 @@ public class BaseRequestHandlerTests
         var request = CreateRequest();
         var cancellationToken = new CancellationTokenSource().Token;
         var validator = new TrackingValidator();
-        using var services = new ServiceCollection()
+        await using var services = new ServiceCollection()
             .AddSingleton<IValidator<TestRequest>>(validator)
             .BuildServiceProvider();
         var logger = new TestLogger<BaseRequestHandler<TestRequest, string>>();
@@ -63,7 +63,7 @@ public class BaseRequestHandlerTests
         firstValidator.RuleFor(candidate => candidate.Data).NotEmpty().WithMessage(firstError);
         var secondValidator = new InlineValidator<TestRequest>();
         secondValidator.RuleFor(candidate => candidate.Data).NotEmpty().WithMessage(secondError);
-        using var services = new ServiceCollection()
+        await using var services = new ServiceCollection()
             .AddSingleton<IValidator<TestRequest>>(firstValidator)
             .AddSingleton<IValidator<TestRequest>>(secondValidator)
             .BuildServiceProvider();
@@ -97,7 +97,7 @@ public class BaseRequestHandlerTests
         await handler.Handle(request, CancellationToken.None);
 
         // Assert
-        var informationEntry = logger.Entries.Single();
+        var informationEntry = logger.Entries.Single(entry => entry.LogLevel == LogLevel.Information);
         var requestData = JsonNode.Parse((string)informationEntry.Properties["@RequestData"]!)!.AsObject();
         await Assert.That(informationEntry.LogLevel).IsEqualTo(LogLevel.Information);
         await Assert.That(informationEntry.Properties["RequestType"]).IsEqualTo(typeof(TestRequest).Name);
@@ -105,7 +105,8 @@ public class BaseRequestHandlerTests
         await Assert.That(requestData["Password"]!.GetValue<string>()).IsEqualTo("***");
         await Assert.That(requestData["Details"]!["Password"]!.GetValue<string>()).IsEqualTo("***");
         await Assert.That(requestData["Items"]![0]!["Password"]!.GetValue<string>()).IsEqualTo("***");
-        await Assert.That(requestData["Details"]!["VisibleValue"]!.GetValue<string>()).IsEqualTo(request.Details.VisibleValue);
+        await Assert.That(requestData["Details"]!["VisibleValue"]!.GetValue<string>())
+            .IsEqualTo(request.Details.VisibleValue);
     }
 
     private static TestRequest CreateRequest(string data = "request data") =>

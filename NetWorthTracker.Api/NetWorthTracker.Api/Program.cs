@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NetWorthTracker.Api.Middleware;
+using NetWorthTracker.Api.Services;
 using NetWorthTracker.Application.AssemblyMarker;
 using NetWorthTracker.Application.Authentication;
 using NetWorthTracker.Application.Authentication.Interfaces;
@@ -51,6 +52,7 @@ builder.Services.AddOptions<JwtSettings>()
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IEmailService, EmailService>();
+builder.Services.AddSingleton<IExceptionResponseMapper, ExceptionResponseMapper>();
 
 builder.Services.AddCors(options =>
 {
@@ -97,8 +99,8 @@ builder.Logging.AddConsole();
 builder.Services.Configure<LoggerFactoryOptions>(options =>
 {
     options.ActivityTrackingOptions = ActivityTrackingOptions.TraceId
-                                     | ActivityTrackingOptions.SpanId
-                                     | ActivityTrackingOptions.ParentId;
+                                      | ActivityTrackingOptions.SpanId
+                                      | ActivityTrackingOptions.ParentId;
 });
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Email"));
 builder.Logging.AddOpenTelemetry(x =>
@@ -127,6 +129,7 @@ builder.Logging.AddOpenTelemetry(x =>
 var app = builder.Build();
 
 app.UseMiddleware<HttpRequestLoggingMiddleware>();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {

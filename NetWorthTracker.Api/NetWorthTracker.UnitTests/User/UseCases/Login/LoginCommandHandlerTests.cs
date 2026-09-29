@@ -1,3 +1,5 @@
+using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NetWorthTracker.Application.Authentication.Interfaces;
 using NetWorthTracker.Application.User.Models.Login;
@@ -19,10 +21,14 @@ public class LoginCommandHandlerTests
         var userRepository = IUserRepository.Mock();
         var tokenService = ITokenService.Mock();
         var logger = ILogger<LoginCommandHandler>.Mock();
+        using var services = new ServiceCollection()
+            .AddSingleton<IValidator<LoginCommand>, LoginCommandValidator>()
+            .BuildServiceProvider();
         userRepository.LoginAsync(username, password, cancellationToken).Returns(false);
         var handler = new LoginCommandHandler(
             userRepository.Object,
             tokenService.Object,
+            services,
             logger: logger.Object);
         var command = new LoginCommand(username, password);
 
