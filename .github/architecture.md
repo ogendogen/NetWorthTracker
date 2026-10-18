@@ -66,7 +66,14 @@ cd NetWorthTracker.Spa
 npm start
 ```
 
-The SPA defaults to `http://localhost:4200`.
+The SPA defaults to `https://localhost:4200`. Before the first start, each developer installs mkcert, runs `mkcert -install`, and generates their own certificate from `NetWorthTracker.Spa` (Git Bash):
+
+```bash
+mkdir -p ssl/dev
+mkcert -cert-file ssl/dev/localhost.pem -key-file ssl/dev/localhost-key.pem localhost 127.0.0.1 ::1
+```
+
+Angular's development server reads these paths from `angular.json`. Both generated files are ignored by Git; do not share certificates or private keys. See the SPA README for first-time setup and Firefox certificate trust troubleshooting. The ASP.NET Core HTTPS certificate is separate and must be trusted separately when using the HTTPS API URL.
 
 ### Integration Tests
 

@@ -4,13 +4,36 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
 
 ## Development server
 
-To start a local development server, run:
+Run the following commands from `NetWorthTracker.Spa`.
+
+### First-time HTTPS setup
+
+Install [mkcert](https://github.com/FiloSottile/mkcert#installation) and make it available on your PATH. Each developer generates their own certificate; do not share certificates or private keys.
+
+In Git Bash, install the local certificate authority and generate a localhost certificate:
 
 ```bash
-ng serve
+mkcert -install
+mkdir -p ssl/dev
+mkcert -cert-file ssl/dev/localhost.pem -key-file ssl/dev/localhost-key.pem localhost 127.0.0.1 ::1
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+The development configuration in `angular.json` uses these certificate paths. Both generated files are ignored by Git. Never commit or share mkcert's `rootCA-key.pem`.
+
+If Firefox reports `SEC_ERROR_UNKNOWN_ISSUER`, set `security.enterprise_roots.enabled` to `true` in `about:config`, then fully close and reopen Firefox. If needed, run `mkcert -CAROOT` and import that directory's `rootCA.pem` through Firefox's Settings > Privacy & Security > Certificates > View Certificates > Authorities > Import, enabling trust for identifying websites. Do not import `rootCA-key.pem`.
+
+### Start the SPA
+
+Install dependencies on first checkout, then start the development server:
+
+```bash
+npm install
+npm start
+```
+
+Open `https://localhost:4200/`. The application automatically reloads when source files change. Restart the development server after changing its certificate configuration.
+
+The API is started separately; see [local development instructions](../.github/architecture.md#local-development). If the development API URL uses HTTPS, also trust the separate ASP.NET Core certificate with `dotnet dev-certs https --trust`; mkcert setup does not trust that certificate.
 
 ## Code scaffolding
 
