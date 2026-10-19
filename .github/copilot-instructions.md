@@ -75,6 +75,7 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 ## Workflow Rules
 
 - Do not start, stop, or restart the API or SPA unless the user explicitly asks.
+- The SPA development server uses `https://localhost:4200` with per-developer mkcert files at `NetWorthTracker.Spa/ssl/dev/localhost.pem` and `localhost-key.pem`. Keep both files ignored by Git; never share private keys. Follow the SPA README for setup and Firefox trust troubleshooting. Trust the separate ASP.NET Core certificate when using the HTTPS API URL.
 - Execute unit tests from the repository root using `dotnet run --project NetWorthTracker.Api/NetWorthTracker.UnitTests/NetWorthTracker.UnitTests.csproj --configuration Release --`.
 - With Docker running, execute integration tests from the repository root using `dotnet run --project NetWorthTracker.Api/NetWorthTracker.IntegrationTests/NetWorthTracker.IntegrationTests/NetWorthTracker.IntegrationTests.csproj --configuration Release --`.
 - Keep backend build, unit tests, integration tests, and the SPA build as separate GitHub Actions jobs so pull requests expose four required checks. Unit and integration jobs must depend on a successful backend build.

@@ -4,7 +4,9 @@
   "cli": {
     "packageManager": "npm",
     "analytics": "e6c50ba7-52aa-474a-a038-76c4b786fa50",
-    "schematicCollections": ["angular-eslint"]
+    "schematicCollections": [
+      "angular-eslint"
+    ]
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -31,7 +33,9 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.scss"]
+            "styles": [
+              "src/styles.scss"
+            ]
           },
           "configurations": {
             "production": {
@@ -70,7 +74,10 @@
               "buildTarget": "NetWorthTracker.Spa:build:production"
             },
             "development": {
-              "buildTarget": "NetWorthTracker.Spa:build:development"
+              "buildTarget": "NetWorthTracker.Spa:build:development",
+              "ssl": true,
+              "sslCert": "ssl/dev/localhost.pem",
+              "sslKey": "ssl/dev/localhost-key.pem"
             }
           },
           "defaultConfiguration": "development"
@@ -81,7 +88,10 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
           }
         }
       }
