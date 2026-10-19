@@ -4,6 +4,8 @@
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
 # User-specific files
+/NetWorthTracker.Spa/ssl/dev/localhost.pem
+/NetWorthTracker.Spa/ssl/dev/localhost-key.pem
 *.rsuser
 *.suo
 *.user
