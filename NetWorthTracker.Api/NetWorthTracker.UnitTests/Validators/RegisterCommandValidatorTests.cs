@@ -6,6 +6,28 @@ namespace NetWorthTracker.UnitTests.User.UseCases.Register;
 public class RegisterCommandValidatorTests : ValidatorTestsBase
 {
     [Test]
+    public async Task GivenMultipleInvalidFields_WhenValidating_ThenReturnsOnlyFirstError()
+    {
+        var command = new RegisterCommand(string.Empty, string.Empty, string.Empty);
+
+        var result = await new RegisterCommandValidator().ValidateAsync(command);
+
+        await Assert.That(result.Errors.Select(error => error.ErrorMessage))
+            .IsEquivalentTo(new[] { "Provided username cannot be empty" });
+    }
+
+    [Test]
+    public async Task GivenEmptyPassword_WhenValidating_ThenStopsAtFirstPasswordRule()
+    {
+        var command = new RegisterCommand("username", string.Empty, "testmail@test.com");
+
+        var result = await new RegisterCommandValidator().ValidateAsync(command);
+
+        await Assert.That(result.Errors.Select(error => error.ErrorMessage))
+            .IsEquivalentTo(new[] { "Provided password cannot be empty" });
+    }
+
+    [Test]
     public async Task GivenValidRegisterCommand_WhenValidating_ThenDoesNotThrow()
     {
         var command = new RegisterCommand("username", "Password1!", "testmail@test.com");

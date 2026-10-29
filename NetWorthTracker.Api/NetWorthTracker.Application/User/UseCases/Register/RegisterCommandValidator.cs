@@ -6,6 +6,9 @@ public sealed class RegisterCommandValidator : AbstractValidator<RegisterCommand
 {
     public RegisterCommandValidator()
     {
+        ClassLevelCascadeMode = CascadeMode.Stop;
+        RuleLevelCascadeMode = CascadeMode.Stop;
+
         ConfigureUsernameRules();
         ConfigurePasswordRules();
         ConfigureEmailRules();

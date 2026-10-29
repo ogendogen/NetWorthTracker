@@ -6,6 +6,17 @@ namespace NetWorthTracker.UnitTests.User.UseCases.Login;
 public class LoginCommandValidatorTests : ValidatorTestsBase
 {
     [Test]
+    public async Task GivenMultipleInvalidFields_WhenValidating_ThenReturnsOnlyFirstError()
+    {
+        var command = new LoginCommand(string.Empty, string.Empty);
+
+        var result = await new LoginCommandValidator().ValidateAsync(command);
+
+        await Assert.That(result.Errors.Select(error => error.ErrorMessage))
+            .IsEquivalentTo(new[] { "Provided username cannot be empty" });
+    }
+
+    [Test]
     public async Task GivenValidLoginCommand_WhenValidating_ThenDoesNotThrow()
     {
         var command = new LoginCommand("username", "Password1!");
