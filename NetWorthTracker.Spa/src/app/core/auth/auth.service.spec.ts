@@ -47,4 +47,36 @@ describe('AuthService', () => {
     expect(service.isAuthenticated()).toBe(false);
     expect(sessionStorage.getItem('net-worth-tracker.session')).toBeNull();
   });
+
+  it('posts a forgot-password request without creating a session', () => {
+    const request = { email: 'user@example.test' };
+    let result: { success: boolean } | undefined;
+
+    service.forgotPassword(request).subscribe((response) => (result = response));
+
+    const httpRequest = httpTesting.expectOne('https://api.example.test/forgot-password');
+    expect(httpRequest.request.method).toBe('POST');
+    expect(httpRequest.request.body).toEqual(request);
+    httpRequest.flush({ success: true });
+
+    expect(result).toEqual({ success: true });
+    expect(service.session()).toBeNull();
+    expect(sessionStorage.getItem('net-worth-tracker.session')).toBeNull();
+  });
+
+  it('posts a reset-password request without creating a session', () => {
+    const request = { token: 'reset-token', password: 'Secret1!', confirmPassword: 'Secret1!' };
+    let result: { success: boolean } | undefined;
+
+    service.resetPassword(request).subscribe((response) => (result = response));
+
+    const httpRequest = httpTesting.expectOne('https://api.example.test/reset-password');
+    expect(httpRequest.request.method).toBe('POST');
+    expect(httpRequest.request.body).toEqual(request);
+    httpRequest.flush({ success: true });
+
+    expect(result).toEqual({ success: true });
+    expect(service.session()).toBeNull();
+    expect(sessionStorage.getItem('net-worth-tracker.session')).toBeNull();
+  });
 });

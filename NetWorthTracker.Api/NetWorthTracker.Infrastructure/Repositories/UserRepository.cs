@@ -61,4 +61,21 @@ public class UserRepository : IUserRepository
         var result = await _context.SaveChangesAsync(cancellationToken);
         return result > 0;
     }
+
+    public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default) =>
+        await _context.Users.SingleOrDefaultAsync(u => u.Email == email, cancellationToken);
+
+    public async Task<bool> UpdatePasswordByEmailAsync(string email, string newPassword,
+        CancellationToken cancellationToken = default)
+    {
+        var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == email, cancellationToken);
+        if (user is null)
+        {
+            return false;
+        }
+
+        user.PasswordHash = BCrypt.HashPassword(newPassword);
+        var result = await _context.SaveChangesAsync(cancellationToken);
+        return result > 0;
+    }
 }

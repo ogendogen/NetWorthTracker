@@ -77,7 +77,7 @@ Angular's development server reads these paths from `angular.json`. Both generat
 
 ### Integration Tests
 
-The integration suite starts the real API in-process and provisions a disposable PostgreSQL 18 container through Testcontainers. The shared test fixture applies the checked-in EF Core migrations and seeds one BCrypt-backed user before exercising login, JWT validation, and the protected data endpoint. It does not connect to or modify the persistent Compose development database.
+The integration suite starts the real API in-process and provisions a disposable PostgreSQL 18 container through Testcontainers. The shared test fixture applies the checked-in EF Core migrations and seeds one BCrypt-backed user before exercising login, JWT validation, and the protected data endpoint. It does not connect to or modify the persistent Compose development database. The fixture replaces `IEmailService` with an in-memory `RecordingEmailService` so tests never reach SMTP and can read the confirmation or reset token that would have been emailed; it also supplies a `FrontendUrl` value for reset links.
 
 Docker must be running. Execute the suite from the repository root:
 
@@ -100,11 +100,14 @@ Testcontainers assigns a random host port and removes the database container aft
 
 All API routes are root-level routes, with no `/api` prefix.
 
-| Endpoint         | Auth       | Current behavior                                                                                                                              |
-| ---------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `POST /login`    | Anonymous  | Verifies a persisted user's BCrypt password. Returns `accessToken`, `expiresAt`, and `userName`; otherwise returns `401`.                     |
-| `POST /register` | Anonymous  | Accepts `username`, `password`, and `email`, persists a BCrypt-hashed user, and returns HTTP 200 with `success`. It does not issue a session. |
-| `GET /data`      | Bearer JWT | Returns mock net-worth summary data. Requests without a valid token return `401`.                                                             |
+| Endpoint                       | Auth       | Current behavior                                                                                                                                                                                                                                   |
+| ------------------------------ | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /login`                  | Anonymous  | Verifies a persisted user's BCrypt password. Returns `accessToken`, `expiresAt`, and `userName`; otherwise returns `401`.                                                                                                                          |
+| `POST /register`               | Anonymous  | Accepts `username`, `password`, and `email`, persists a BCrypt-hashed user, and returns HTTP 200 with `success`. It does not issue a session.                                                                                                      |
+| `GET /confirm-email?token=...` | Anonymous  | Validates a 24-hour `email_confirmation` JWT, marks the email confirmed, and redirects to the SPA `/email-confirmed` or `/email-confirmation-failed` page.                                                                                         |
+| `POST /forgot-password`        | Anonymous  | Accepts `email`. Always returns HTTP 200 with `success: true` for a well-formed email so the response never reveals whether an account exists; emails a reset link only when a confirmed user matches. Returns `400` only for validation failures. |
+| `POST /reset-password`         | Anonymous  | Accepts `token`, `password`, and `confirmPassword`. Validates the 1-hour `password_reset` JWT and password rules, BCrypt-hashes and stores the new password, and returns `success`; invalid or expired tokens return `400`.                        |
+| `GET /data`                    | Bearer JWT | Returns mock net-worth summary data. Requests without a valid token return `401`.                                                                                                                                                                  |
 
 JWT configuration lives under the `Jwt` section. The signing key is loaded from the active environment's local plaintext secrets file and can be overridden through the `Jwt__SigningKey` environment variable. The API fails at startup when the resolved production signing key is empty. Use a stable production secret so API restarts do not invalidate existing tokens.
 
@@ -122,6 +125,8 @@ The backend follows a dependency direction of API -> Infrastructure -> Applicati
 The initial `users` table has a generated UUID primary key, required `Login` (maximum 32), `PasswordHash` (maximum 256), `Email` (maximum 320), `IsEmailConfirmed`, and `CreatedAt` columns. `Login` and `Email` each have unique indexes; UUIDs use `gen_random_uuid()` and `CreatedAt` uses `CURRENT_TIMESTAMP`.
 
 `POST /login` is database-backed: the repository looks up the login and verifies the supplied password with BCrypt before the application handler creates a JWT response. `POST /register` checks for an existing login or email, hashes the password with BCrypt, and persists the user before returning a success flag. Registration does not issue a JWT or create a session. Input validation and stable HTTP mapping for duplicate-user failures are not implemented yet.
+
+Email-confirmation and password-reset links use purpose-scoped JWTs issued by `TokenService` with the same `Jwt` signing key, issuer, and audience as login tokens. Each token carries the user's email and a `purpose` claim (`email_confirmation`, 24 hours; `password_reset`, 1 hour); validation rejects a token presented for the wrong purpose. Reset tokens are stateless, so a reset link remains usable until it expires even after a successful reset. `ForgotPasswordCommandHandler` looks the user up by email and sends `IEmailService.SendPasswordResetEmail` only when the account exists and its email is confirmed, but always returns success. The reset email links directly to `{FrontendUrl}/reset-password?token=...`. `ResetPasswordCommandHandler` validates the token, then `UserRepository.UpdatePasswordByEmailAsync` BCrypt-hashes and stores the new password. `ResetPasswordCommandValidator` reuses the shared `ApplyPasswordRules` extension and requires `confirmPassword` to equal `password`; `SensitiveFields` redacts `Password`, `ConfirmPassword`, and `Token` from handler logs.
 
 The API uses Microsoft.Extensions.Logging with console output and OpenTelemetry OTLP/HTTP log export to Seq. Log levels use the existing `Logging` configuration in `appsettings.json`; the exporter uses `Seq:ApiUrl` and `Seq:ApiKey`. Resource settings, scope inclusion, and formatted-message inclusion are configured in the outer `AddOpenTelemetry` callback before exporter initialization. Only endpoint, protocol, and headers are configured inside `AddOtlpExporter`. `HttpRequestLoggingMiddleware` records the HTTP method, path, final status code, and elapsed milliseconds for each completed request. It logs unhandled exceptions with a `500` result before rethrowing them and does not include query strings or request/response bodies.
 
@@ -167,6 +172,14 @@ src/app/
 
 Session storage is intentional for this scaffold: closing the browser session signs the user out. There are no refresh tokens or persistent login behavior yet.
 
+### Password Reset Flow
+
+1. The login page links to the public lazy `/forgot-password` route (guarded by `guestGuard`), where the user submits an email address.
+2. `AuthService.forgotPassword` calls `POST /forgot-password`. On any `200` the SPA navigates to the public `/forgot-password-sent` page, which states that a link was sent if an account exists and is valid for 1 hour; it never reveals whether the email is registered.
+3. The email links to the public `/reset-password?token=...` route (guarded by `guestGuard`). Without a `token` query parameter the page hides the form and offers a link back to `/forgot-password`.
+4. The reactive form requires the new password twice; it reuses the shared `CustomValidators.passwordComplexity` and group-level `CustomValidators.passwordsMatch` validators from `src/app/shared/validators/`.
+5. `AuthService.resetPassword` calls `POST /reset-password` with `token`, `password`, and `confirmPassword` without changing session state. Success navigates to the public `/password-reset-success` page, which offers a sign-in link and redirects to `/login` after a ten-second countdown. Failure shows an inline error with a link to request a new reset link.
+
 ### Feature and Layout Model
 
 `features/functionality.registry.ts` defines every authenticated business feature with:
@@ -202,7 +215,7 @@ This is an initial scaffold. The following are intentionally absent or incomplet
 
 - Server-side registration input validation and stable duplicate-user error responses. Registration persistence, BCrypt password hashing, email confirmation, and the initial `users` migration are present.
 - Request-span export, audit logging, and a dedicated logging table; request-log trace correlation is configured through OpenTelemetry and activity scopes.
-- Refresh tokens, password reset, authorization roles, and production secret management.
+- Refresh tokens, authorization roles, and production secret management. Password reset is implemented with stateless 1-hour tokens; single-use reset tokens and rate limiting of `/forgot-password` are not.
 - Managed production key distribution and rotation; deployment identities and production recipients still require operational configuration to decrypt and materialize secrets before startup.
 - Financial CRUD, historical persistence, and real dashboard calculations.
 - Complete automated test coverage. `npm test` is available, but focused auth and feature tests were deferred.

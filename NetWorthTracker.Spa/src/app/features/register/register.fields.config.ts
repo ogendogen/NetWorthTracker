@@ -1,9 +1,4 @@
-import {
-  AbstractControl,
-  ValidationErrors,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
+import { ValidatorFn, Validators } from '@angular/forms';
 import { CustomValidators } from '../../shared/validators/custom-validators';
 
 export type RegisterFieldName = 'username' | 'email' | 'password' | 'confirmPassword';
@@ -72,10 +67,7 @@ export const registerFields: Record<RegisterFieldName, RegisterFieldConfig> = {
   },
 };
 
-export const passwordsMatch: ValidatorFn = (control: AbstractControl): ValidationErrors | null =>
-  control.get('password')?.value === control.get('confirmPassword')?.value
-    ? null
-    : { passwordMismatch: true };
+export const passwordsMatch: ValidatorFn = CustomValidators.passwordsMatch;
 
 export const registerFormValidations = {
   passwordMismatch: {

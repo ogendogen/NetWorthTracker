@@ -7,4 +7,6 @@ namespace NetWorthTracker.Domain.Common.Interfaces;
 public interface IEmailService
 {
     public void SendPostRegistrationEmail(string username, string toAddress, string confirmationToken);
+
+    public void SendPasswordResetEmail(string username, string toAddress, string resetToken);
 }

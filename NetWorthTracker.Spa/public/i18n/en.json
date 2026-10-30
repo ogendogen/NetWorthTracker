@@ -9,6 +9,7 @@
     "signingIn": "Signing in",
     "newUser": "New to Net Worth Tracker?",
     "createAccount": "Create account",
+    "forgotPassword": "Forgot your password?",
     "fields": {
       "username": {
         "label": "Username"
@@ -58,6 +59,48 @@
     "message": "We couldn't confirm your email address. The confirmation link may be invalid or expired.",
     "signIn": "Sign in"
   },
+  "forgotPassword": {
+    "subtitle": "Reset your password",
+    "instruction": "Enter the email address for your account and we will send you a link to choose a new password.",
+    "sendLink": "Send reset link",
+    "sending": "Sending reset link",
+    "requestFailed": "We could not process your request. Try again in a moment.",
+    "backToSignIn": "Back to sign in",
+    "fields": {
+      "email": {
+        "label": "Email"
+      }
+    }
+  },
+  "forgotPasswordSent": {
+    "title": "Check your email",
+    "message": "If an account exists for that email address, we have sent a password reset link.",
+    "expiry": "The reset link is valid for 1 hour.",
+    "signIn": "Go to sign in"
+  },
+  "resetPassword": {
+    "subtitle": "Choose a new password",
+    "resetPassword": "Reset password",
+    "resetting": "Resetting password",
+    "resetFailed": "We could not reset your password. The link may be invalid or expired.",
+    "missingToken": "This password reset link is incomplete. Request a new link to continue.",
+    "requestNewLink": "Request a new link",
+    "backToSignIn": "Back to sign in",
+    "fields": {
+      "password": {
+        "label": "New password"
+      },
+      "confirmPassword": {
+        "label": "Confirm new password"
+      }
+    }
+  },
+  "passwordResetSuccess": {
+    "title": "Password reset",
+    "success": "Your password has been changed. You can now sign in with your new password.",
+    "redirect": "Automatic sign-in redirect in {{ seconds }}s.",
+    "signIn": "Sign in now"
+  },
   "validation": {
     "login": {
       "username": {
@@ -91,6 +134,25 @@
       },
       "confirmPassword": {
         "required": "Confirm your password."
+      },
+      "passwordMismatch": "Passwords do not match."
+    },
+    "forgotPassword": {
+      "email": {
+        "required": "Enter your email address.",
+        "invalid": "Enter a valid email address.",
+        "maxLength": "Email address must be 320 characters or fewer."
+      }
+    },
+    "resetPassword": {
+      "password": {
+        "required": "Enter a new password.",
+        "minLength": "Password must be at least 8 characters.",
+        "maxLength": "Password must be 64 characters or fewer.",
+        "complexity": "Password must include uppercase and lowercase letters, a number, and a special symbol."
+      },
+      "confirmPassword": {
+        "required": "Confirm your new password."
       },
       "passwordMismatch": "Passwords do not match."
     }

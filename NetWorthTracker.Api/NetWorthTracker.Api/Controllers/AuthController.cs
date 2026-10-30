@@ -4,11 +4,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NetWorthTracker.Application.Authentication.Interfaces;
 using NetWorthTracker.Application.User.Models.ConfirmEmail;
+using NetWorthTracker.Application.User.Models.ForgotPassword;
 using NetWorthTracker.Application.User.Models.Login;
 using NetWorthTracker.Application.User.Models.Register;
+using NetWorthTracker.Application.User.Models.ResetPassword;
 using NetWorthTracker.Application.User.UseCases.ConfirmEmail;
+using NetWorthTracker.Application.User.UseCases.ForgotPassword;
 using NetWorthTracker.Application.User.UseCases.Login;
 using NetWorthTracker.Application.User.UseCases.Register;
+using NetWorthTracker.Application.User.UseCases.ResetPassword;
 
 namespace NetWorthTracker.Api.Controllers;
 
@@ -53,5 +57,26 @@ public sealed class AuthController : ControllerBase
         var result = await _mediator.Send(new ConfirmEmailCommand(token));
 
         return result.IsSuccess && result.Value.IsEmailConfirmed ? Redirect($"{_configuration["FrontendUrl"]}/email-confirmed") : Redirect($"{_configuration["FrontendUrl"]}/email-confirmation-failed");
+    }
+
+    [HttpPost("/forgot-password")]
+    [ProducesResponseType<ForgotPasswordResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ForgotPasswordResponse>> ForgotPassword(ForgotPasswordRequest request)
+    {
+        var result = await _mediator.Send(new ForgotPasswordCommand(request.Email));
+
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Errors);
+    }
+
+    [HttpPost("/reset-password")]
+    [ProducesResponseType<ResetPasswordResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ResetPasswordResponse>> ResetPassword(ResetPasswordRequest request)
+    {
+        var result = await _mediator.Send(
+            new ResetPasswordCommand(request.Token, request.Password, request.ConfirmPassword));
+
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Errors);
     }
 }

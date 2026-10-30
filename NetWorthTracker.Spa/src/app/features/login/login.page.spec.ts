@@ -35,6 +35,7 @@ describe('LoginPageComponent', () => {
         subtitle: 'Sign in to view your financial overview',
         newUser: 'New to Net Worth Tracker?',
         createAccount: 'Create account',
+        forgotPassword: 'Forgot your password?',
       },
     });
     await firstValueFrom(translateService.use('en'));
@@ -48,6 +49,16 @@ describe('LoginPageComponent', () => {
       .nativeElement as HTMLAnchorElement;
     expect(link.textContent).toContain('Create account');
     expect(link.getAttribute('href')).toBe('/register');
+  });
+
+  it('links the login form to password reset', () => {
+    const fixture = TestBed.createComponent(LoginPageComponent);
+    fixture.detectChanges();
+
+    const link = fixture.debugElement.query(By.css('.forgot-password-link a'))
+      .nativeElement as HTMLAnchorElement;
+    expect(link.textContent).toContain('Forgot your password?');
+    expect(link.getAttribute('href')).toBe('/forgot-password');
   });
 
   it('does not show a registration success message on login', () => {

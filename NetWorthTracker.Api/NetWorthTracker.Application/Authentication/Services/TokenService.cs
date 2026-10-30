@@ -13,6 +13,10 @@ namespace NetWorthTracker.Application.Authentication.Services;
 
 public sealed class TokenService : ITokenService
 {
+    public const string PurposeClaimType = "purpose";
+    public const string EmailConfirmationPurpose = "email_confirmation";
+    public const string PasswordResetPurpose = "password_reset";
+
     private readonly JwtSettings _jwtSettings;
     private readonly ILogger<TokenService> _logger;
 
@@ -46,7 +50,19 @@ public sealed class TokenService : ITokenService
             userName);
     }
 
-    public string GenerateEmailToken(string userEmail)
+    public string GenerateEmailToken(string userEmail) =>
+        GeneratePurposeToken(userEmail, EmailConfirmationPurpose, TimeSpan.FromHours(24));
+
+    public Result<string?> ValidateEmailToken(string token, out string? email) =>
+        ValidatePurposeToken(token, EmailConfirmationPurpose, out email);
+
+    public string GeneratePasswordResetToken(string userEmail) =>
+        GeneratePurposeToken(userEmail, PasswordResetPurpose, TimeSpan.FromHours(1));
+
+    public Result<string?> ValidatePasswordResetToken(string token, out string? email) =>
+        ValidatePurposeToken(token, PasswordResetPurpose, out email);
+
+    private string GeneratePurposeToken(string userEmail, string purpose, TimeSpan lifetime)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_jwtSettings.SigningKey);
@@ -56,9 +72,9 @@ public sealed class TokenService : ITokenService
             Subject = new ClaimsIdentity(
             [
             new Claim(ClaimTypes.Email, userEmail),
-            new Claim("purpose", "email_confirmation")
+            new Claim(PurposeClaimType, purpose)
             ]),
-            Expires = DateTime.UtcNow.AddHours(24),
+            Expires = DateTime.UtcNow.Add(lifetime),
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature),
@@ -70,7 +86,7 @@ public sealed class TokenService : ITokenService
         return tokenHandler.WriteToken(token);
     }
 
-    public Result<string?> ValidateEmailToken(string token, out string? email)
+    private Result<string?> ValidatePurposeToken(string token, string expectedPurpose, out string? email)
     {
         email = null;
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -93,20 +109,20 @@ public sealed class TokenService : ITokenService
         {
             var principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
 
-            var purposeClaim = principal.FindFirst("purpose")?.Value;
-            if (purposeClaim != "email_confirmation")
+            var purposeClaim = principal.FindFirst(PurposeClaimType)?.Value;
+            if (purposeClaim != expectedPurpose)
             {
-                _logger.LogWarning("Invalid email token purpose: {Purpose}", purposeClaim);
-                return Result.Fail("Invalid email token purpose");
+                _logger.LogWarning("Invalid {ExpectedPurpose} token purpose: {Purpose}", expectedPurpose, purposeClaim);
+                return Result.Fail($"Invalid {expectedPurpose} token purpose");
             }
 
             email = principal.FindFirst(ClaimTypes.Email)?.Value;
-            return Result.Ok(principal.FindFirst(ClaimTypes.Email)?.Value);
+            return Result.Ok(email);
         }
         catch (Exception)
         {
-            _logger.LogWarning("Invalid email token: {Token}", token);
-            return Result.Fail("Invalid email token");
+            _logger.LogWarning("Invalid {ExpectedPurpose} token", expectedPurpose);
+            return Result.Fail($"Invalid {expectedPurpose} token");
         }
     }
 }

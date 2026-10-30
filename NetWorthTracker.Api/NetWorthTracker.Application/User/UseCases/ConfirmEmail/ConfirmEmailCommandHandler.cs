@@ -25,9 +25,9 @@ public class ConfirmEmailCommandHandler : BaseRequestHandler<ConfirmEmailCommand
 
     protected override async ValueTask<Result<ConfirmEmailResponse>> Handler(ConfirmEmailCommand request, CancellationToken cancellationToken)
     {
-        var result = _tokenService.ValidateEmailToken(request.Token, out string email);
+        var result = _tokenService.ValidateEmailToken(request.Token, out var email);
 
-        if (result.IsFailed)
+        if (result.IsFailed || string.IsNullOrEmpty(email))
         {
             return await ValueTask.FromResult(Result.Fail<ConfirmEmailResponse>("Invalid token"));
         }

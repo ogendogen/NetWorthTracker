@@ -4,10 +4,14 @@ import { map, Observable } from 'rxjs';
 import { API_BASE_URL } from '../../app.config';
 import {
   AuthSession,
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
   LoginRequest,
   LoginResponse,
   RegisterRequest,
   RegisterResponse,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
 } from './auth.models';
 
 const SESSION_STORAGE_KEY = 'net-worth-tracker.session';
@@ -36,6 +40,14 @@ export class AuthService {
 
   register(credentials: RegisterRequest): Observable<RegisterResponse> {
     return this.http.post<RegisterResponse>(`${this.apiBaseUrl}/register`, credentials);
+  }
+
+  forgotPassword(request: ForgotPasswordRequest): Observable<ForgotPasswordResponse> {
+    return this.http.post<ForgotPasswordResponse>(`${this.apiBaseUrl}/forgot-password`, request);
+  }
+
+  resetPassword(request: ResetPasswordRequest): Observable<ResetPasswordResponse> {
+    return this.http.post<ResetPasswordResponse>(`${this.apiBaseUrl}/reset-password`, request);
   }
 
   logout(): void {
