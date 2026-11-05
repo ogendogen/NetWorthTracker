@@ -37,6 +37,36 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'forgot-password',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./features/forgot-password/forgot-password.page').then(
+        (module) => module.ForgotPasswordPageComponent,
+      ),
+  },
+  {
+    path: 'forgot-password-sent',
+    loadComponent: () =>
+      import('./features/forgot-password-sent/forgot-password-sent.page').then(
+        (module) => module.ForgotPasswordSentPageComponent,
+      ),
+  },
+  {
+    path: 'reset-password',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./features/reset-password/reset-password.page').then(
+        (module) => module.ResetPasswordPageComponent,
+      ),
+  },
+  {
+    path: 'password-reset-success',
+    loadComponent: () =>
+      import('./features/password-reset-success/password-reset-success.page').then(
+        (module) => module.PasswordResetSuccessPageComponent,
+      ),
+  },
+  {
     path: '',
     canActivate: [authGuard],
     canActivateChild: [authGuard],

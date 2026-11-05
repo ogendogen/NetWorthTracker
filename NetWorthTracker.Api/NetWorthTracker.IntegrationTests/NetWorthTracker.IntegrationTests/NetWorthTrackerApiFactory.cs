@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using NetWorthTracker.Domain.Common.Interfaces;
 using NetWorthTracker.Domain.User.Models;
 using NetWorthTracker.Infrastructure;
 using Testcontainers.PostgreSql;
@@ -17,9 +20,12 @@ public sealed class NetWorthTrackerApiFactory : WebApplicationFactory<Program>, 
     public const string JwtSigningKey = "integration-tests-only-signing-key-2026";
     public const string TestPassword = "integration-password";
     public const string TestUserName = "integration-user";
-    private const string TestUserEmail = "integration-user@example.com";
+    public const string TestUserEmail = "integration-user@example.com";
+    public const string FrontendUrl = "https://localhost:4200";
 
     private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder("postgres:18").Build();
+
+    public RecordingEmailService EmailService { get; } = new();
 
     public async Task InitializeAsync()
     {
@@ -60,9 +66,15 @@ public sealed class NetWorthTrackerApiFactory : WebApplicationFactory<Program>, 
                 ["Jwt:Issuer"] = JwtIssuer,
                 ["Jwt:LifetimeMinutes"] = "15",
                 ["Jwt:SigningKey"] = JwtSigningKey,
+                ["FrontendUrl"] = FrontendUrl,
                 ["Seq:ApiUrl"] = "http://localhost:5341",
                 ["Seq:ApiKey"] = "integration-tests-only-api-key"
             });
+        });
+        builder.ConfigureTestServices(services =>
+        {
+            services.RemoveAll<IEmailService>();
+            services.AddSingleton<IEmailService>(EmailService);
         });
     }
 }

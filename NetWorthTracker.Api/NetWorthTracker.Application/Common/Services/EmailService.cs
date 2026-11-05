@@ -29,6 +29,13 @@ public class EmailService : IEmailService
         SendEmail(new MailboxAddress(username, toAddress), subject, body);
     }
 
+    public void SendPasswordResetEmail(string username, string toAddress, string resetToken)
+    {
+        var subject = "Reset your NetWorthTracker password";
+        var body = $"Hello {username},\n\nWe received a request to reset the password for your NetWorthTracker account.\n\nTo choose a new password, open the following link within 1 hour: {_configuration["FrontendUrl"]}/reset-password?token={resetToken}\n\nIf you did not request a password reset, you can ignore this email and your password will stay unchanged.\n\nBest regards,\nThe NetWorthTracker Team";
+        SendEmail(new MailboxAddress(username, toAddress), subject, body);
+    }
+
     private void SendEmail(MailboxAddress to, string subject, string body)
     {
         _logger.LogInformation("Preparing to send email to {ToAddress} with subject '{Subject}'", to.Address, subject);

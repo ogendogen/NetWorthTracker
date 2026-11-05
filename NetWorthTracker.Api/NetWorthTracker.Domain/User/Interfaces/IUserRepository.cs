@@ -21,4 +21,13 @@ public interface IUserRepository
     Task<bool> ConfirmEmailByEmail(
         string email,
         CancellationToken cancellationToken = default);
+
+    Task<Models.User?> GetByEmailAsync(
+        string email,
+        CancellationToken cancellationToken = default);
+
+    Task<bool> UpdatePasswordByEmailAsync(
+        string email,
+        string newPassword,
+        CancellationToken cancellationToken = default);
 }
