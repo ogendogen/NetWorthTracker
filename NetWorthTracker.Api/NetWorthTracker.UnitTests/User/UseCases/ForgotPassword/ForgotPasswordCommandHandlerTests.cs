@@ -2,7 +2,6 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NetWorthTracker.Application.Authentication.Interfaces;
-using NetWorthTracker.Application.User.Models.ForgotPassword;
 using NetWorthTracker.Application.User.UseCases.ForgotPassword;
 using NetWorthTracker.Domain.Common.Interfaces;
 using NetWorthTracker.Domain.User.Interfaces;
@@ -39,7 +38,6 @@ public class ForgotPasswordCommandHandlerTests
 
         // Assert
         await Assert.That(result.IsSuccess).IsTrue();
-        await Assert.That(result.Value).IsEqualTo(new ForgotPasswordResponse(true));
         tokenService.GeneratePasswordResetToken(Email).WasCalled(Times.Once);
         emailService.SendPasswordResetEmail(Username, Email, ResetToken).WasCalled(Times.Once);
     }
@@ -67,7 +65,6 @@ public class ForgotPasswordCommandHandlerTests
 
         // Assert
         await Assert.That(result.IsSuccess).IsTrue();
-        await Assert.That(result.Value).IsEqualTo(new ForgotPasswordResponse(true));
         tokenService.GeneratePasswordResetToken(Any<string>()).WasNeverCalled();
         emailService.SendPasswordResetEmail(Any<string>(), Any<string>(), Any<string>()).WasNeverCalled();
     }
@@ -95,7 +92,6 @@ public class ForgotPasswordCommandHandlerTests
 
         // Assert
         await Assert.That(result.IsSuccess).IsTrue();
-        await Assert.That(result.Value).IsEqualTo(new ForgotPasswordResponse(true));
         tokenService.GeneratePasswordResetToken(Any<string>()).WasNeverCalled();
         emailService.SendPasswordResetEmail(Any<string>(), Any<string>(), Any<string>()).WasNeverCalled();
     }

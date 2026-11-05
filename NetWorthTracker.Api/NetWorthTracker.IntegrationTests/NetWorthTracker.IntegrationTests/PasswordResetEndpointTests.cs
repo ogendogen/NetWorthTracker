@@ -28,8 +28,7 @@ public class PasswordResetEndpointTests
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
-        var result = await response.Content.ReadFromJsonAsync<ForgotPasswordResponse>();
-        await Assert.That(result?.Success).IsTrue();
+        await Assert.That(await response.Content.ReadAsStringAsync()).IsEqualTo(string.Empty);
 
         var resetEmail = ApiFactory.EmailService.SentEmails.LastOrDefault(email =>
             email.Kind == RecordingEmailService.PasswordResetKind &&
@@ -40,7 +39,7 @@ public class PasswordResetEndpointTests
     }
 
     [Test]
-    public async Task GivenUnknownEmail_WhenRequestingPasswordReset_ThenReturnsSameOkResponseWithoutEmail()
+    public async Task GivenUnknownEmail_WhenRequestingPasswordReset_ThenReturnsOkWithoutSendingEmail()
     {
         // Arrange
         const string unknownEmail = "nobody-here@example.com";
@@ -51,8 +50,7 @@ public class PasswordResetEndpointTests
 
         // Assert
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
-        var result = await response.Content.ReadFromJsonAsync<ForgotPasswordResponse>();
-        await Assert.That(result?.Success).IsTrue();
+        await Assert.That(await response.Content.ReadAsStringAsync()).IsEqualTo(string.Empty);
         await Assert.That(ApiFactory.EmailService.SentEmails.Any(email => email.ToAddress == unknownEmail)).IsFalse();
     }
 

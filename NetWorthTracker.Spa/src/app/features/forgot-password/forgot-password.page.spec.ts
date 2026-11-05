@@ -3,13 +3,13 @@ import { By } from '@angular/platform-browser';
 import { provideRouter, Router } from '@angular/router';
 import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom, Observable, of, throwError } from 'rxjs';
-import { ForgotPasswordRequest, ForgotPasswordResponse } from '../../core/auth/auth.models';
+import { ForgotPasswordRequest } from '../../core/auth/auth.models';
 import { AuthService } from '../../core/auth/auth.service';
 import { ForgotPasswordPageComponent } from './forgot-password.page';
 
 describe('ForgotPasswordPageComponent', () => {
   const authService = {
-    forgotPassword: vi.fn<(request: ForgotPasswordRequest) => Observable<ForgotPasswordResponse>>(),
+    forgotPassword: vi.fn<(request: ForgotPasswordRequest) => Observable<void>>(),
   };
 
   beforeEach(async () => {
@@ -52,7 +52,7 @@ describe('ForgotPasswordPageComponent', () => {
   });
 
   it('submits the email and navigates to the sent page', () => {
-    authService.forgotPassword.mockReturnValue(of({ success: true }));
+    authService.forgotPassword.mockReturnValue(of(undefined));
     const fixture = TestBed.createComponent(ForgotPasswordPageComponent);
     const component = fixture.componentInstance;
     const router = TestBed.inject(Router);

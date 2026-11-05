@@ -60,13 +60,13 @@ public sealed class AuthController : ControllerBase
     }
 
     [HttpPost("/forgot-password")]
-    [ProducesResponseType<ForgotPasswordResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ForgotPasswordResponse>> ForgotPassword(ForgotPasswordRequest request)
+    public async Task<ActionResult> ForgotPassword(ForgotPasswordRequest request)
     {
         var result = await _mediator.Send(new ForgotPasswordCommand(request.Email));
 
-        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Errors);
+        return result.IsSuccess ? Ok() : BadRequest(result.Errors);
     }
 
     [HttpPost("/reset-password")]

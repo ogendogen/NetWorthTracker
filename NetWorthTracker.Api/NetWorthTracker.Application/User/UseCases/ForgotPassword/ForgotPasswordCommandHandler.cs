@@ -2,13 +2,12 @@ using FluentResults;
 using Microsoft.Extensions.Logging;
 using NetWorthTracker.Application.Authentication.Interfaces;
 using NetWorthTracker.Application.Common.Handlers;
-using NetWorthTracker.Application.User.Models.ForgotPassword;
 using NetWorthTracker.Domain.Common.Interfaces;
 using NetWorthTracker.Domain.User.Interfaces;
 
 namespace NetWorthTracker.Application.User.UseCases.ForgotPassword;
 
-public class ForgotPasswordCommandHandler : BaseRequestHandler<ForgotPasswordCommand, ForgotPasswordResponse>
+public class ForgotPasswordCommandHandler : ResultRequestHandler<ForgotPasswordCommand>
 {
     private readonly IUserRepository _userRepository;
     private readonly ITokenService _tokenService;
@@ -28,7 +27,7 @@ public class ForgotPasswordCommandHandler : BaseRequestHandler<ForgotPasswordCom
     }
 
     // Always succeeds so the response cannot reveal whether the email is registered.
-    protected override async ValueTask<Result<ForgotPasswordResponse>> Handler(
+    protected override async ValueTask<Result> Handler(
         ForgotPasswordCommand request,
         CancellationToken cancellationToken)
     {
@@ -41,6 +40,6 @@ public class ForgotPasswordCommandHandler : BaseRequestHandler<ForgotPasswordCom
             _emailService.SendPasswordResetEmail(user.Login, user.Email, encodedToken);
         }
 
-        return Result.Ok(new ForgotPasswordResponse(true));
+        return Result.Ok();
     }
 }

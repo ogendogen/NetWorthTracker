@@ -50,16 +50,14 @@ describe('AuthService', () => {
 
   it('posts a forgot-password request without creating a session', () => {
     const request = { email: 'user@example.test' };
-    let result: { success: boolean } | undefined;
 
-    service.forgotPassword(request).subscribe((response) => (result = response));
+    service.forgotPassword(request).subscribe();
 
     const httpRequest = httpTesting.expectOne('https://api.example.test/forgot-password');
     expect(httpRequest.request.method).toBe('POST');
     expect(httpRequest.request.body).toEqual(request);
-    httpRequest.flush({ success: true });
+    httpRequest.flush(null);
 
-    expect(result).toEqual({ success: true });
     expect(service.session()).toBeNull();
     expect(sessionStorage.getItem('net-worth-tracker.session')).toBeNull();
   });

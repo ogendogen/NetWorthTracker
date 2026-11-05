@@ -5,7 +5,6 @@ import { API_BASE_URL } from '../../app.config';
 import {
   AuthSession,
   ForgotPasswordRequest,
-  ForgotPasswordResponse,
   LoginRequest,
   LoginResponse,
   RegisterRequest,
@@ -42,8 +41,8 @@ export class AuthService {
     return this.http.post<RegisterResponse>(`${this.apiBaseUrl}/register`, credentials);
   }
 
-  forgotPassword(request: ForgotPasswordRequest): Observable<ForgotPasswordResponse> {
-    return this.http.post<ForgotPasswordResponse>(`${this.apiBaseUrl}/forgot-password`, request);
+  forgotPassword(request: ForgotPasswordRequest): Observable<void> {
+    return this.http.post<void>(`${this.apiBaseUrl}/forgot-password`, request);
   }
 
   resetPassword(request: ResetPasswordRequest): Observable<ResetPasswordResponse> {
