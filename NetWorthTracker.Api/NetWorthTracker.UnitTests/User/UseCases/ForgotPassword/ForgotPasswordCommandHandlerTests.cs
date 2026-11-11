@@ -12,7 +12,7 @@ public class ForgotPasswordCommandHandlerTests
 {
     private const string Username = "username";
     private const string Email = "testmail@test.com";
-    private const string ResetToken = "reset-token";
+    private const string ResetToken = "reset+token/==";
 
     [Test]
     public async Task GivenConfirmedUser_WhenHandlingForgotPassword_ThenSendsResetEmailAndReturnsSuccess()

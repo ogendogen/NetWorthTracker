@@ -36,8 +36,7 @@ public class ForgotPasswordCommandHandler : ResultRequestHandler<ForgotPasswordC
         if (user is { IsEmailConfirmed: true })
         {
             var resetToken = _tokenService.GeneratePasswordResetToken(user.Email);
-            var encodedToken = Uri.EscapeDataString(resetToken);
-            _emailService.SendPasswordResetEmail(user.Login, user.Email, encodedToken);
+            _emailService.SendPasswordResetEmail(user.Login, user.Email, resetToken);
         }
 
         return Result.Ok();

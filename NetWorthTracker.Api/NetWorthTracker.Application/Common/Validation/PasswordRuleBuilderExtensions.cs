@@ -4,11 +4,19 @@ namespace NetWorthTracker.Application.Common.Validation;
 
 public static class PasswordRuleBuilderExtensions
 {
-    public static IRuleBuilderOptions<T, string> ApplyPasswordRules<T>(this IRuleBuilder<T, string> ruleBuilder) =>
+    public static IRuleBuilderOptions<T, string> ApplyUserLoginPasswordRules<T>(this IRuleBuilder<T, string> ruleBuilder) =>
         ruleBuilder
             .NotEmpty().WithMessage("Provided password cannot be empty")
-            .MinimumLength(8).WithMessage("Provided password must have at least 8 characters")
-            .MaximumLength(64).WithMessage("Provided password cannot be longer than 64 characters")
+            .MaximumLength(AccountValidationLimits.PasswordMaxLength)
+            .WithMessage($"Provided password cannot be longer than {AccountValidationLimits.PasswordMaxLength} characters");
+
+    public static IRuleBuilderOptions<T, string> ApplyUserRegisterPasswordRules<T>(this IRuleBuilder<T, string> ruleBuilder) =>
+        ruleBuilder
+            .NotEmpty().WithMessage("Provided password cannot be empty")
+            .MinimumLength(AccountValidationLimits.PasswordMinLength)
+            .WithMessage($"Provided password must have at least {AccountValidationLimits.PasswordMinLength} characters")
+            .MaximumLength(AccountValidationLimits.PasswordMaxLength)
+            .WithMessage($"Provided password cannot be longer than {AccountValidationLimits.PasswordMaxLength} characters")
             .Must(ContainsUppercase).WithMessage("Provided password must contain at least one uppercase letter")
             .Must(ContainsNumber).WithMessage("Provided password must contain at least one number")
             .Must(ContainsSpecialCharacter)
