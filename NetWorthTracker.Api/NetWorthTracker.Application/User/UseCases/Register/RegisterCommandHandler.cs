@@ -47,8 +47,7 @@ public class RegisterCommandHandler : BaseRequestHandler<RegisterCommand, Regist
         if (success)
         {
             var confirmationToken = _tokenService.GenerateEmailToken(request.Email);
-            var encodedToken = Uri.EscapeDataString(confirmationToken);
-            _emailService.SendPostRegistrationEmail(request.Username, request.Email, encodedToken);
+            _emailService.SendPostRegistrationEmail(request.Username, request.Email, confirmationToken);
         }
 
         //todo : log failures

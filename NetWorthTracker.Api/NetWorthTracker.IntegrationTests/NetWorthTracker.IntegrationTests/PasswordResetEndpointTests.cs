@@ -82,7 +82,7 @@ public class PasswordResetEndpointTests
         await Assert.That(forgotResponse.StatusCode).IsEqualTo(HttpStatusCode.OK);
         var resetEmail = ApiFactory.EmailService.SentEmails.Last(sent =>
             sent.Kind == RecordingEmailService.PasswordResetKind && sent.ToAddress == email);
-        var token = Uri.UnescapeDataString(resetEmail.Token);
+        var token = resetEmail.Token;
 
         // Act
         var resetResponse = await client.PostAsJsonAsync(
@@ -112,7 +112,7 @@ public class PasswordResetEndpointTests
         var resetEmail = ApiFactory.EmailService.SentEmails.Last(sent =>
             sent.Kind == RecordingEmailService.PasswordResetKind &&
             sent.ToAddress == NetWorthTrackerApiFactory.TestUserEmail);
-        var token = Uri.UnescapeDataString(resetEmail.Token);
+        var token = resetEmail.Token;
 
         // Act
         var response = await client.PostAsJsonAsync(

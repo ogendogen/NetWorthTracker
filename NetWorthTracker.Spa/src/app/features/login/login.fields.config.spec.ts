@@ -45,22 +45,13 @@ describe('loginFields', () => {
     expect(control.hasError('maxlength')).toBe(true);
   });
 
-  it('requires uppercase, lowercase, number, and special-symbol characters', () => {
+  it('accepts existing passwords without registration complexity rules', () => {
     const control = createControl('password');
-    const invalidPasswords = [
-      'lowercase1!',
-      'UPPERCASE1!',
-      'NoNumber!',
-      'NoSymbol1',
-      'Aa1 aaaa',
-    ];
+    const passwords = ['lowercase1!', 'UPPERCASE1!', 'NoNumber!', 'NoSymbol1'];
 
-    for (const password of invalidPasswords) {
+    for (const password of passwords) {
       control.setValue(password);
-      expect(control.hasError('pattern')).toBe(true);
+      expect(control.valid).toBe(true);
     }
-
-    control.setValue('Valid1!Password');
-    expect(control.valid).toBe(true);
   });
 });

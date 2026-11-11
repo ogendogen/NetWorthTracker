@@ -9,6 +9,7 @@ import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
+import { getValidationMessage } from '../../shared/forms/form-validation.utils';
 import { ForgotPasswordFieldName, forgotPasswordFields } from './forgot-password.fields.config';
 
 @Component({
@@ -41,10 +42,7 @@ export class ForgotPasswordPageComponent {
 
   getValidationMessage(field: ForgotPasswordFieldName): string {
     const control = this.form.controls[field];
-    return (
-      forgotPasswordFields[field].validationMessages.find(({ error }) => control.hasError(error))
-        ?.translationKey ?? ''
-    );
+    return getValidationMessage(control, forgotPasswordFields[field].validationMessages);
   }
 
   submit(): void {
