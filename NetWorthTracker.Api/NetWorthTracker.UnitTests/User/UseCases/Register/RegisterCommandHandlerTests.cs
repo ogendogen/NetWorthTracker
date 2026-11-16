@@ -20,6 +20,7 @@ public class RegisterCommandHandlerTests
         const string username = "username";
         const string password = "Password1!";
         const string email = "testmail@test.com";
+        const string confirmationToken = "confirmation+token/==";
         var expectedResponse = new RegisterResponse(Success: true);
         var cancellationToken = new CancellationTokenSource().Token;
 
@@ -32,6 +33,7 @@ public class RegisterCommandHandlerTests
         var logger = ILogger<RegisterCommandHandler>.Mock();
         var emailService = IEmailService.Mock();
         var tokenService = ITokenService.Mock();
+        tokenService.GenerateEmailToken(email).Returns(confirmationToken);
         using var services = CreateServices();
 
         var registerCommandHandler = new RegisterCommandHandler(
@@ -56,6 +58,7 @@ public class RegisterCommandHandlerTests
             cancellationToken).WasCalled(Times.Once);
         userRepoMock.RegisterAsync(username, password, email,
             cancellationToken).WasCalled(Times.Once);
+        emailService.SendPostRegistrationEmail(username, email, confirmationToken).WasCalled(Times.Once);
     }
 
     [Test]

@@ -9,6 +9,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
+import { getValidationMessage } from '../../shared/forms/form-validation.utils';
 import {
   registerFields,
   registerFormValidations,
@@ -51,10 +52,7 @@ export class RegisterPageComponent {
 
   getValidationMessage(field: RegisterFieldName): string {
     const control = this.form.controls[field];
-    return (
-      registerFields[field].validationMessages.find(({ error }) => control.hasError(error))
-        ?.translationKey ?? ''
-    );
+    return getValidationMessage(control, registerFields[field].validationMessages);
   }
 
   get passwordMismatchVisible(): boolean {

@@ -48,7 +48,7 @@ public class RegisterCommandValidatorTests : ValidatorTestsBase
     [Test]
     public async Task GivenRegisterCommandWithTooLongUsername_WhenValidating_ThenValidationErrorHasExpectedMessage()
     {
-        var command = new RegisterCommand(new string('u', 33), "Password1!", "testmail@test.com");
+        var command = new RegisterCommand(new string('u', UsernameMaxLength + 1), "Password1!", "testmail@test.com");
 
         await AssertValidationErrorsHaveMessagesAsync(new RegisterCommandValidator(), command,
             "Provided username cannot be longer than 32 characters");
@@ -66,7 +66,8 @@ public class RegisterCommandValidatorTests : ValidatorTestsBase
     [Test]
     public async Task GivenRegisterCommandWithTooShortPassword_WhenValidating_ThenValidationErrorHasExpectedMessage()
     {
-        var command = new RegisterCommand("username", "Aa1!", "testmail@test.com");
+        var password = "A1!" + new string('a', PasswordMinLength - "A1!".Length - 1);
+        var command = new RegisterCommand("username", password, "testmail@test.com");
 
         await AssertValidationErrorsHaveMessagesAsync(new RegisterCommandValidator(), command,
             "Provided password must have at least 8 characters");
@@ -75,7 +76,8 @@ public class RegisterCommandValidatorTests : ValidatorTestsBase
     [Test]
     public async Task GivenRegisterCommandWithTooLongPassword_WhenValidating_ThenValidationErrorHasExpectedMessage()
     {
-        var command = new RegisterCommand("username", new string('a', 62) + "A1!", "testmail@test.com");
+        var password = "A1!" + new string('a', PasswordMaxLength - "A1!".Length + 1);
+        var command = new RegisterCommand("username", password, "testmail@test.com");
 
         await AssertValidationErrorsHaveMessagesAsync(new RegisterCommandValidator(), command,
             "Provided password cannot be longer than 64 characters");
@@ -129,9 +131,40 @@ public class RegisterCommandValidatorTests : ValidatorTestsBase
     [Test]
     public async Task GivenRegisterCommandWithTooLongEmail_WhenValidating_ThenValidationErrorHasExpectedMessage()
     {
-        var command = new RegisterCommand("username", "Password1!", new string('a', 312) + "@test.com");
+        var email = new string('a', EmailMaxLength - "@test.com".Length + 1) + "@test.com";
+        var command = new RegisterCommand("username", "Password1!", email);
 
         await AssertValidationErrorsHaveMessagesAsync(new RegisterCommandValidator(), command,
             "Provided email address cannot be longer than 320 characters");
+    }
+
+    [Test]
+    public async Task GivenFieldsAtLengthLimits_WhenValidating_ThenDoesNotThrow()
+    {
+        var password = "A1!" + new string('a', PasswordMinLength - "A1!".Length);
+        var email = new string('a', EmailMaxLength - "@test.com".Length) + "@test.com";
+        var command = new RegisterCommand(new string('u', UsernameMaxLength), password, email);
+
+        await Assert.That(async () => await new RegisterCommandValidator().ValidateAndThrowAsync(command))
+            .ThrowsNothing();
+    }
+
+    [Test]
+    public async Task GivenPasswordAtMaximumLength_WhenValidating_ThenDoesNotThrow()
+    {
+        var password = "A1!" + new string('a', PasswordMaxLength - "A1!".Length);
+        var command = new RegisterCommand("username", password, "testmail@test.com");
+
+        await Assert.That(async () => await new RegisterCommandValidator().ValidateAndThrowAsync(command))
+            .ThrowsNothing();
+    }
+
+    [Test]
+    public async Task GivenPasswordWithSymbol_WhenValidating_ThenDoesNotThrow()
+    {
+        var command = new RegisterCommand("username", "Password1$", "testmail@test.com");
+
+        await Assert.That(async () => await new RegisterCommandValidator().ValidateAndThrowAsync(command))
+            .ThrowsNothing();
     }
 }

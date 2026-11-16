@@ -11,6 +11,9 @@ namespace NetWorthTracker.Application.Common.Services;
 
 public class EmailService : IEmailService
 {
+    private const string ConfirmEmailPath = "confirm-email";
+    private const string ResetPasswordPath = "reset-password";
+
     private readonly EmailSettings _emailSettings;
     private readonly ILogger<EmailService> _logger;
     private readonly IConfiguration _configuration;
@@ -25,16 +28,21 @@ public class EmailService : IEmailService
     public void SendPostRegistrationEmail(string username, string toAddress, string confirmationToken)
     {
         var subject = "Welcome to NetWorthTracker!";
-        var body = $"Hello {username},\n\nThank you for registering with NetWorthTracker. We're excited to have you on board!\n\nPlease confirm your email by clicking the following link: {_configuration["ApiUrl"]}/confirm-email?token={confirmationToken}\n\nBest regards,\nThe NetWorthTracker Team";
+        var confirmationUrl = BuildActionUrl(_configuration["ApiUrl"], ConfirmEmailPath, confirmationToken);
+        var body = $"Hello {username},\n\nThank you for registering with NetWorthTracker. We're excited to have you on board!\n\nPlease confirm your email by clicking the following link: {confirmationUrl}\n\nBest regards,\nThe NetWorthTracker Team";
         SendEmail(new MailboxAddress(username, toAddress), subject, body);
     }
 
     public void SendPasswordResetEmail(string username, string toAddress, string resetToken)
     {
         var subject = "Reset your NetWorthTracker password";
-        var body = $"Hello {username},\n\nWe received a request to reset the password for your NetWorthTracker account.\n\nTo choose a new password, open the following link within 1 hour: {_configuration["FrontendUrl"]}/reset-password?token={resetToken}\n\nIf you did not request a password reset, you can ignore this email and your password will stay unchanged.\n\nBest regards,\nThe NetWorthTracker Team";
+        var resetUrl = BuildActionUrl(_configuration["FrontendUrl"], ResetPasswordPath, resetToken);
+        var body = $"Hello {username},\n\nWe received a request to reset the password for your NetWorthTracker account.\n\nTo choose a new password, open the following link within 1 hour: {resetUrl}\n\nIf you did not request a password reset, you can ignore this email and your password will stay unchanged.\n\nBest regards,\nThe NetWorthTracker Team";
         SendEmail(new MailboxAddress(username, toAddress), subject, body);
     }
+
+    private static string BuildActionUrl(string? baseUrl, string path, string token) =>
+        $"{baseUrl?.TrimEnd('/')}/{path}?token={Uri.EscapeDataString(token)}";
 
     private void SendEmail(MailboxAddress to, string subject, string body)
     {

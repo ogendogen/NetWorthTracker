@@ -36,9 +36,20 @@ public class ForgotPasswordCommandValidatorTests : ValidatorTestsBase
     [Test]
     public async Task GivenTooLongEmail_WhenValidating_ThenValidationErrorHasExpectedMessage()
     {
-        var command = new ForgotPasswordCommand($"{new string('a', 320)}@test.com");
+        var email = new string('a', EmailMaxLength - "@test.com".Length + 1) + "@test.com";
+        var command = new ForgotPasswordCommand(email);
 
         await AssertValidationErrorsHaveMessagesAsync(new ForgotPasswordCommandValidator(), command,
             "Provided email address cannot be longer than 320 characters");
+    }
+
+    [Test]
+    public async Task GivenEmailAtMaximumLength_WhenValidating_ThenDoesNotThrow()
+    {
+        var email = new string('a', EmailMaxLength - "@test.com".Length) + "@test.com";
+        var command = new ForgotPasswordCommand(email);
+
+        await Assert.That(async () => await new ForgotPasswordCommandValidator().ValidateAndThrowAsync(command))
+            .ThrowsNothing();
     }
 }

@@ -9,6 +9,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
+import { getValidationMessage } from '../../shared/forms/form-validation.utils';
 import {
   ResetPasswordFieldName,
   resetPasswordFields,
@@ -53,10 +54,7 @@ export class ResetPasswordPageComponent {
 
   getValidationMessage(field: ResetPasswordFieldName): string {
     const control = this.form.controls[field];
-    return (
-      resetPasswordFields[field].validationMessages.find(({ error }) => control.hasError(error))
-        ?.translationKey ?? ''
-    );
+    return getValidationMessage(control, resetPasswordFields[field].validationMessages);
   }
 
   get passwordMismatchVisible(): boolean {

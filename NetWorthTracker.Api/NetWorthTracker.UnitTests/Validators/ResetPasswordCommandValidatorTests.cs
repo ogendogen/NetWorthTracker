@@ -71,4 +71,24 @@ public class ResetPasswordCommandValidatorTests : ValidatorTestsBase
         await AssertValidationErrorsHaveMessagesAsync(new ResetPasswordCommandValidator(), command,
             "Passwords do not match");
     }
+
+    [Test]
+    public async Task GivenTooShortPassword_WhenValidating_ThenValidationErrorHasExpectedMessage()
+    {
+        var password = "A1!" + new string('a', PasswordMinLength - "A1!".Length - 1);
+        var command = new ResetPasswordCommand(Token, password, password);
+
+        await AssertValidationErrorsHaveMessagesAsync(new ResetPasswordCommandValidator(), command,
+            "Provided password must have at least 8 characters");
+    }
+
+    [Test]
+    public async Task GivenTooLongPassword_WhenValidating_ThenValidationErrorHasExpectedMessage()
+    {
+        var password = "A1!" + new string('a', PasswordMaxLength - "A1!".Length + 1);
+        var command = new ResetPasswordCommand(Token, password, password);
+
+        await AssertValidationErrorsHaveMessagesAsync(new ResetPasswordCommandValidator(), command,
+            "Provided password cannot be longer than 64 characters");
+    }
 }

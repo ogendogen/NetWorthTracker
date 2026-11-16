@@ -18,20 +18,17 @@ public sealed class RegisterCommandValidator : AbstractValidator<RegisterCommand
     private void ConfigureUsernameRules()
     {
         RuleFor(x => x.Username)
-            .NotEmpty().WithMessage("Provided username cannot be empty")
-            .MaximumLength(32).WithMessage("Provided username cannot be longer than 32 characters");
+            .ApplyUsernameRules();
     }
 
     private void ConfigurePasswordRules()
     {
-        RuleFor(x => x.Password).ApplyPasswordRules();
+        RuleFor(x => x.Password).ApplyUserRegisterPasswordRules();
     }
 
     private void ConfigureEmailRules()
     {
         RuleFor(x => x.Email)
-            .NotEmpty().WithMessage("Provided email cannot be empty")
-            .EmailAddress().WithMessage("Provided email is not a valid email address")
-            .MaximumLength(320).WithMessage("Provided email address cannot be longer than 320 characters");
+            .ApplyEmailRules();
     }
 }

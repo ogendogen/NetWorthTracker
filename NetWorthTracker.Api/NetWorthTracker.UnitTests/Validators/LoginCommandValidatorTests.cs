@@ -37,7 +37,7 @@ public class LoginCommandValidatorTests : ValidatorTestsBase
     [Test]
     public async Task GivenLoginCommandWithTooLongUsername_WhenValidating_ThenValidationErrorHasExpectedMessage()
     {
-        var command = new LoginCommand(new string('u', 33), "Password1!");
+        var command = new LoginCommand(new string('u', UsernameMaxLength + 1), "Password1!");
 
         await AssertValidationErrorsHaveMessagesAsync(new LoginCommandValidator(), command,
             "Provided username cannot be longer than 32 characters");
@@ -55,9 +55,27 @@ public class LoginCommandValidatorTests : ValidatorTestsBase
     [Test]
     public async Task GivenLoginCommandWithTooLongPassword_WhenValidating_ThenValidationErrorHasExpectedMessage()
     {
-        var command = new LoginCommand("username", new string('p', 65));
+        var command = new LoginCommand("username", new string('p', PasswordMaxLength + 1));
 
         await AssertValidationErrorsHaveMessagesAsync(new LoginCommandValidator(), command,
             "Provided password cannot be longer than 64 characters");
+    }
+
+    [Test]
+    public async Task GivenCredentialsAtMaximumLengths_WhenValidating_ThenDoesNotThrow()
+    {
+        var command = new LoginCommand(new string('u', UsernameMaxLength), new string('p', PasswordMaxLength));
+
+        await Assert.That(async () => await new LoginCommandValidator().ValidateAndThrowAsync(command))
+            .ThrowsNothing();
+    }
+
+    [Test]
+    public async Task GivenShortPassword_WhenValidating_ThenDoesNotThrow()
+    {
+        var command = new LoginCommand("username", "x");
+
+        await Assert.That(async () => await new LoginCommandValidator().ValidateAndThrowAsync(command))
+            .ThrowsNothing();
     }
 }

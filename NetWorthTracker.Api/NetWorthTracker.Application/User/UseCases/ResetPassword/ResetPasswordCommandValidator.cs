@@ -13,7 +13,7 @@ public sealed class ResetPasswordCommandValidator : AbstractValidator<ResetPassw
         RuleFor(x => x.Token)
             .NotEmpty().WithMessage("Provided token cannot be empty");
 
-        RuleFor(x => x.Password).ApplyPasswordRules();
+        RuleFor(x => x.Password).ApplyUserRegisterPasswordRules();
 
         RuleFor(x => x.ConfirmPassword)
             .Equal(x => x.Password).WithMessage("Passwords do not match");
